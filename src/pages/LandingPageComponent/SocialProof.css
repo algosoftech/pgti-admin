@@ -1,0 +1,84 @@
+.social-proof-section {
+  padding: 60px 5vw 40px 5vw;
+  background: #fff;
+  text-align: center;
+}
+.sp-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 28px;
+  color: #22223b;
+}
+.sp-logos {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+.sp-logo {
+  height: 48px;
+  width: auto;
+  opacity: 0.7;
+  filter: grayscale(1);
+  transition: opacity 0.2s;
+}
+.sp-logo:hover {
+  opacity: 1;
+  filter: none;
+}
+.sp-testimonials {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.sp-testimonial {
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 24px 18px;
+  max-width: 320px;
+  min-width: 220px;
+  box-shadow: 0 2px 12px rgba(34,34,59,0.06);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sp-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+}
+.sp-text {
+  font-size: 1.05rem;
+  color: #4a4e69;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+.sp-name {
+  font-size: 1rem;
+  color: #22223b;
+  font-weight: 600;
+}
+.sp-badges {
+  margin-top: 18px;
+}
+.sp-badge {
+  display: inline-block;
+  background: #e0e7ef;
+  color: #22223b;
+  border-radius: 20px;
+  padding: 7px 18px;
+  margin: 0 8px 8px 0;
+  font-size: 0.98rem;
+  font-weight: 500;
+}
+@media (max-width: 900px) {
+  .sp-logos, .sp-testimonials {
+    flex-direction: column;
+    gap: 18px;
+  }
+}

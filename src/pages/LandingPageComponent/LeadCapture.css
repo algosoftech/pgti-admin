@@ -1,0 +1,57 @@
+.lead-capture-section {
+  padding: 60px 5vw 40px 5vw;
+  background: #f8fafc;
+  text-align: center;
+}
+.lc-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #22223b;
+}
+.lc-desc {
+  font-size: 1.1rem;
+  color: #4a4e69;
+  margin-bottom: 28px;
+}
+.lc-form {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.lc-input {
+  padding: 12px 18px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  min-width: 220px;
+  outline: none;
+}
+.lc-btn {
+  background: #22223b;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.lc-btn:hover {
+  background: #4a4e69;
+}
+.lc-success {
+  color: #2e7d32;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 18px;
+}
+@media (max-width: 900px) {
+  .lc-form {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+}

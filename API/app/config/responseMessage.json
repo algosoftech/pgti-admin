@@ -1,0 +1,339 @@
+{
+    "APP_MESSAGES": {
+        "SUCCESS": {
+            "errorCode": "success",
+            "message": "Success",
+            "statusCode": 200
+        },
+        "ERROR_VALIDATION": {
+            "errorCode": "requestParamsNotComplete",
+            "message": "Validation Error",
+            "statusCode": 400
+        },
+        "ERROR_SERVER_ERROR": {
+            "errorCode": "serverError",
+            "message": "Server Error",
+            "statusCode": 500
+        },
+        "ERROR_DATA_NOT_FOUND": {
+            "errorCode": "dataNotFound",
+            "message": "No data found",
+            "statusCode": 404
+        },
+        "ERROR_ALREADY_EXIST": {
+            "errorCode": "dataAlreadyExist",
+            "message": "Data already exist.",
+            "statusCode": 404
+        },
+        "PROCESS_ERROR": {
+            "errorCode": "processError",
+            "message": "Oops! An error occur while processing your request.",
+            "statusCode": 404
+        },
+        "INVALID_LOGIN_CREDENTIAL": {
+            "errorCode": "invalidlogincredential",
+            "message": "Please enter correct Email/Password.",
+            "statusCode": 404
+        },
+        "PERMISSION_ERROR": {
+            "errorCode": "permissionError",
+            "message": "Your are not allowed to perform this operation.",
+            "statusCode": 404
+        },
+        "ID_ERROR": {
+            "errorCode": "idError",
+            "message": "Please enter correct id.",
+            "statusCode": 404
+        },
+        "STATUS_EMPTY": {
+            "errorCode": "statusEmpty",
+            "message": "Status is required.",
+            "statusCode": 404
+        },
+        "TYPE_EMPTY": {
+            "errorCode": "typeEmpty",
+            "message": "User's type is `re`quired.",
+            "statusCode": 404
+        },
+        "EMAIL_EMPTY" : {
+            "errorCode": "emailEmpty",
+            "message": "Email is required.",
+            "statusCode": 404
+        },
+        "PASSWORD_EMPTY" : {
+            "errorCode": "emailEmpty",
+            "message": "Password is required.",
+            "statusCode": 404
+        },
+        "INACTIVE_ACCOUNT" : {
+            "errorCode": "inactiveAccount",
+            "message": "Your account is inactive. Please contact support team.",
+            "statusCode": 404
+        },
+        "BLOCK_ACCOUNT" : {
+            "errorCode": "blockAccount",
+            "message": "Your account is block. Please contact support team.",
+            "statusCode": 404
+        },
+        "DELETE_ACCOUNT" : {
+            "errorCode": "deleteAccount",
+            "message": "Your account is deleted. Please contact support team.",
+            "statusCode": 404
+        },
+        "NAME_EMPTY" : {
+            "errorCode": "nameEmpty",
+            "message": "Name is required.",
+            "statusCode": 404
+        },
+        "PHONE_EMPTY" : {
+            "errorCode": "phoneEmpty",
+            "message": "Phone is required.",
+            "statusCode": 404
+        },
+        "ALREADY_REGISTERED" : {
+            "errorCode": "alreadyRegistered",
+            "message": "User already registered.",
+            "statusCode": 404
+        },
+        "INVALID_OTP" : {
+            "errorCode": "invalidOtp",
+            "message": "Please enter correct One Time Password (OTP).",
+            "statusCode": 404
+        },
+        "OTP_EMPTY" : {
+            "errorCode": "otpEmpty",
+            "message": "One Time Password (OTP) is required.",
+            "statusCode": 404
+        },
+        "VALIDATION_ERROR" : {
+            "errorCode": "validationError",
+            "message": "Please fill required fields.",
+            "statusCode": 404
+        },
+        "FOLDER_NAME_EMPTY" : {
+            "errorCode": "folderNameEmpty",
+            "message": "Folder name is required.",
+            "statusCode": 404
+        },
+        "URL_EMPTY" : {
+            "errorCode": "urlEmpty",
+            "message": "URL is required.",
+            "statusCode": 404
+        },
+        "IMAGE_EMPTY" : {
+            "errorCode": "imageEmpty",
+            "message": "Image is required.",
+            "statusCode": 404
+        },
+        "CATEGORY_EMPTY" : {
+            "errorCode": "categoryEmpty",
+            "message": "Category is required.",
+            "statusCode": 404
+        },
+        "TITLE_EMPTY" : {
+            "errorCode": "titleEmpty",
+            "message": "Title is required.",
+            "statusCode": 404
+        },
+        "DESCRIPTION_EMPTY" : {
+            "errorCode": "descriptionEmpty",
+            "message": "Description is required.",
+            "statusCode": 404
+        },
+        "SORT_DESCRIPTION_EMPTY" : {
+            "errorCode": "sortDescriptionEmpty",
+            "message": "Sort description is required.",
+            "statusCode": 404
+        },
+        "PRODUCT_EMPTY" : {
+            "errorCode": "productEmpty",
+            "message": "Product is required.",
+            "statusCode": 404
+        },
+        "PRODUCT_ERROR" : {
+            "errorCode": "productError",
+            "message": "Product not fount.",
+            "statusCode": 404
+        },
+        "UNIT_EMPTY" : {
+            "errorCode": "unitEmpty",
+            "message": "Unit is required.",
+            "statusCode": 404
+        },
+        "RATE_EMPTY" : {
+            "errorCode": "rateEmpty",
+            "message": "Rate is required.",
+            "statusCode": 404
+        },
+        "STOCK_EMPTY" : {
+            "errorCode": "stockEmpty",
+            "message": "Stock is required.",
+            "statusCode": 404
+        },
+        "DISCOUNT_TEXT_EMPTY" : {
+            "errorCode": "discountTextEmpty",
+            "message": "Discount text is required.",
+            "statusCode": 404
+        },
+        "DISCOUNT_EMPTY" : {
+            "errorCode": "discountEmpty",
+            "message": "Discount is required.",
+            "statusCode": 404
+        },
+        "HOUSE_EMPTY" : {
+            "errorCode": "houseEmpty",
+            "message": "House/Flat/Block No. is required.",
+            "statusCode": 404
+        },
+        "LOCALITY_EMPTY" : {
+            "errorCode": "localityEmpty",
+            "message": "Apartment/Road/Locality is required.",
+            "statusCode": 404
+        },
+        "ADDRESS_TYPE_EMPTY" : {
+            "errorCode": "addressTypeEmpty",
+            "message": "Type is required.",
+            "statusCode": 404
+        },
+        "CODE_EMPTY" : {
+            "errorCode": "codeEmpty",
+            "message": "Code is required.",
+            "statusCode": 404
+        },
+        "DISCOUNT_TYPE_EMPTY" : {
+            "errorCode": "discountTypeEmpty",
+            "message": "Discount type is required.",
+            "statusCode": 404
+        },
+        "MAX_CAP_EMPTY" : {
+            "errorCode": "macCapEmpty",
+            "message": "Max. cap is required.",
+            "statusCode": 404
+        },
+        "MIN_CAP_EMPTY" : {
+            "errorCode": "minCapEmpty",
+            "message": "Min. cap is required.",
+            "statusCode": 404
+        },
+        "ELIGIBLE_AMOUNT_EMPTY" : {
+            "errorCode": "eligibleAmountEmpty",
+            "message": "Eligible amount is required.",
+            "statusCode": 404
+        },
+        "START_DATE_EMPTY" : {
+            "errorCode": "startDateEmpty",
+            "message": "Start date is required.",
+            "statusCode": 404
+        },
+        "END_DATE_EMPTY" : {
+            "errorCode": "endDateEmpty",
+            "message": "End date is required.",
+            "statusCode": 404
+        },
+        "PROMO_CODE_EMPTY" : {
+            "errorCode": "promoCodeEmpty",
+            "message": "Promo code is required.",
+            "statusCode": 404
+        },
+        "RELATION_EMPTY" : {
+            "errorCode": "relationEmpty",
+            "message": "Relation is required.",
+            "statusCode": 404
+        },
+        "ADDRESS_EMPTY" : {
+            "errorCode": "addressEmpty",
+            "message": "Address is required.",
+            "statusCode": 404
+        },
+        "ADDRESS_ERROR" : {
+            "errorCode": "addressError",
+            "message": "Address not found or invalid.",
+            "statusCode": 404
+        },
+        "CART_EMPTY" : {
+            "errorCode": "cartEmpty",
+            "message": "Cart is empty.",
+            "statusCode": 404
+        },
+        "STOCK_ERROR" : {
+            "errorCode": "stockError",
+            "message": "Stock is not available.",
+            "statusCode": 404
+        },
+        "PROMOCODE_ERROR" : {
+            "errorCode": "promoCodeError",
+            "message": "Promo code is not valid for current date.",
+            "statusCode": 404
+        },
+        "ORDER_AMOUNT_ERROR" : {
+            "errorCode": "orderAmountError",
+            "message": "Order amount is not valid.",
+            "statusCode": 404
+        },
+        "ORDER_ERROR" : {
+            "errorCode": "orderError",
+            "message": "An error occurred while creating order.",
+            "statusCode": 404
+        },
+        "MESSAGE_EMPTY" : {
+            "errorCode": "messageEmpty",
+            "message": "Issue/Feedback is required.",
+            "statusCode": 404
+        },
+        "QUESTION_EMPTY" : {
+            "errorCode": "questionEmpty",
+            "message": "Question is required.",
+            "statusCode": 404
+        },
+        "ANSWER_EMPTY" : {
+            "errorCode": "answerEmpty",
+            "message": "Answer is required.",
+            "statusCode": 404
+        },
+        "ARTICLE_ID_EMPTY" : {
+            "errorCode": "articleIdEmpty",
+            "message": "Article ID is required.",
+            "statusCode": 404
+        },
+        "PRODUCT_ID_EMPTY" : {
+            "errorCode": "productIdEmpty",
+            "message": "Product ID is required.",
+            "statusCode": 404
+        },
+        "VARIANT_ID_EMPTY" : {
+            "errorCode": "variantIdEmpty",
+            "message": "Variant ID is required.",
+            "statusCode": 404
+        },
+        "TERMS_CONDITION_EMPTY" : {
+            "errorCode": "termsConditionEmpty",
+            "message": "Terms & Condition is required.",
+            "statusCode": 404
+        },
+        "EVENT_FEE_EMPTY" : {
+            "errorCode": "eventFeeEmpty",
+            "message": "Event fee is required.",
+            "statusCode": 404
+        },
+        "CAPACITY_EMPTY" : {
+            "errorCode": "capacityEmpty",
+            "message": "Capacity is required.",
+            "statusCode": 404
+        },
+        "QUANTITY_EMPTY" : {
+            "errorCode": "quantityEmpty",
+            "message": "Quantity is required.",
+            "statusCode": 404
+        },
+        "INGREDIENTS_EMPTY" : {
+            "errorCode": "ingredientsEmpty",
+            "message": "Ingredients are required.",
+            "statusCode": 404
+        },
+        "ERROR_BULK_OPERATION_FAILED" : {
+            "errorCode": "errorBulkOperationFailed",
+            "message": "An error occurred while processing the ingredients.",
+            "statusCode": 404
+        }
+    }
+}

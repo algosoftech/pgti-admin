@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - Farmer's Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .search-box {
+            margin-bottom: 30px;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        .endpoint-group {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .endpoint-group-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .endpoint {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .endpoint:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .method {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .method.post {
+            background: #49cc90;
+            color: white;
+        }
+
+        .method.get {
+            background: #61affe;
+            color: white;
+        }
+
+        .method.put {
+            background: #fca130;
+            color: white;
+        }
+
+        .method.delete {
+            background: #f93e3e;
+            color: white;
+        }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .auth-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .auth-badge.required {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .auth-badge.api-key {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .auth-badge.optional {
+            background: #95e1d3;
+            color: #333;
+        }
+
+        .endpoint-description {
+            color: #666;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+
+        .auth-info {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .auth-info h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .auth-info ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+
+        .auth-info code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .toc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .toc h2 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            margin: 8px 0;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.2em;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 API Documentation</h1>
+            <p>Farmer's Store - Complete API Reference</p>
+        </header>
+
+        <div class="content">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search endpoints, methods, or paths...">
+            </div>
+
+            <div class="auth-info">
+                <h3>🔐 Authentication Requirements</h3>
+                <ul>
+                    <li><strong>Auth Token:</strong> Required for protected endpoints. Send in header as <code>authToken</code> or query parameter <code>authToken</code></li>
+                    <li><strong>API Key:</strong> Required for front-end endpoints. Send in header as <code>api-key</code> or query parameter <code>api-key</code></li>
+                    <li><strong>Optional Auth:</strong> Some endpoints support both authenticated and guest users</li>
+                </ul>
+            </div>
+
+            <div class="toc">
+                <h2>📑 Table of Contents</h2>
+                <ul>
+                    <li><a href="#common">Common APIs</a></li>
+                    <li><a href="#admin-accounts">Admin - Accounts</a></li>
+                    <li><a href="#admin-users">Admin - Users</a></li>
+                    <li><a href="#admin-category">Admin - Category</a></li>
+                    <li><a href="#admin-subcategory">Admin - Sub Category</a></li>
+                    <li><a href="#admin-cms">Admin - CMS</a></li>
+                    <li><a href="#admin-products">Admin - Products</a></li>
+                    <li><a href="#admin-product-variants">Admin - Product Variants</a></li>
+                    <li><a href="#admin-promo-codes">Admin - Promo Codes</a></li>
+                    <li><a href="#admin-orders">Admin - Orders</a></li>
+                    <li><a href="#admin-articles">Admin - Articles</a></li>
+                    <li><a href="#admin-events">Admin - Events</a></li>
+                    <li><a href="#front-users">Front - Users</a></li>
+                    <li><a href="#front-cms">Front - CMS</a></li>
+                    <li><a href="#front-products">Front - Products</a></li>
+                    <li><a href="#front-cart">Front - Cart</a></li>
+                    <li><a href="#front-promo-codes">Front - Promo Codes</a></li>
+                    <li><a href="#front-orders">Front - Orders</a></li>
+                </ul>
+            </div>
+
+            <!-- Common APIs -->
+            <div class="section" id="common">
+                <h2 class="section-title">Common APIs</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Clip Art Management</div>
+                    
+                    <div class="endpoint" data-search="clip-art upload">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/common/clip-art/upload</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Upload a clip art image. Accepts JPEG, JPG, PNG, and WEBP formats (max 2MB).
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="clip-art delete">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/common/clip-art/delete</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Delete a clip art image.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="clip-art list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/common/clip-art/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all clip art images.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin - Accounts -->
+            <div class="section" id="admin-accounts">
+                <h2 class="section-title">Admin - Accounts</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Authentication</div>
+                    
+                    <div class="endpoint" data-search="admin login">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/accounts/login</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Admin login endpoint.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="admin verify otp">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/accounts/verify-otp</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Verify OTP for admin login.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="admin forgot password">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/accounts/forgot-password</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Request password reset for admin account.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="admin reset password">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/accounts/reset-password</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Reset admin password with reset token.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Sub Admin Management</div>
+                    
+                    <div class="endpoint" data-search="sub-admin list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/accounts/sub-admin/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all sub-admin accounts.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="sub-admin permission">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/accounts/sub-admin/permission</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get permissions for sub-admin accounts.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="sub-admin addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/accounts/sub-admin/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update sub-admin account.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="sub-admin change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/accounts/sub-admin/changeStatus</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of a sub-admin account.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin - Users -->
+            <div class="section" id="admin-users">
+                <h2 class="section-title">Admin - Users</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">User Management</div>
+                    
+                    <div class="endpoint" data-search="users list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/users/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all users.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="users addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/users/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update user data.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="users change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/users/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of a user.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin - Category -->
+            <div class="section" id="admin-category">
+                <h2 class="section-title">Admin - Category</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Category Management</div>
+                    
+                    <div class="endpoint" data-search="category list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/category/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all categories.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="category addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/category/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update category.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="category change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/category/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of a category.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin - Sub Category -->
+            <div class="section" id="admin-subcategory">
+                <h2 class="section-title">Admin - Sub Category</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Sub Category Management</div>
+                    
+                    <div class="endpoint" data-search="sub-category list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/sub-category/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all sub-categories.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="sub-category addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/sub-category/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update sub-category.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="sub-category change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/sub-category/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of a sub-category.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin - CMS -->
+            <div class="section" id="admin-cms">
+                <h2 class="section-title">Admin - CMS</h2>
+                
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Banner Management</div>
+                    
+                    <div class="endpoint" data-search="banner list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/cms/banner/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all banners.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="banner addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/cms/banner/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update banner.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="banner change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/cms/banner/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of a banner.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">FAQ Management</div>
+                    
+                    <div class="endpoint" data-search="faq list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/cms/faq/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all FAQs.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="faq addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/cms/faq/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update FAQ.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="faq change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/cms/faq/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of a FAQ.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="faq delete">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/cms/faq/delete</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Delete a FAQ.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Contact Shop Management</div>
+                    
+                    <div class="endpoint" data-search="contact-shop list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/cms/contact-shop/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all contact shop entries.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="contact-shop addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/cms/contact-shop/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update contact shop entry.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="contact-shop change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/cms/contact-shop/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of a contact shop entry.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="contact-shop delete">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/cms/contact-shop/delete</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Delete a contact shop entry.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin - Products -->
+            <div class="section" id="admin-products">
+                <h2 class="section-title">Admin - Products</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Product Management</div>
+                    
+                    <div class="endpoint" data-search="products list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/products/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all products.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="products addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/products/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update product.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="products change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/products/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of a product.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin - Product Variants -->
+            <div class="section" id="admin-product-variants">
+                <h2 class="section-title">Admin - Product Variants</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Product Variant Management</div>
+                    
+                    <div class="endpoint" data-search="product-variants list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/product-variants/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all product variants.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="product-variants addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/product-variants/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update product variant.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="product-variants change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/product-variants/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of a product variant.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin - Promo Codes -->
+            <div class="section" id="admin-promo-codes">
+                <h2 class="section-title">Admin - Promo Codes</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Promo Code Management</div>
+                    
+                    <div class="endpoint" data-search="promo-code list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/promo-code/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all promo codes.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="promo-code addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/promo-code/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update promo code.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="promo-code change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/promo-code/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of a promo code.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin - Orders -->
+            <div class="section" id="admin-orders">
+                <h2 class="section-title">Admin - Orders</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Order Management</div>
+                    
+                    <div class="endpoint" data-search="orders list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/orders/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all orders.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin - Articles -->
+            <div class="section" id="admin-articles">
+                <h2 class="section-title">Admin - Articles</h2>
+                
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Article Management</div>
+                    
+                    <div class="endpoint" data-search="articles list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/articles/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all articles.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="articles addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/articles/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update article.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="articles change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/articles/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of an article.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="articles delete">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/articles/delete</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Delete an article.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Ingredients Management</div>
+                    
+                    <div class="endpoint" data-search="ingredients list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/articles/ingredients/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all ingredients.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="ingredients addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/articles/ingredients/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update ingredient.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="ingredients change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/articles/ingredients/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of an ingredient.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="ingredients delete">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/articles/ingredients/delete</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Delete an ingredient.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin - Events -->
+            <div class="section" id="admin-events">
+                <h2 class="section-title">Admin - Events</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Event Management</div>
+                    
+                    <div class="endpoint" data-search="events list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/events/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of all events.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="events addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/events/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update event.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="events change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/events/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of an event.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="events delete">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/admin/events/delete</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Delete an event.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Front - Users -->
+            <div class="section" id="front-users">
+                <h2 class="section-title">Front - Users</h2>
+                
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Authentication</div>
+                    
+                    <div class="endpoint" data-search="front login">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/login</span>
+                        </div>
+                        <div class="endpoint-description">
+                            User login endpoint.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="front verify otp">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/verify-otp</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Verify OTP for user login.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="front get profile">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/get-profile</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get user profile data.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="front update profile">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/update-profile</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Update user profile data.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="front logout">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/logout</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Logout user session.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Address Management</div>
+                    
+                    <div class="endpoint" data-search="address list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/address/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of user addresses.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="address addeditdata">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/address/addeditdata</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create or update user address.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="address change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/address/change-status</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change status (activate/deactivate) of an address.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="address mark default">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/address/mark-as-default</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Mark an address as default.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Family Management</div>
+                    
+                    <div class="endpoint" data-search="family list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/family/list</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of family members.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="family send request">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/family/send-request</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Send family member request.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="family accept request">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/family/accept-request</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Accept family member request.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="family reject request">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/users/family/reject-request</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Reject family member request.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Front - CMS -->
+            <div class="section" id="front-cms">
+                <h2 class="section-title">Front - CMS</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Content Management</div>
+                    
+                    <div class="endpoint" data-search="get home content">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cms/get-home-content</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get home page content including banners.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="get banners">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cms/get-banners</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of active banners.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="get categories">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cms/get-categories</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of active categories.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="get sub categories">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cms/get-sub-categories</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of active sub-categories.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="contact us">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cms/contact-us</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Submit contact us form.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="contact shop">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cms/contact-shop</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get contact shop information.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="faqs">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cms/faqs</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of active FAQs.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Front - Products -->
+            <div class="section" id="front-products">
+                <h2 class="section-title">Front - Products</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Product Listing</div>
+                    
+                    <div class="endpoint" data-search="products list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/products/list</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of products available for front-end.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="products details">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/products/details</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get detailed information about a specific product.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Front - Cart -->
+            <div class="section" id="front-cart">
+                <h2 class="section-title">Front - Cart</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Cart Management</div>
+                    
+                    <div class="endpoint" data-search="cart add">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cart/add</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                            <span class="auth-badge optional">Optional Auth</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Add item to cart. Supports both authenticated and guest users.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="cart list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cart/list</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                            <span class="auth-badge optional">Optional Auth</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get cart items. Supports both authenticated and guest users.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="cart update">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cart/update</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                            <span class="auth-badge optional">Optional Auth</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Update cart item quantity. Supports both authenticated and guest users.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="cart remove">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cart/remove</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                            <span class="auth-badge optional">Optional Auth</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Remove item from cart. Supports both authenticated and guest users.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="cart clear">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cart/clear</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                            <span class="auth-badge optional">Optional Auth</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Clear all items from cart. Supports both authenticated and guest users.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="cart migrate">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/cart/migrate-guest-cart</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Migrate guest cart to user cart after login. Requires authentication.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Front - Promo Codes -->
+            <div class="section" id="front-promo-codes">
+                <h2 class="section-title">Front - Promo Codes</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Promo Code Management</div>
+                    
+                    <div class="endpoint" data-search="promo-codes list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/promo-codes/list</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of available promo codes.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="promo-codes validate">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/promo-codes/validate</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Validate a promo code for the authenticated user.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Front - Orders -->
+            <div class="section" id="front-orders">
+                <h2 class="section-title">Front - Orders</h2>
+                <div class="endpoint-group">
+                    <div class="endpoint-group-title">Order Management</div>
+                    
+                    <div class="endpoint" data-search="orders create">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/orders/create</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create a new order. Requires authentication.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="orders change status">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/orders/change-status</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Change order status. Requires authentication.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="orders list">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/orders/list</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get list of user orders. Requires authentication.
+                        </div>
+                    </div>
+
+                    <div class="endpoint" data-search="orders details">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-path">/v1/front/orders/details</span>
+                            <span class="auth-badge api-key">API Key Required</span>
+                            <span class="auth-badge required">Auth Required</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get detailed information about a specific order. Requires authentication.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-results hidden" id="noResults">
+                No endpoints found matching your search.
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 AMEX Digital Trading Platform - API Documentation</p>
+            <p>Generated for Digi IT Solutions</p>
+        </footer>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const endpoints = document.querySelectorAll('.endpoint');
+        const sections = document.querySelectorAll('.section');
+        const noResults = document.getElementById('noResults');
+
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            if (searchTerm === '') {
+                // Show all endpoints and sections
+                endpoints.forEach(endpoint => {
+                    endpoint.classList.remove('hidden');
+                    visibleCount++;
+                });
+                sections.forEach(section => {
+                    section.classList.remove('hidden');
+                });
+                noResults.classList.add('hidden');
+            } else {
+                // Filter endpoints
+                endpoints.forEach(endpoint => {
+                    const searchData = endpoint.getAttribute('data-search') || '';
+                    const endpointPath = endpoint.querySelector('.endpoint-path')?.textContent || '';
+                    const endpointDesc = endpoint.querySelector('.endpoint-description')?.textContent || '';
+                    
+                    const searchableText = (searchData + ' ' + endpointPath + ' ' + endpointDesc).toLowerCase();
+                    
+                    if (searchableText.includes(searchTerm)) {
+                        endpoint.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        endpoint.classList.add('hidden');
+                    }
+                });
+
+                // Show/hide sections based on visible endpoints
+                sections.forEach(section => {
+                    const sectionEndpoints = section.querySelectorAll('.endpoint');
+                    const visibleEndpoints = Array.from(sectionEndpoints).filter(ep => !ep.classList.contains('hidden'));
+                    
+                    if (visibleEndpoints.length > 0) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+
+                // Show no results message if nothing found
+                if (visibleCount === 0) {
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                }
+            }
+        });
+
+        // Smooth scroll for table of contents links
+        document.querySelectorAll('.toc a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

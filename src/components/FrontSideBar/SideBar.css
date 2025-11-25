@@ -1,0 +1,118 @@
+.sidebar_logo {
+  margin-left: 50px;
+}
+.side_bar_main_div {
+  padding: unset !important;
+  display: flex;
+  max-width: 100% !important;
+}
+/* .my_sidebar_all_section {
+  position: relative;
+} */
+.custom_profile_class_productList {
+  margin-bottom: 100px;
+  padding: 8px 12px;
+}
+.custom_profile_class {
+  position: absolute;
+  bottom: 0;
+}
+.my_sidebar_all_section a {
+  text-decoration: none !important;
+}
+.custom_profile_class {
+  width: 100%;
+}
+.sidebar_profile_main_content {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+/* .user_profile_pic_sidebar {
+  width: 50%;
+} */
+
+.user_profile_pic_Admin_panel {
+  font-size: 16px;
+  line-height: 23px;
+  font-weight: 500;
+}
+.user_profile_pic_Admin_panel_ {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+.sidebar_profile_main_content_section {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  gap: 50px;
+}
+.side_bar_fagreaterthan {
+  margin-top: 11px;
+}
+.user_profile_pic_sidebar {
+  margin-top: 17px;
+  max-width: 40px;
+}
+/* //colooaseeee */
+.ant-collapse-header {
+  display: flex;
+  flex-direction: row-reverse;
+}
+.ant-collapse-header-text {
+  margin-left: 16px;
+  font-size: 16px;
+  line-height: 23.17px;
+  font-family: "Jost", sans-serif;
+  font-weight: 400;
+}
+.sidebar_collapse_iohomeoutline {
+  margin-left: -10px;
+}
+.sidebar_collapse_iohomeoutline_categoires {
+  margin-left: 17px;
+}
+.visible {
+  display: inline-block;
+}
+.hidden {
+  display: none;
+}
+:where(.arrow-visible) .ant-collapse-arrow {
+  display: inline-block !important;
+}
+
+:where(.arrow-hidden) .ant-collapse-arrow {
+  display: none !important;
+}
+.my_collapse_icon:where(.css-dev-only-do-not-override-dkbvqv).ant-collapse
+  > .ant-collapse-item {
+  /* border-bottom: 1px solid #d9d9d9; */
+  border: none !important;
+}
+.my_collapse_icon:where(.css-dev-only-do-not-override-dkbvqv).ant-collapse {
+  border: none !important;
+}
+.my_collapse_icon:where(.css-dev-only-do-not-override-dkbvqv).ant-collapse
+  .ant-collapse-content {
+  border-top: none !important;
+}
+/* //for border */
+.my_collapse_icon :where(.css-dkbvqv).ant-collapse {
+  border: none !important;
+}
+:where(.css-dkbvqv).ant-collapse {
+  border: none !important;
+}
+.my_collapse_icon:where(.css-dkbvqv).ant-collapse > .ant-collapse-item {
+  border-bottom: 1px solid #d9d9d9;
+  border-bottom: none;
+}
+/* //end border */
+.side_bar_account_user_list {
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 18.79px;
+}
+/* ///////// */

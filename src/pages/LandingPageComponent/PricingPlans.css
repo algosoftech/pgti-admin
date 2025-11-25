@@ -1,0 +1,102 @@
+.pricing-section {
+  padding: 80px 5vw 60px 5vw;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  text-align: center;
+  position: relative;
+}
+.pricing-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 36px;
+  color: #22223b;
+}
+.pricing-cards {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.pricing-card {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(45,80,22,0.08);
+  padding: 40px 32px 36px 32px;
+  max-width: 320px;
+  min-width: 240px;
+  flex: 1 1 240px;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(57,181,74,0.1);
+  position: relative;
+}
+.pricing-card.highlight {
+  border-color: #39B54A;
+  box-shadow: 0 16px 48px rgba(57,181,74,0.15);
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fff8 100%);
+}
+.pricing-card.highlight::before {
+  content: "Most Popular";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #39B54A;
+  color: white;
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.plan-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #4a4e69;
+}
+.plan-price {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #22223b;
+}
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 22px;
+}
+.plan-features li {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 8px;
+}
+.plan-cta {
+  background: #22223b;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.plan-cta:hover {
+  background: #4a4e69;
+}
+@media (max-width: 900px) {
+  .pricing-section {
+    padding: 60px 4vw 40px 4vw;
+  }
+  .pricing-cards {
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+  }
+  .pricing-card {
+    max-width: 100%;
+    min-width: 280px;
+  }
+  .pricing-card.highlight {
+    transform: none;
+  }
+}
