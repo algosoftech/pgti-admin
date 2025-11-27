@@ -35,7 +35,7 @@ import "../../pages/Admin/admin-pages.css";
 
 /**
  * EnhancedTable - Reusable TanStack Table Component
- * 
+ *
  * Features:
  * - Column Sorting (client-side)
  * - Column Resizing
@@ -55,7 +55,7 @@ export default function EnhancedTable({
   data = [],
   columns = [],
   isLoading = false,
-  
+
   // Pagination props
   currentPage = 1,
   totalPages = 1,
@@ -64,28 +64,28 @@ export default function EnhancedTable({
   count = 0,
   onPageChange,
   onLimitChange,
-  
+
   // Server-side filter props
   serverColumnFilters = {},
   onServerColumnFiltersChange,
-  
+
   // Callbacks
   onRefresh,
-  
+
   // Permissions
   permission = {},
-  
+
   // Custom actions dropdown
   renderActions,
-  
+
   // Empty state
   emptyStateMessage = "No data found",
   activeTab = "all",
-  
+
   // Additional props
   targetRef,
   showDataComponent = true,
-  
+
   // Export props
   enableExport = true,
   exportFileName = "export",
@@ -97,21 +97,22 @@ export default function EnhancedTable({
   const [columnSizing, setColumnSizing] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [columnPinning, setColumnPinning] = useState({
-    left: ['select'],
-    right: ['actions'],
+    left: ["select"],
+    right: ["actions"],
   });
   const tableContainerRef = useRef(null);
   const tableWrapperRef = useRef(null);
-  
+
   // Filter state
   const [globalFilter, setGlobalFilter] = useState("");
   const [showColumnFilters, setShowColumnFilters] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [showColumnVisibilityModal, setShowColumnVisibilityModal] = useState(false);
-  
+  const [showColumnVisibilityModal, setShowColumnVisibilityModal] =
+    useState(false);
+
   // Column visibility state
   const [columnVisibility, setColumnVisibility] = useState({});
-  
+
   // Column reordering
   const [draggedColumn, setDraggedColumn] = useState(null);
 
@@ -129,7 +130,7 @@ export default function EnhancedTable({
       return;
     }
 
-    const currentOrder = table.getAllLeafColumns().map(col => col.id);
+    const currentOrder = table.getAllLeafColumns().map((col) => col.id);
     const draggedIndex = currentOrder.indexOf(draggedColumn);
     const targetIndex = currentOrder.indexOf(targetColumnId);
 
@@ -171,14 +172,20 @@ export default function EnhancedTable({
       setIsFullScreen(!!document.fullscreenElement);
     };
 
-    document.addEventListener('fullscreenchange', handleFullScreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullScreenChange);
-    document.addEventListener('msfullscreenchange', handleFullScreenChange);
+    document.addEventListener("fullscreenchange", handleFullScreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullScreenChange);
+    document.addEventListener("msfullscreenchange", handleFullScreenChange);
 
     return () => {
-      document.removeEventListener('fullscreenchange', handleFullScreenChange);
-      document.removeEventListener('webkitfullscreenchange', handleFullScreenChange);
-      document.removeEventListener('msfullscreenchange', handleFullScreenChange);
+      document.removeEventListener("fullscreenchange", handleFullScreenChange);
+      document.removeEventListener(
+        "webkitfullscreenchange",
+        handleFullScreenChange
+      );
+      document.removeEventListener(
+        "msfullscreenchange",
+        handleFullScreenChange
+      );
     };
   }, []);
 
@@ -213,7 +220,7 @@ export default function EnhancedTable({
     onColumnPinningChange: setColumnPinning,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: (updater) => {
-      if (typeof updater === 'function') {
+      if (typeof updater === "function") {
         const newPagination = updater({
           pageIndex: currentPage - 1,
           pageSize: limit,
@@ -231,10 +238,10 @@ export default function EnhancedTable({
     getFilteredRowModel: getFilteredRowModel(),
     enableRowSelection: true,
     enableColumnResizing: true,
-    columnResizeMode: 'onChange',
+    columnResizeMode: "onChange",
     enableSorting: true,
     enableGlobalFilter: true,
-    globalFilterFn: 'includesString',
+    globalFilterFn: "includesString",
     enableColumnPinning: true,
     enableHiding: true,
     manualPagination: true,
@@ -255,9 +262,12 @@ export default function EnhancedTable({
   const handleExport = () => {
     try {
       // Get visible columns (excluding select and actions)
-      const visibleColumns = table.getAllLeafColumns().filter(
-        col => col.getIsVisible() && col.id !== 'select' && col.id !== 'actions'
-      );
+      const visibleColumns = table
+        .getAllLeafColumns()
+        .filter(
+          (col) =>
+            col.getIsVisible() && col.id !== "select" && col.id !== "actions"
+        );
 
       if (visibleColumns.length === 0) {
         notification.open({
@@ -274,17 +284,21 @@ export default function EnhancedTable({
       let dataToExport;
       if (exportOnlySelected && selectedCount > 0) {
         // Export only selected rows
-        dataToExport = table.getSelectedRowModel().rows.map(row => row.original);
+        dataToExport = table
+          .getSelectedRowModel()
+          .rows.map((row) => row.original);
       } else {
         // Export filtered rows (respects global filter and column filters)
-        dataToExport = table.getFilteredRowModel().rows.map(row => row.original);
+        dataToExport = table
+          .getFilteredRowModel()
+          .rows.map((row) => row.original);
       }
 
       if (dataToExport.length === 0) {
         notification.open({
           message: "Export Failed",
-          description: exportOnlySelected 
-            ? "No rows selected to export." 
+          description: exportOnlySelected
+            ? "No rows selected to export."
             : "No data available to export.",
           placement: "topRight",
           icon: <CheckCircleOutlined style={{ color: "orange" }} />,
@@ -294,21 +308,23 @@ export default function EnhancedTable({
       }
 
       // Get column headers
-      const headers = visibleColumns.map(col => {
+      const headers = visibleColumns.map((col) => {
         // Get header text
         const header = col.columnDef.header;
-        if (typeof header === 'string') {
+        if (typeof header === "string") {
           return header;
         }
         // For function headers, try to get a readable name
-        return col.id.charAt(0).toUpperCase() + col.id.slice(1).replace(/_/g, ' ');
+        return (
+          col.id.charAt(0).toUpperCase() + col.id.slice(1).replace(/_/g, " ")
+        );
       });
 
       // Convert data to CSV rows
-      const csvRows = dataToExport.map(row => {
-        return visibleColumns.map(col => {
-          let value = '';
-          
+      const csvRows = dataToExport.map((row) => {
+        return visibleColumns.map((col) => {
+          let value = "";
+
           // Get the cell value
           if (col.columnDef.accessorFn) {
             value = col.columnDef.accessorFn(row);
@@ -316,13 +332,13 @@ export default function EnhancedTable({
             value = row[col.columnDef.accessorKey];
           } else {
             // For custom cells, try to get a value
-            value = row[col.id] || '';
+            value = row[col.id] || "";
           }
 
           // Format the value
           if (value === null || value === undefined) {
-            value = '';
-          } else if (typeof value === 'object') {
+            value = "";
+          } else if (typeof value === "object") {
             // For objects, convert to string
             value = JSON.stringify(value);
           } else {
@@ -331,7 +347,11 @@ export default function EnhancedTable({
 
           // Escape CSV special characters
           // If value contains comma, quote, or newline, wrap in quotes and escape quotes
-          if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+          if (
+            value.includes(",") ||
+            value.includes('"') ||
+            value.includes("\n")
+          ) {
             value = `"${value.replace(/"/g, '""')}"`;
           }
 
@@ -341,25 +361,30 @@ export default function EnhancedTable({
 
       // Combine headers and rows
       const csvContent = [
-        headers.join(','),
-        ...csvRows.map(row => row.join(','))
-      ].join('\n');
+        headers.join(","),
+        ...csvRows.map((row) => row.join(",")),
+      ].join("\n");
 
       // Add BOM for Excel compatibility
-      const BOM = '\uFEFF';
-      const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
-      
+      const BOM = "\uFEFF";
+      const blob = new Blob([BOM + csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+
       // Create download link
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      
+      link.setAttribute("href", url);
+
       // Generate filename with timestamp
-      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      const timestamp = new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace(/:/g, "-");
       const filename = `${exportFileName}_${timestamp}.csv`;
-      link.setAttribute('download', filename);
-      
-      link.style.visibility = 'hidden';
+      link.setAttribute("download", filename);
+
+      link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -367,16 +392,19 @@ export default function EnhancedTable({
 
       notification.open({
         message: "Export Successful",
-        description: `Exported ${dataToExport.length} row${dataToExport.length !== 1 ? 's' : ''} to ${filename}`,
+        description: `Exported ${dataToExport.length} row${
+          dataToExport.length !== 1 ? "s" : ""
+        } to ${filename}`,
         placement: "topRight",
         icon: <CheckCircleOutlined style={{ color: "green" }} />,
         duration: 2,
       });
     } catch (error) {
-      console.error('Export error:', error);
+      console.error("Export error:", error);
       notification.open({
         message: "Export Failed",
-        description: "An error occurred while exporting data. Please try again.",
+        description:
+          "An error occurred while exporting data. Please try again.",
         placement: "topRight",
         icon: <CheckCircleOutlined style={{ color: "red" }} />,
         duration: 2,
@@ -387,28 +415,32 @@ export default function EnhancedTable({
   return (
     <div ref={tableWrapperRef}>
       {/* Global Search Bar */}
-      <div style={{
-        marginBottom: "16px",
-        display: "flex",
-        gap: "12px",
-        alignItems: "center",
-        flexWrap: "wrap"
-      }}>
-        <div style={{ 
-          position: "relative", 
-          flex: "1", 
-          minWidth: "300px",
-          maxWidth: "500px" 
-        }}>
-          <FontAwesomeIcon 
-            icon={faSearch} 
+      <div
+        style={{
+          marginBottom: "16px",
+          display: "flex",
+          gap: "12px",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <div
+          style={{
+            position: "relative",
+            flex: "1",
+            minWidth: "300px",
+            maxWidth: "500px",
+          }}
+        >
+          <FontAwesomeIcon
+            icon={faSearch}
             style={{
               position: "absolute",
               left: "12px",
               top: "50%",
               transform: "translateY(-50%)",
               color: "#9ca3af",
-              fontSize: "14px"
+              fontSize: "14px",
             }}
           />
           <input
@@ -425,8 +457,8 @@ export default function EnhancedTable({
               outline: "none",
               transition: "all 0.2s",
             }}
-            onFocus={(e) => e.target.style.borderColor = "#3b82f6"}
-            onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+            onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+            onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
           />
           {globalFilter && (
             <button
@@ -442,7 +474,7 @@ export default function EnhancedTable({
                 color: "#9ca3af",
                 padding: "4px",
                 display: "flex",
-                alignItems: "center"
+                alignItems: "center",
               }}
               title="Clear search"
             >
@@ -450,30 +482,38 @@ export default function EnhancedTable({
             </button>
           )}
         </div>
-        {(globalFilter || Object.values(serverColumnFilters || {}).some(v => v)) && (
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "8px 12px",
-            backgroundColor: "#eff6ff",
-            borderRadius: "6px",
-            fontSize: "13px",
-            color: "#3b82f6",
-            fontWeight: 500
-          }}>
+        {(globalFilter ||
+          Object.values(serverColumnFilters || {}).some((v) => v)) && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 12px",
+              backgroundColor: "#eff6ff",
+              borderRadius: "6px",
+              fontSize: "13px",
+              color: "#3b82f6",
+              fontWeight: 500,
+            }}
+          >
             <FontAwesomeIcon icon={faFilterCircleXmark} />
             <span>
-              {table.getFilteredRowModel().rows.length} of {data?.length} result{data?.length !== 1 ? 's' : ''}
+              {table.getFilteredRowModel().rows.length} of {data?.length} result
+              {data?.length !== 1 ? "s" : ""}
             </span>
           </div>
         )}
 
         {/* Action Buttons */}
         <div style={{ display: "flex", gap: "8px", marginLeft: "auto" }}>
-          {(sorting.length > 0 || Object.keys(columnSizing).length > 0 || columnOrder.length > 0 || globalFilter || 
-            Object.values(serverColumnFilters || {}).some(v => v) ||
-            columnPinning.left?.length > 1 || columnPinning.right?.length > 1 ||
+          {(sorting.length > 0 ||
+            Object.keys(columnSizing).length > 0 ||
+            columnOrder.length > 0 ||
+            globalFilter ||
+            Object.values(serverColumnFilters || {}).some((v) => v) ||
+            columnPinning.left?.length > 1 ||
+            columnPinning.right?.length > 1 ||
             Object.keys(columnVisibility).length > 0) && (
             <button
               className="action-button secondary"
@@ -487,12 +527,13 @@ export default function EnhancedTable({
                   onServerColumnFiltersChange({});
                 }
                 setColumnPinning({
-                  left: ['select'],
-                  right: ['actions'],
+                  left: ["select"],
+                  right: ["actions"],
                 });
                 notification.open({
                   message: "Table Reset",
-                  description: "Table customization, filters, and column visibility have been reset.",
+                  description:
+                    "Table customization, filters, and column visibility have been reset.",
                   placement: "topRight",
                   icon: <CheckCircleOutlined style={{ color: "green" }} />,
                   duration: 2,
@@ -506,9 +547,13 @@ export default function EnhancedTable({
           )}
 
           <button
-            className={`action-button ${showColumnFilters ? 'primary' : 'secondary'}`}
+            className={`action-button ${
+              showColumnFilters ? "primary" : "secondary"
+            }`}
             onClick={() => setShowColumnFilters(!showColumnFilters)}
-            title={showColumnFilters ? "Hide column filters" : "Show column filters"}
+            title={
+              showColumnFilters ? "Hide column filters" : "Show column filters"
+            }
           >
             <FontAwesomeIcon icon={showColumnFilters ? faEye : faEyeSlash} />
             Column Filters
@@ -538,8 +583,14 @@ export default function EnhancedTable({
               onClick={handleExport}
               title={
                 exportOnlySelected && selectedCount > 0
-                  ? `Export ${selectedCount} selected row${selectedCount > 1 ? 's' : ''} to CSV`
-                  : `Export ${table.getFilteredRowModel().rows.length} filtered row${table.getFilteredRowModel().rows.length !== 1 ? 's' : ''} to CSV`
+                  ? `Export ${selectedCount} selected row${
+                      selectedCount > 1 ? "s" : ""
+                    } to CSV`
+                  : `Export ${
+                      table.getFilteredRowModel().rows.length
+                    } filtered row${
+                      table.getFilteredRowModel().rows.length !== 1 ? "s" : ""
+                    } to CSV`
               }
               disabled={data?.length === 0}
             >
@@ -552,18 +603,20 @@ export default function EnhancedTable({
 
       {/* Selected rows banner */}
       {selectedCount > 0 && (
-        <div style={{
-          padding: "12px 16px",
-          backgroundColor: "#3b82f6",
-          color: "white",
-          borderRadius: "8px",
-          marginBottom: "16px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center"
-        }}>
+        <div
+          style={{
+            padding: "12px 16px",
+            backgroundColor: "#3b82f6",
+            color: "white",
+            borderRadius: "8px",
+            marginBottom: "16px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <span style={{ fontWeight: 600 }}>
-            {selectedCount} row{selectedCount > 1 ? 's' : ''} selected
+            {selectedCount} row{selectedCount > 1 ? "s" : ""} selected
           </span>
           <button
             onClick={() => setRowSelection({})}
@@ -594,27 +647,36 @@ export default function EnhancedTable({
             ref={tableContainerRef}
             style={{
               overflow: "auto",
-              height: "600px",
+              height: "calc(100vh - 400px)",
               position: "relative",
             }}
           >
-            <table 
-              className="modern-table" 
-              style={{ 
+            <table
+              className="modern-table"
+              style={{
                 width: "100%",
                 tableLayout: "fixed",
-                position: "relative"
+                position: "relative",
               }}
             >
-              <thead style={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: "white" }}>
-                {table.getHeaderGroups().map(headerGroup => (
+              <thead
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 10,
+                  backgroundColor: "white",
+                }}
+              >
+                {table.getHeaderGroups().map((headerGroup) => (
                   <React.Fragment key={headerGroup.id}>
                     {/* Header Row */}
                     <tr style={{ display: "flex", width: "100%" }}>
-                      {headerGroup.headers.map(header => (
+                      {headerGroup.headers.map((header) => (
                         <th
                           key={header.id}
-                          draggable={header.id !== 'select' && header.id !== 'actions'}
+                          draggable={
+                            header.id !== "select" && header.id !== "actions"
+                          }
                           onDragStart={() => handleDragStart(header.id)}
                           onDragOver={handleDragOver}
                           onDrop={() => handleDrop(header.id)}
@@ -622,76 +684,149 @@ export default function EnhancedTable({
                             width: `${header.getSize()}px`,
                             minWidth: `${header.getSize()}px`,
                             maxWidth: `${header.getSize()}px`,
-                            position: header.column.getIsPinned() ? "sticky" : "relative",
-                            left: header.column.getIsPinned() === "left" ? `${header.column.getStart('left')}px` : undefined,
-                            right: header.column.getIsPinned() === "right" ? `${header.column.getAfter('right')}px` : undefined,
-                            cursor: header.column.getCanSort() ? "pointer" : "default",
+                            position: header.column.getIsPinned()
+                              ? "sticky"
+                              : "relative",
+                            left:
+                              header.column.getIsPinned() === "left"
+                                ? `${header.column.getStart("left")}px`
+                                : undefined,
+                            right:
+                              header.column.getIsPinned() === "right"
+                                ? `${header.column.getAfter("right")}px`
+                                : undefined,
+                            cursor: header.column.getCanSort()
+                              ? "pointer"
+                              : "default",
                             userSelect: "none",
-                            backgroundColor: draggedColumn === header.id ? "#e0e7ff" : header.column.getIsPinned() ? "#f0f9ff" : "white",
+                            backgroundColor:
+                              draggedColumn === header.id
+                                ? "#e0e7ff"
+                                : header.column.getIsPinned()
+                                ? "#f0f9ff"
+                                : "white",
                             opacity: draggedColumn === header.id ? 0.5 : 1,
                             transition: "background-color 0.2s",
                             zIndex: header.column.getIsPinned() ? 20 : 10,
-                            boxShadow: header.column.getIsPinned() ? "2px 0 4px rgba(0,0,0,0.1)" : "none",
+                            boxShadow: header.column.getIsPinned()
+                              ? "2px 0 4px rgba(0,0,0,0.1)"
+                              : "none",
                             display: "flex",
                             alignItems: "center",
                           }}
                         >
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", width: "100%" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }} onClick={header.column.getToggleSortingHandler()}>
-                              {header.id !== 'select' && header.id !== 'actions' && (
-                                <FontAwesomeIcon 
-                                  icon={faGripVertical} 
-                                  style={{ opacity: 0.5, fontSize: "12px", cursor: "grab" }}
-                                  title="Drag to reorder"
-                                />
-                              )}
-                              {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                              {header.column.getCanPin() && header.id !== 'select' && header.id !== 'actions' && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    const isPinned = header.column.getIsPinned();
-                                    header.column.pin(isPinned ? false : 'left');
-                                  }}
-                                  onContextMenu={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    header.column.pin(header.column.getIsPinned() ? false : 'right');
-                                  }}
-                                  style={{
-                                    background: "none",
-                                    border: "none",
-                                    cursor: "pointer",
-                                    padding: "4px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    color: header.column.getIsPinned() ? "#3b82f6" : "#9ca3af",
-                                    opacity: header.column.getIsPinned() ? 1 : 0.5,
-                                  }}
-                                  title={header.column.getIsPinned() ? `Pinned to ${header.column.getIsPinned()} (click to unpin)` : "Click to pin left, right-click to pin right"}
-                                >
-                                  <FontAwesomeIcon 
-                                    icon={faThumbtack} 
-                                    style={{ 
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              gap: "8px",
+                              width: "100%",
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                flex: 1,
+                              }}
+                              onClick={header.column.getToggleSortingHandler()}
+                            >
+                              {header.id !== "select" &&
+                                header.id !== "actions" && (
+                                  <FontAwesomeIcon
+                                    icon={faGripVertical}
+                                    style={{
+                                      opacity: 0.5,
                                       fontSize: "12px",
-                                      transform: header.column.getIsPinned() ? "rotate(0deg)" : "rotate(45deg)",
-                                      transition: "transform 0.2s"
+                                      cursor: "grab",
                                     }}
+                                    title="Drag to reorder"
                                   />
-                                </button>
-                              )}
+                                )}
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                  )}
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                              }}
+                            >
+                              {header.column.getCanPin() &&
+                                header.id !== "select" &&
+                                header.id !== "actions" && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const isPinned =
+                                        header.column.getIsPinned();
+                                      header.column.pin(
+                                        isPinned ? false : "left"
+                                      );
+                                    }}
+                                    onContextMenu={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      header.column.pin(
+                                        header.column.getIsPinned()
+                                          ? false
+                                          : "right"
+                                      );
+                                    }}
+                                    style={{
+                                      background: "none",
+                                      border: "none",
+                                      cursor: "pointer",
+                                      padding: "4px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      color: header.column.getIsPinned()
+                                        ? "#3b82f6"
+                                        : "#9ca3af",
+                                      opacity: header.column.getIsPinned()
+                                        ? 1
+                                        : 0.5,
+                                    }}
+                                    title={
+                                      header.column.getIsPinned()
+                                        ? `Pinned to ${header.column.getIsPinned()} (click to unpin)`
+                                        : "Click to pin left, right-click to pin right"
+                                    }
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faThumbtack}
+                                      style={{
+                                        fontSize: "12px",
+                                        transform: header.column.getIsPinned()
+                                          ? "rotate(0deg)"
+                                          : "rotate(45deg)",
+                                        transition: "transform 0.2s",
+                                      }}
+                                    />
+                                  </button>
+                                )}
                               {header.column.getCanSort() && (
-                                <FontAwesomeIcon 
+                                <FontAwesomeIcon
                                   icon={
-                                    header.column.getIsSorted() === "asc" ? faSortUp :
-                                    header.column.getIsSorted() === "desc" ? faSortDown : faSort
+                                    header.column.getIsSorted() === "asc"
+                                      ? faSortUp
+                                      : header.column.getIsSorted() === "desc"
+                                      ? faSortDown
+                                      : faSort
                                   }
-                                  style={{ 
+                                  style={{
                                     fontSize: "14px",
-                                    opacity: header.column.getIsSorted() ? 1 : 0.3,
-                                    cursor: "pointer"
+                                    opacity: header.column.getIsSorted()
+                                      ? 1
+                                      : 0.3,
+                                    cursor: "pointer",
                                   }}
                                   onClick={header.column.getToggleSortingHandler()}
                                 />
@@ -702,14 +837,20 @@ export default function EnhancedTable({
                             <div
                               onMouseDown={header.getResizeHandler()}
                               onTouchStart={header.getResizeHandler()}
-                              className={`resizer ${header.column.getIsResizing() ? "isResizing" : ""}`}
+                              className={`resizer ${
+                                header.column.getIsResizing()
+                                  ? "isResizing"
+                                  : ""
+                              }`}
                               style={{
                                 position: "absolute",
                                 right: 0,
                                 top: 0,
                                 height: "100%",
                                 width: "5px",
-                                background: header.column.getIsResizing() ? "#3b82f6" : "transparent",
+                                background: header.column.getIsResizing()
+                                  ? "#3b82f6"
+                                  : "transparent",
                                 cursor: "col-resize",
                                 userSelect: "none",
                                 touchAction: "none",
@@ -722,14 +863,23 @@ export default function EnhancedTable({
 
                     {/* Filter Row */}
                     {showColumnFilters && (
-                      <tr style={{ backgroundColor: "#f9fafb", display: "flex", width: "100%" }}>
-                        {headerGroup.headers.map(header => {
+                      <tr
+                        style={{
+                          backgroundColor: "#f9fafb",
+                          display: "flex",
+                          width: "100%",
+                        }}
+                      >
+                        {headerGroup.headers.map((header) => {
                           const columnId = header.column.id;
                           const canFilter = header.column.getCanFilter();
-                          const filterValue = canFilter && serverColumnFilters[columnId] ? serverColumnFilters[columnId] : "";
-                          
+                          const filterValue =
+                            canFilter && serverColumnFilters[columnId]
+                              ? serverColumnFilters[columnId]
+                              : "";
+
                           return (
-                            <th 
+                            <th
                               key={`${header.id}-filter`}
                               style={{
                                 width: `${header.getSize()}px`,
@@ -737,18 +887,39 @@ export default function EnhancedTable({
                                 maxWidth: `${header.getSize()}px`,
                                 padding: "8px",
                                 borderTop: "1px solid #e5e7eb",
-                                position: header.column.getIsPinned() ? "sticky" : "relative",
-                                left: header.column.getIsPinned() === "left" ? `${header.column.getStart('left')}px` : undefined,
-                                right: header.column.getIsPinned() === "right" ? `${header.column.getAfter('right')}px` : undefined,
-                                backgroundColor: header.column.getIsPinned() ? "#f0f9ff" : "#f9fafb",
+                                position: header.column.getIsPinned()
+                                  ? "sticky"
+                                  : "relative",
+                                left:
+                                  header.column.getIsPinned() === "left"
+                                    ? `${header.column.getStart("left")}px`
+                                    : undefined,
+                                right:
+                                  header.column.getIsPinned() === "right"
+                                    ? `${header.column.getAfter("right")}px`
+                                    : undefined,
+                                backgroundColor: header.column.getIsPinned()
+                                  ? "#f0f9ff"
+                                  : "#f9fafb",
                                 zIndex: header.column.getIsPinned() ? 20 : 10,
-                                boxShadow: header.column.getIsPinned() ? "2px 0 4px rgba(0,0,0,0.1)" : "none",
+                                boxShadow: header.column.getIsPinned()
+                                  ? "2px 0 4px rgba(0,0,0,0.1)"
+                                  : "none",
                                 display: "flex",
                                 alignItems: "center",
                               }}
                             >
-                              {canFilter && header.id !== 'select' && header.id !== 'actions' && header.id !== 'index' ? (
-                                <div style={{ position: "relative", width: "100%" }} onClick={(e) => e.stopPropagation()}>
+                              {canFilter &&
+                              header.id !== "select" &&
+                              header.id !== "actions" &&
+                              header.id !== "index" ? (
+                                <div
+                                  style={{
+                                    position: "relative",
+                                    width: "100%",
+                                  }}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
                                   <input
                                     type="text"
                                     value={filterValue}
@@ -756,7 +927,7 @@ export default function EnhancedTable({
                                       if (onServerColumnFiltersChange) {
                                         onServerColumnFiltersChange({
                                           ...serverColumnFilters,
-                                          [columnId]: e.target.value
+                                          [columnId]: e.target.value,
                                         });
                                       }
                                     }}
@@ -768,10 +939,14 @@ export default function EnhancedTable({
                                       borderRadius: "4px",
                                       fontSize: "12px",
                                       outline: "none",
-                                      backgroundColor: "white"
+                                      backgroundColor: "white",
                                     }}
-                                    onFocus={(e) => e.target.style.borderColor = "#3b82f6"}
-                                    onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                                    onFocus={(e) =>
+                                      (e.target.style.borderColor = "#3b82f6")
+                                    }
+                                    onBlur={(e) =>
+                                      (e.target.style.borderColor = "#e5e7eb")
+                                    }
                                   />
                                   {filterValue && (
                                     <button
@@ -780,7 +955,7 @@ export default function EnhancedTable({
                                         if (onServerColumnFiltersChange) {
                                           onServerColumnFiltersChange({
                                             ...serverColumnFilters,
-                                            [columnId]: ""
+                                            [columnId]: "",
                                           });
                                         }
                                       }}
@@ -796,7 +971,7 @@ export default function EnhancedTable({
                                         padding: "2px",
                                         display: "flex",
                                         alignItems: "center",
-                                        fontSize: "10px"
+                                        fontSize: "10px",
                                       }}
                                       title="Clear filter"
                                     >
@@ -813,29 +988,64 @@ export default function EnhancedTable({
                   </React.Fragment>
                 ))}
               </thead>
-              
-              <tbody style={{ 
-                height: data?.length === 0 ? "auto" : `${rowVirtualizer.getTotalSize()}px`,
-                position: "relative"
-              }}>
+
+              <tbody
+                style={{
+                  height:
+                    data?.length === 0
+                      ? "auto"
+                      : `${rowVirtualizer.getTotalSize()}px`,
+                  position: "relative",
+                }}
+              >
                 {data?.length === 0 ? (
                   <tr>
-                    <td colSpan={table.getAllColumns().length} style={{ textAlign: "center", padding: "60px 20px", position: "relative" }}>
+                    <td
+                      colSpan={table.getAllColumns().length}
+                      style={{
+                        textAlign: "center",
+                        padding: "60px 20px",
+                        position: "relative",
+                      }}
+                    >
                       <div className="empty-state">
                         <div className="empty-state-icon">
-                          <FontAwesomeIcon icon={faEye} style={{ fontSize: "48px", color: "#cbd5e1" }} />
+                          <FontAwesomeIcon
+                            icon={faEye}
+                            style={{ fontSize: "48px", color: "#cbd5e1" }}
+                          />
                         </div>
-                        <h3 className="empty-state-title" style={{ margin: "16px 0 8px", fontSize: "18px", color: "#1f2937" }}>
+                        <h3
+                          className="empty-state-title"
+                          style={{
+                            margin: "16px 0 8px",
+                            fontSize: "18px",
+                            color: "#1f2937",
+                          }}
+                        >
                           {emptyStateMessage}
                         </h3>
-                        <p className="empty-state-description" style={{ margin: 0, fontSize: "14px", color: "#6b7280" }}>
-                          {globalFilter || Object.values(serverColumnFilters || {}).some(v => v)
+                        <p
+                          className="empty-state-description"
+                          style={{
+                            margin: 0,
+                            fontSize: "14px",
+                            color: "#6b7280",
+                          }}
+                        >
+                          {globalFilter ||
+                          Object.values(serverColumnFilters || {}).some(
+                            (v) => v
+                          )
                             ? "Try adjusting your filters or search terms"
-                            : activeTab === "all" 
-                              ? "No data has been created yet." 
-                              : `No ${activeTab} data found.`}
+                            : activeTab === "all"
+                            ? "No data has been created yet."
+                            : `No ${activeTab} data found.`}
                         </p>
-                        {(globalFilter || Object.values(serverColumnFilters || {}).some(v => v)) && (
+                        {(globalFilter ||
+                          Object.values(serverColumnFilters || {}).some(
+                            (v) => v
+                          )) && (
                           <button
                             onClick={() => {
                               setGlobalFilter("");
@@ -855,7 +1065,10 @@ export default function EnhancedTable({
                               fontWeight: 500,
                             }}
                           >
-                            <FontAwesomeIcon icon={faTimes} style={{ marginRight: "8px" }} />
+                            <FontAwesomeIcon
+                              icon={faTimes}
+                              style={{ marginRight: "8px" }}
+                            />
                             Clear All Filters
                           </button>
                         )}
@@ -863,7 +1076,7 @@ export default function EnhancedTable({
                     </td>
                   </tr>
                 ) : (
-                  rowVirtualizer.getVirtualItems().map(virtualRow => {
+                  rowVirtualizer.getVirtualItems().map((virtualRow) => {
                     const row = rows[virtualRow.index];
                     return (
                       <tr
@@ -874,22 +1087,35 @@ export default function EnhancedTable({
                           width: "100%",
                           display: "flex",
                         }}
-                      >
-                        {row.getVisibleCells().map(cell => (
-                          <td 
+                        >
+                        {row.getVisibleCells().map((cell) => (
+                          <td
                             key={cell.id}
                             style={{
                               width: `${cell.column.getSize()}px`,
                               minWidth: `${cell.column.getSize()}px`,
                               maxWidth: `${cell.column.getSize()}px`,
-                              position: cell.column.getIsPinned() ? "sticky" : "relative",
-                              left: cell.column.getIsPinned() === "left" ? `${cell.column.getStart('left')}px` : undefined,
-                              right: cell.column.getIsPinned() === "right" ? `${cell.column.getAfter('right')}px` : undefined,
-                              backgroundColor: cell.column.getIsPinned() ? "#f0f9ff" : "white",
+                              position: cell.column.getIsPinned()
+                              ? "sticky"
+                                : "relative",
+                              left:
+                                cell.column.getIsPinned() === "left"
+                                  ? `${cell.column.getStart("left")}px`
+                                  : undefined,
+                              right:
+                                cell.column.getIsPinned() === "right"
+                                  ? `${cell.column.getAfter("right")}px`
+                                  : undefined,
+                              backgroundColor: cell.column.getIsPinned()
+                                ? "#f0f9ff"
+                                : "white",
                               zIndex: cell.column.getIsPinned() ? 15 : 1,
-                              boxShadow: cell.column.getIsPinned() ? "2px 0 4px rgba(0,0,0,0.08)" : "none",
+                              boxShadow: cell.column.getIsPinned()
+                                ? "2px 0 4px rgba(0,0,0,0.08)"
+                                : "none",
                               display: "flex",
                               alignItems: "center",
+                              borderTop: "1px solid #000",
                             }}
                           >
                             {flexRender(
@@ -906,18 +1132,25 @@ export default function EnhancedTable({
             </table>
           </div>
         )}
-        
+
         {/* Pagination */}
         <div className="modern-pagination">
           <div className="pagination-info">
-            Showing {skip + 1} to {Math.min(skip + limit, count)} of {count} items
+            Showing {skip + 1} to {Math.min(skip + limit, count)} of {count}{" "}
+            items
             {globalFilter && (
-              <span style={{ marginLeft: "8px", color: "#3b82f6", fontSize: "13px" }}>
+              <span
+                style={{
+                  marginLeft: "8px",
+                  color: "#3b82f6",
+                  fontSize: "13px",
+                }}
+              >
                 ({table.getFilteredRowModel().rows.length} filtered)
               </span>
             )}
           </div>
-          
+
           {totalPages > 1 && (
             <div className="tanstack-pagination">
               <button
@@ -942,21 +1175,35 @@ export default function EnhancedTable({
                 {(() => {
                   const pages = [];
                   const maxVisible = 5;
-                  let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+                  let start = Math.max(
+                    1,
+                    currentPage - Math.floor(maxVisible / 2)
+                  );
                   let end = Math.min(totalPages, start + maxVisible - 1);
-                  
+
                   if (end - start + 1 < maxVisible) {
                     start = Math.max(1, end - maxVisible + 1);
                   }
 
                   if (start > 1) {
                     pages.push(
-                      <button key={1} onClick={() => onPageChange && onPageChange(1)} className="pagination-button">
+                      <button
+                        key={1}
+                        onClick={() => onPageChange && onPageChange(1)}
+                        className="pagination-button"
+                      >
                         1
                       </button>
                     );
                     if (start > 2) {
-                      pages.push(<span key="ellipsis-start" className="pagination-ellipsis">...</span>);
+                      pages.push(
+                        <span
+                          key="ellipsis-start"
+                          className="pagination-ellipsis"
+                        >
+                          ...
+                        </span>
+                      );
                     }
                   }
 
@@ -965,7 +1212,9 @@ export default function EnhancedTable({
                       <button
                         key={i}
                         onClick={() => onPageChange && onPageChange(i)}
-                        className={`pagination-button ${i === currentPage ? "active" : ""}`}
+                        className={`pagination-button ${
+                          i === currentPage ? "active" : ""
+                        }`}
                       >
                         {i}
                       </button>
@@ -974,10 +1223,21 @@ export default function EnhancedTable({
 
                   if (end < totalPages) {
                     if (end < totalPages - 1) {
-                      pages.push(<span key="ellipsis-end" className="pagination-ellipsis">...</span>);
+                      pages.push(
+                        <span
+                          key="ellipsis-end"
+                          className="pagination-ellipsis"
+                        >
+                          ...
+                        </span>
+                      );
                     }
                     pages.push(
-                      <button key={totalPages} onClick={() => onPageChange && onPageChange(totalPages)} className="pagination-button">
+                      <button
+                        key={totalPages}
+                        onClick={() => onPageChange && onPageChange(totalPages)}
+                        className="pagination-button"
+                      >
                         {totalPages}
                       </button>
                     );
@@ -1040,8 +1300,8 @@ export default function EnhancedTable({
             onClick={() => {
               const allColumns = table.getAllLeafColumns();
               const newVisibility = {};
-              allColumns.forEach(col => {
-                if (col.id !== 'select' && col.id !== 'actions') {
+              allColumns.forEach((col) => {
+                if (col.id !== "select" && col.id !== "actions") {
                   newVisibility[col.id] = true;
                 }
               });
@@ -1057,8 +1317,8 @@ export default function EnhancedTable({
             onClick={() => {
               const allColumns = table.getAllLeafColumns();
               const newVisibility = {};
-              allColumns.forEach(col => {
-                if (col.id !== 'select' && col.id !== 'actions') {
+              allColumns.forEach((col) => {
+                if (col.id !== "select" && col.id !== "actions") {
                   newVisibility[col.id] = false;
                 }
               });
@@ -1079,9 +1339,12 @@ export default function EnhancedTable({
         width={400}
       >
         <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-          {table.getAllLeafColumns()
-            .filter(column => column.id !== 'select' && column.id !== 'actions')
-            .map(column => {
+          {table
+            .getAllLeafColumns()
+            .filter(
+              (column) => column.id !== "select" && column.id !== "actions"
+            )
+            .map((column) => {
               const isVisible = column.getIsVisible();
               return (
                 <div
@@ -1094,8 +1357,12 @@ export default function EnhancedTable({
                     cursor: "pointer",
                     transition: "background-color 0.2s",
                   }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = "#f9fafb"}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = "transparent"}
+                  onMouseEnter={(e) =>
+                    (e.target.style.backgroundColor = "#f9fafb")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.target.style.backgroundColor = "transparent")
+                  }
                   onClick={() => {
                     column.toggleVisibility(!isVisible);
                   }}
@@ -1108,24 +1375,27 @@ export default function EnhancedTable({
                     onClick={(e) => e.stopPropagation()}
                     style={{ marginRight: "12px" }}
                   />
-                  <span style={{ 
-                    flex: 1, 
-                    fontSize: "14px",
-                    fontWeight: isVisible ? 500 : 400,
-                    color: isVisible ? "#1f2937" : "#9ca3af"
-                  }}>
-                    {typeof column.columnDef.header === 'string' 
-                      ? column.columnDef.header 
-                      : column.id.charAt(0).toUpperCase() + column.id.slice(1).replace(/_/g, ' ')}
+                  <span
+                    style={{
+                      flex: 1,
+                      fontSize: "14px",
+                      fontWeight: isVisible ? 500 : 400,
+                      color: isVisible ? "#1f2937" : "#9ca3af",
+                    }}
+                  >
+                    {typeof column.columnDef.header === "string"
+                      ? column.columnDef.header
+                      : column.id.charAt(0).toUpperCase() +
+                        column.id.slice(1).replace(/_/g, " ")}
                   </span>
                   {column.getIsPinned() && (
-                    <FontAwesomeIcon 
-                      icon={faThumbtack} 
-                      style={{ 
-                        fontSize: "12px", 
+                    <FontAwesomeIcon
+                      icon={faThumbtack}
+                      style={{
+                        fontSize: "12px",
                         color: "#3b82f6",
-                        marginLeft: "8px"
-                      }} 
+                        marginLeft: "8px",
+                      }}
                       title={`Pinned to ${column.getIsPinned()}`}
                     />
                   )}
@@ -1137,4 +1407,3 @@ export default function EnhancedTable({
     </div>
   );
 }
-

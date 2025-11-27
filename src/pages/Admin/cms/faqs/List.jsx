@@ -19,7 +19,11 @@ import EnhancedTable from "../../../../components/EnhancedTable/EnhancedTable";
 
 import { useNavigate } from "react-router-dom";
 
-import { InfoCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  InfoCircleOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 
 import moment from "moment";
 import { usePermissions } from "../../../../controllers/PermissionContext";
@@ -71,7 +75,7 @@ export default function FaqList() {
     setActiveTab(tab);
     dispatch(setShowRequest(tab === "all" ? "" : tab.toUpperCase()));
   };
-  
+
   const handleEdit = async (item = {}) => {
     navigate("/admin/cms/faqs/addeditdata", { state: item });
   };
@@ -82,9 +86,13 @@ export default function FaqList() {
   const getList = () => {
     const options = {
       type: "",
-      condition: {        
-        ...(serverColumnFilters.question ? { question: serverColumnFilters.question } : null),
-        ...(serverColumnFilters.answer ? { answer: serverColumnFilters.answer } : null),
+      condition: {
+        ...(serverColumnFilters.question
+          ? { question: serverColumnFilters.question }
+          : null),
+        ...(serverColumnFilters.answer
+          ? { answer: serverColumnFilters.answer }
+          : null),
         ...(serverColumnFilters.tag ? { tag: serverColumnFilters.tag } : null),
         ...(showRequest ? { status: showRequest } : null),
       },
@@ -129,7 +137,7 @@ export default function FaqList() {
       });
       return;
     }
-    
+
     if (!status || status === "") {
       notification.open({
         message: "Oops!",
@@ -145,7 +153,7 @@ export default function FaqList() {
       const result = await dispatch(
         changeFaqStatus({ editId: id, status })
       ).unwrap();
-      
+
       notification.open({
         message: "Success",
         description: result.message || `Status changed successfully.`,
@@ -153,13 +161,14 @@ export default function FaqList() {
         icon: <CheckCircleOutlined style={{ color: "green" }} />,
         duration: 2,
       });
-      
+
       // Refresh the list after status change
       getList();
     } catch (error) {
       notification.open({
         message: "Oops!",
-        description: error || `Operation not perform yet! please try in some time.`,
+        description:
+          error || `Operation not perform yet! please try in some time.`,
         placement: "topRight",
         icon: <InfoCircleOutlined style={{ color: "red" }} />,
         duration: 2,
@@ -172,18 +181,20 @@ export default function FaqList() {
    *********************************************************/
   const handleDelete = (item) => {
     Modal.confirm({
-      title: 'Are you sure you want to delete this FAQ?',
+      title: "Are you sure you want to delete this FAQ?",
       icon: <ExclamationCircleOutlined />,
-      content: `Question: ${item?.question?.substring(0, 50)}${item?.question?.length > 50 ? '...' : ''}`,
-      okText: 'Yes, Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
+      content: `Question: ${item?.question?.substring(0, 50)}${
+        item?.question?.length > 50 ? "..." : ""
+      }`,
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
       onOk: async () => {
         try {
           const result = await dispatch(
             deleteFaqAction({ editId: item.id })
           ).unwrap();
-          
+
           notification.open({
             message: "Success",
             description: result.message || `FAQ deleted successfully.`,
@@ -191,7 +202,7 @@ export default function FaqList() {
             icon: <CheckCircleOutlined style={{ color: "green" }} />,
             duration: 2,
           });
-          
+
           // Refresh the list after delete
           getList();
         } catch (error) {
@@ -219,8 +230,9 @@ export default function FaqList() {
             <span>Edit</span>
           </button>
         )}
-        {(PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y") && (
-          items?.status === "A" ? (
+        {(PERMISSION?.change_status === "Y" ||
+          PERMISSION?.fullAccess === "Y") &&
+          (items?.status === "A" ? (
             <button
               className="action-dropdown-item danger"
               onClick={() => {
@@ -240,8 +252,7 @@ export default function FaqList() {
               <FontAwesomeIcon icon={faThumbsUp} />
               <span>Activate</span>
             </button>
-          )
-        )}
+          ))}
         {(PERMISSION?.delete === "Y" || PERMISSION?.fullAccess === "Y") && (
           <button
             className="action-dropdown-item danger"
@@ -255,7 +266,6 @@ export default function FaqList() {
     );
   };
 
-  
   /*********************************************************
    *  Debounce effect for server-side COLUMN filters only
    *********************************************************/
@@ -272,7 +282,7 @@ export default function FaqList() {
     return () => clearTimeout(debounceTimer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serverColumnFilters]); // Only column filters, NOT global search
-  
+
   /*********************************************************
    *  This function will load when page load and with dependency update
    *********************************************************/
@@ -283,7 +293,7 @@ export default function FaqList() {
         behavior: "smooth",
       });
     }
-    window.scrollTo({top: 0,behavior: "smooth"});
+    window.scrollTo({ top: 0, behavior: "smooth" });
     document.title = "Farmer Store || Admin || FAQ's List";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showRequest, filter, LIMIT]);
@@ -292,10 +302,12 @@ export default function FaqList() {
   const columns = useMemo(
     () => [
       {
-        id: 'index',
-        header: '#',
+        id: "index",
+        header: "#",
         cell: ({ row }) => {
-          const index = ALLLISTDATA.findIndex(item => item.id === row.original.id);
+          const index = ALLLISTDATA.findIndex(
+            (item) => item.id === row.original.id
+          );
           return <div>{index + SKIP + 1}</div>;
         },
         size: 60,
@@ -303,8 +315,8 @@ export default function FaqList() {
         enableColumnFilter: false,
       },
       {
-        accessorKey: 'question',
-        header: 'Question',
+        accessorKey: "question",
+        header: "Question",
         cell: ({ getValue }) => (
           <div className="font-weight-600" style={{ maxWidth: "300px" }}>
             {getValue() || "N/A"}
@@ -315,8 +327,8 @@ export default function FaqList() {
         enableColumnFilter: true,
       },
       {
-        accessorKey: 'answer',
-        header: 'Answer',
+        accessorKey: "answer",
+        header: "Answer",
         cell: ({ getValue }) => {
           const answer = getValue() || "N/A";
           return (
@@ -330,20 +342,18 @@ export default function FaqList() {
         enableColumnFilter: true,
       },
       {
-        accessorKey: 'tag',
-        header: 'Tag',
+        accessorKey: "tag",
+        header: "Tag",
         cell: ({ getValue }) => (
-          <div className="font-weight-600">
-            {getValue() || "N/A"}
-          </div>
+          <div className="font-weight-600">{getValue() || "N/A"}</div>
         ),
         size: 150,
         enableSorting: true,
         enableColumnFilter: true,
       },
       {
-        accessorKey: 'created_at',
-        header: 'Created',
+        accessorKey: "created_at",
+        header: "Created",
         cell: ({ getValue }) => {
           const date = getValue();
           return (
@@ -362,12 +372,16 @@ export default function FaqList() {
         enableColumnFilter: false,
       },
       {
-        accessorKey: 'status',
-        header: 'Status',
+        accessorKey: "status",
+        header: "Status",
         cell: ({ getValue }) => {
           const status = getValue();
           return (
-            <span className={`status-badge ${status === "A" ? "active" : "inactive"}`}>
+            <span
+              className={`status-badge ${
+                status === "A" ? "active" : "inactive"
+              }`}
+            >
               {status === "A" ? "Active" : "Inactive"}
             </span>
           );
@@ -377,29 +391,27 @@ export default function FaqList() {
         enableColumnFilter: false,
       },
       {
-        id: 'actions',
-        header: 'Actions',
+        id: "actions",
+        header: "Actions",
         cell: ({ row }) => {
           const item = row.original;
-          return (
-            (PERMISSION?.add_edit === "Y" || 
-             PERMISSION?.change_status === "Y" || 
-             PERMISSION?.delete === "Y" ||
-             PERMISSION?.fullAccess === "Y") ? (
-              <div className="action-dropdown">
-                <Dropdown
-                  overlay={() => dropdownMenu(item)}
-                  placement="bottomRight"
-                  trigger={['click']}
-                >
-                  <button className="action-dropdown-trigger">
-                    <FontAwesomeIcon icon={faEllipsis} />
-                  </button>
-                </Dropdown>
-              </div>
-            ) : (
-              <span className="text-muted">--</span>
-            )
+          return PERMISSION?.add_edit === "Y" ||
+            PERMISSION?.change_status === "Y" ||
+            PERMISSION?.delete === "Y" ||
+            PERMISSION?.fullAccess === "Y" ? (
+            <div className="action-dropdown">
+              <Dropdown
+                overlay={() => dropdownMenu(item)}
+                placement="bottomRight"
+                trigger={["click"]}
+              >
+                <button className="action-dropdown-trigger">
+                  <FontAwesomeIcon icon={faEllipsis} />
+                </button>
+              </Dropdown>
+            </div>
+          ) : (
+            <span className="text-muted">--</span>
           );
         },
         size: 100,
@@ -414,11 +426,11 @@ export default function FaqList() {
     <>
       <div className="admin-page-container" ref={targetRef}>
         <Top_navbar title="FAQs" />
-        
-        <div className="page-header">
-          {/* <h1 className="page-title">FAQ Management</h1> */}
-          {/* <p className="page-subtitle">Manage your FAQs, view their details, and track their activity</p> */}
-        </div>
+
+        {/* <div className="page-header">
+          <h1 className="page-title">FAQ Management</h1>
+          <p className="page-subtitle">Manage your FAQs, view their details, and track their activity</p>
+        </div> */}
 
         <div className="content-card">
           <div className="tabs-header">
@@ -445,7 +457,7 @@ export default function FaqList() {
 
             <div className="tabs-actions">
               <ShowData setLimit={handleLimitChange} limit={LIMIT} />
-              
+
               <button
                 className="action-button secondary"
                 onClick={() => getList()}
@@ -453,8 +465,9 @@ export default function FaqList() {
                 <FontAwesomeIcon icon={faRefresh} />
                 Refresh
               </button>
-              
-              {(PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y") && (
+
+              {(PERMISSION?.add_edit === "Y" ||
+                PERMISSION?.fullAccess === "Y") && (
                 <button
                   className="action-button primary"
                   onClick={() => handleEdit()}
@@ -493,4 +506,3 @@ export default function FaqList() {
     </>
   );
 }
-

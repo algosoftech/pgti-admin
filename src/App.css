@@ -193,7 +193,7 @@ td {
 .btn-secondary {
   --bs-btn-color: #fff !important;
   --bs-btn-bg: #a80f4f9b !important;
-  --bs-btn-border-color: #a80f4f9b   !important;
+  --bs-btn-border-color: #a80f4f9b !important;
   --bs-btn-hover-color: #fff !important;
   --bs-btn-hover-bg: #a80f4fd5 !important;
   --bs-btn-hover-border-color: #a80f4fd5 !important;
@@ -208,5 +208,5 @@ td {
 /* Filter bar icon */
 svg:not(:root).svg-inline--fa,
 svg:not(:host).svg-inline--fa {
-  color: #a80f4fc3;
+  color: #2f953c;
 }

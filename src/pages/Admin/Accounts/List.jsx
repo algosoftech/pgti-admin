@@ -327,10 +327,10 @@ export default function SubAdminList() {
       <div className="admin-page-container" ref={targetRef}>
         <Top_navbar title="Sub Administrators" />
         
-        <div className="page-header">
-          {/* <h1 className="page-title">Sub Administrator Management</h1>
-          <p className="page-subtitle">Manage sub administrators, their permissions, and access levels</p> */}
-        </div>
+        {/* <div className="page-header">
+          <h1 className="page-title">Sub Administrator Management</h1>
+          <p className="page-subtitle">Manage sub administrators, their permissions, and access levels</p>
+        </div> */}
 
         <div className="content-card">
           <div className="tabs-header">

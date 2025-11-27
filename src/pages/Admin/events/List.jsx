@@ -17,7 +17,11 @@ import EnhancedTable from "../../../components/EnhancedTable/EnhancedTable";
 
 import { useNavigate } from "react-router-dom";
 
-import { InfoCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  InfoCircleOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 
 import moment from "moment";
 import { usePermissions } from "../../../controllers/PermissionContext";
@@ -54,7 +58,7 @@ export default function EventList() {
   const PERMISSION = usePermissions("events");
   const [activeTab, setActiveTab] = useState("all");
   const [articles, setArticles] = useState([]);
-  
+
   // Server-side filter state
   const [serverColumnFilters, setServerColumnFilters] = useState({
     article_id: "",
@@ -90,7 +94,7 @@ export default function EventList() {
     setActiveTab(tab);
     dispatch(setShowRequest(tab === "all" ? "" : tab.toUpperCase()));
   };
-  
+
   const handleEdit = async (item = {}) => {
     navigate("/admin/events/addeditdata", { state: item });
   };
@@ -99,13 +103,13 @@ export default function EventList() {
   const columns = useMemo(
     () => [
       {
-        id: 'select',
+        id: "select",
         header: ({ table }) => (
           <input
             type="checkbox"
             checked={table.getIsAllRowsSelected()}
             onChange={table.getToggleAllRowsSelectedHandler()}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           />
         ),
         cell: ({ row }) => (
@@ -113,7 +117,7 @@ export default function EventList() {
             type="checkbox"
             checked={row.getIsSelected()}
             onChange={row.getToggleSelectedHandler()}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           />
         ),
         size: 60,
@@ -122,8 +126,8 @@ export default function EventList() {
         enableGlobalFilter: false,
       },
       {
-        accessorKey: 'index',
-        header: '#',
+        accessorKey: "index",
+        header: "#",
         cell: ({ row }) => row.index + SKIP + 1,
         size: 80,
         enableSorting: true,
@@ -131,8 +135,8 @@ export default function EventList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'article_id',
-        header: 'Article',
+        accessorKey: "article_id",
+        header: "Article",
         cell: ({ getValue }) => (
           <div className="font-weight-600">
             {getValue() ? getArticleTitle(getValue()) : "N/A"}
@@ -144,8 +148,8 @@ export default function EventList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'event_start',
-        header: 'Start Date',
+        accessorKey: "event_start",
+        header: "Start Date",
         cell: ({ getValue }) => (
           <div>
             <div className="text-muted">
@@ -162,8 +166,8 @@ export default function EventList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'event_end',
-        header: 'End Date',
+        accessorKey: "event_end",
+        header: "End Date",
         cell: ({ getValue }) => (
           <div>
             <div className="text-muted">
@@ -180,12 +184,10 @@ export default function EventList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'capacity',
-        header: 'Capacity',
+        accessorKey: "capacity",
+        header: "Capacity",
         cell: ({ getValue }) => (
-          <div className="font-weight-600">
-            {getValue() || 0}
-          </div>
+          <div className="font-weight-600">{getValue() || 0}</div>
         ),
         size: 180,
         enableSorting: true,
@@ -193,10 +195,14 @@ export default function EventList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'is_paid',
-        header: 'Paid Event',
+        accessorKey: "is_paid",
+        header: "Paid Event",
         cell: ({ getValue }) => (
-          <span className={`status-badge ${getValue() === "Y" ? "active" : "inactive"}`}>
+          <span
+            className={`status-badge ${
+              getValue() === "Y" ? "active" : "inactive"
+            }`}
+          >
             {getValue() === "Y" ? "Yes" : "No"}
           </span>
         ),
@@ -206,11 +212,13 @@ export default function EventList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'event_fee',
-        header: 'Event Fee',
+        accessorKey: "event_fee",
+        header: "Event Fee",
         cell: ({ getValue, row }) => (
           <div className="font-weight-600">
-            {row.original.is_paid === "Y" ? `₹${parseFloat(getValue() || 0).toFixed(2)}` : "Free"}
+            {row.original.is_paid === "Y"
+              ? `₹${parseFloat(getValue() || 0).toFixed(2)}`
+              : "Free"}
           </div>
         ),
         size: 180,
@@ -219,13 +227,18 @@ export default function EventList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'created_at',
-        header: 'Created',
-        accessorFn: (row) => moment(row.created_at).format("MMM DD, YYYY HH:mm"),
+        accessorKey: "created_at",
+        header: "Created",
+        accessorFn: (row) =>
+          moment(row.created_at).format("MMM DD, YYYY HH:mm"),
         cell: ({ row }) => (
           <>
-            <div className="text-muted">{moment(row.original.created_at).format("MMM DD, YYYY")}</div>
-            <div className="text-muted small">{moment(row.original.created_at).format("HH:mm")}</div>
+            <div className="text-muted">
+              {moment(row.original.created_at).format("MMM DD, YYYY")}
+            </div>
+            <div className="text-muted small">
+              {moment(row.original.created_at).format("HH:mm")}
+            </div>
           </>
         ),
         size: 180,
@@ -234,11 +247,15 @@ export default function EventList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'status',
-        header: 'Status',
-        accessorFn: (row) => row.status === "A" ? "Active" : "Inactive",
+        accessorKey: "status",
+        header: "Status",
+        accessorFn: (row) => (row.status === "A" ? "Active" : "Inactive"),
         cell: ({ row }) => (
-          <span className={`status-badge ${row.original.status === "A" ? "active" : "inactive"}`}>
+          <span
+            className={`status-badge ${
+              row.original.status === "A" ? "active" : "inactive"
+            }`}
+          >
             {row.original.status === "A" ? "Active" : "Inactive"}
           </span>
         ),
@@ -248,13 +265,20 @@ export default function EventList() {
         enableHiding: true,
       },
       {
-        id: 'actions',
-        header: 'Actions',
+        id: "actions",
+        header: "Actions",
         cell: ({ row }) => {
           const item = row.original;
-          return (PERMISSION?.add_edit === "Y" || PERMISSION?.change_status === "Y" || PERMISSION?.delete === "Y" || PERMISSION?.fullAccess === "Y") ? (
+          return PERMISSION?.add_edit === "Y" ||
+            PERMISSION?.change_status === "Y" ||
+            PERMISSION?.delete === "Y" ||
+            PERMISSION?.fullAccess === "Y" ? (
             <div className="action-dropdown">
-              <Dropdown overlay={() => dropdownMenu(item)} placement="bottomRight" trigger={['click']}>
+              <Dropdown
+                overlay={() => dropdownMenu(item)}
+                placement="bottomRight"
+                trigger={["click"]}
+              >
                 <button className="action-dropdown-trigger">
                   <FontAwesomeIcon icon={faEllipsis} />
                 </button>
@@ -275,13 +299,17 @@ export default function EventList() {
 
   /*********************************************************
    *  This function is use to fetch events list
-   *********************************************************/ 
+   *********************************************************/
   const getList = () => {
     const options = {
       type: "",
       condition: {
-        ...(serverColumnFilters.article_id ? { article_id: serverColumnFilters.article_id } : null),
-        ...(serverColumnFilters.status ? { statusSearch: serverColumnFilters.status } : null),
+        ...(serverColumnFilters.article_id
+          ? { article_id: serverColumnFilters.article_id }
+          : null),
+        ...(serverColumnFilters.status
+          ? { statusSearch: serverColumnFilters.status }
+          : null),
         ...(showRequest ? { status: showRequest } : null),
       },
       skip: SKIP ? SKIP : 0,
@@ -304,7 +332,7 @@ export default function EventList() {
       });
       return;
     }
-    
+
     if (!status || status === "") {
       notification.open({
         message: "Oops!",
@@ -320,7 +348,7 @@ export default function EventList() {
       const result = await dispatch(
         changeEventStatus({ editId: id, status })
       ).unwrap();
-      
+
       notification.open({
         message: "Success",
         description: result.message || `Status changed successfully.`,
@@ -328,13 +356,14 @@ export default function EventList() {
         icon: <CheckCircleOutlined style={{ color: "green" }} />,
         duration: 2,
       });
-      
+
       // Refresh the list after status change
       getList();
     } catch (error) {
       notification.open({
         message: "Oops!",
-        description: error || `Operation not perform yet! please try in some time.`,
+        description:
+          error || `Operation not perform yet! please try in some time.`,
         placement: "topRight",
         icon: <InfoCircleOutlined style={{ color: "red" }} />,
         duration: 2,
@@ -347,18 +376,18 @@ export default function EventList() {
    *********************************************************/
   const handleDelete = (item) => {
     Modal.confirm({
-      title: 'Are you sure you want to delete this event?',
+      title: "Are you sure you want to delete this event?",
       icon: <ExclamationCircleOutlined />,
       content: `Article: ${getArticleTitle(item?.article_id)}`,
-      okText: 'Yes, Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
       onOk: async () => {
         try {
           const result = await dispatch(
             deleteEventAction({ editId: item.id })
           ).unwrap();
-          
+
           notification.open({
             message: "Success",
             description: result.message || `Event deleted successfully.`,
@@ -366,7 +395,7 @@ export default function EventList() {
             icon: <CheckCircleOutlined style={{ color: "green" }} />,
             duration: 2,
           });
-          
+
           // Refresh the list after delete
           getList();
         } catch (error) {
@@ -394,8 +423,9 @@ export default function EventList() {
             <span>Edit</span>
           </button>
         )}
-        {(PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y") && (
-          items?.status === "A" ? (
+        {(PERMISSION?.change_status === "Y" ||
+          PERMISSION?.fullAccess === "Y") &&
+          (items?.status === "A" ? (
             <button
               className="action-dropdown-item danger"
               onClick={() => {
@@ -415,8 +445,7 @@ export default function EventList() {
               <FontAwesomeIcon icon={faThumbsUp} />
               <span>Activate</span>
             </button>
-          )
-        )}
+          ))}
         {(PERMISSION?.delete === "Y" || PERMISSION?.fullAccess === "Y") && (
           <button
             className="action-dropdown-item danger"
@@ -456,7 +485,7 @@ export default function EventList() {
         behavior: "smooth",
       });
     }
-    window.scrollTo({top: 0,behavior: "smooth"});
+    window.scrollTo({ top: 0, behavior: "smooth" });
     document.title = "Farmer Store || Admin || Events List";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showRequest, LIMIT]);
@@ -465,11 +494,11 @@ export default function EventList() {
     <>
       <div className="admin-page-container" ref={targetRef}>
         <Top_navbar title="Events" />
-        
-        <div className="page-header">
-          {/* <h1 className="page-title">Event Management</h1> */}
-          {/* <p className="page-subtitle">Manage your events, view their details, and track their activity</p> */}
-        </div>
+
+        {/* <div className="page-header">
+          <h1 className="page-title">Event Management</h1>
+          <p className="page-subtitle">Manage your events, view their details, and track their activity</p>
+        </div> */}
 
         <div className="content-card">
           <div className="tabs-header">
@@ -502,8 +531,9 @@ export default function EventList() {
                 <FontAwesomeIcon icon={faRefresh} />
                 Refresh
               </button>
-              
-              {(PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y") && (
+
+              {(PERMISSION?.add_edit === "Y" ||
+                PERMISSION?.fullAccess === "Y") && (
                 <button
                   className="action-button primary"
                   onClick={() => handleEdit()}
@@ -551,4 +581,3 @@ export default function EventList() {
     </>
   );
 }
-

@@ -54,7 +54,7 @@ export default function SubCategoryList() {
   const [categories, setCategories] = useState([]);
   const PERMISSION = usePermissions("subCategories");
   const [activeTab, setActiveTab] = useState("all");
-  
+
   // Server-side filter state
   const [serverColumnFilters, setServerColumnFilters] = useState({
     name: "",
@@ -66,7 +66,7 @@ export default function SubCategoryList() {
     setActiveTab(tab);
     dispatch(setShowRequest(tab === "all" ? "" : tab.toUpperCase()));
   };
-  
+
   const handleEdit = async (item = {}) => {
     navigate("/admin/sub-categories/addeditdata", { state: item });
   };
@@ -100,12 +100,22 @@ export default function SubCategoryList() {
   const columns = useMemo(
     () => [
       {
-        id: 'select',
+        id: "select",
         header: ({ table }) => (
-          <input type="checkbox" checked={table.getIsAllRowsSelected()} onChange={table.getToggleAllRowsSelectedHandler()} style={{ cursor: 'pointer' }} />
+          <input
+            type="checkbox"
+            checked={table.getIsAllRowsSelected()}
+            onChange={table.getToggleAllRowsSelectedHandler()}
+            style={{ cursor: "pointer" }}
+          />
         ),
         cell: ({ row }) => (
-          <input type="checkbox" checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} style={{ cursor: 'pointer' }} />
+          <input
+            type="checkbox"
+            checked={row.getIsSelected()}
+            onChange={row.getToggleSelectedHandler()}
+            style={{ cursor: "pointer" }}
+          />
         ),
         size: 60,
         enableSorting: false,
@@ -113,26 +123,30 @@ export default function SubCategoryList() {
         enableGlobalFilter: false,
       },
       {
-        accessorKey: 'index',
-        header: '#',
+        accessorKey: "index",
+        header: "#",
         cell: ({ row }) => row.index + SKIP + 1,
         size: 100,
         enableSorting: false,
         enableGlobalFilter: false,
       },
       {
-        accessorKey: 'name',
-        header: 'Sub-Category',
-        cell: ({ getValue }) => <div className="font-weight-600">{getValue()}</div>,
+        accessorKey: "name",
+        header: "Sub-Category",
+        cell: ({ getValue }) => (
+          <div className="font-weight-600">{getValue()}</div>
+        ),
         size: 250,
         enableSorting: true,
         enableColumnFilter: true,
       },
       {
-        accessorKey: 'category',
-        header: 'Category',
+        accessorKey: "category",
+        header: "Category",
         // accessorFn: (row) => getCategoryName(row.category),
-        cell: ({ getValue }) => <div className="font-weight-500">{getValue()}</div>,
+        cell: ({ getValue }) => (
+          <div className="font-weight-500">{getValue()}</div>
+        ),
         size: 250,
         enableSorting: true,
         enableColumnFilter: true,
@@ -140,13 +154,18 @@ export default function SubCategoryList() {
         enableGlobalFilter: true,
       },
       {
-        accessorKey: 'created_at',
-        header: 'Created',
-        accessorFn: (row) => moment(row.created_at).format("MMM DD, YYYY HH:mm"),
+        accessorKey: "created_at",
+        header: "Created",
+        accessorFn: (row) =>
+          moment(row.created_at).format("MMM DD, YYYY HH:mm"),
         cell: ({ row }) => (
           <>
-            <div className="text-muted">{moment(row.original.created_at).format("MMM DD, YYYY")}</div>
-            <div className="text-muted small">{moment(row.original.created_at).format("HH:mm")}</div>
+            <div className="text-muted">
+              {moment(row.original.created_at).format("MMM DD, YYYY")}
+            </div>
+            <div className="text-muted small">
+              {moment(row.original.created_at).format("HH:mm")}
+            </div>
           </>
         ),
         size: 150,
@@ -156,11 +175,15 @@ export default function SubCategoryList() {
         enableGlobalFilter: true,
       },
       {
-        accessorKey: 'status',
-        header: 'Status',
-        accessorFn: (row) => row.status === "A" ? "Active" : "Inactive",
+        accessorKey: "status",
+        header: "Status",
+        accessorFn: (row) => (row.status === "A" ? "Active" : "Inactive"),
         cell: ({ row }) => (
-          <span className={`status-badge ${row.original.status === "A" ? "active" : "inactive"}`}>
+          <span
+            className={`status-badge ${
+              row.original.status === "A" ? "active" : "inactive"
+            }`}
+          >
             {row.original.status === "A" ? "Active" : "Inactive"}
           </span>
         ),
@@ -171,13 +194,19 @@ export default function SubCategoryList() {
         enableGlobalFilter: true,
       },
       {
-        id: 'actions',
-        header: 'Actions',
+        id: "actions",
+        header: "Actions",
         cell: ({ row }) => {
           const item = row.original;
-          return (PERMISSION?.add_edit === "Y" || PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y") ? (
+          return PERMISSION?.add_edit === "Y" ||
+            PERMISSION?.change_status === "Y" ||
+            PERMISSION?.fullAccess === "Y" ? (
             <div className="action-dropdown">
-              <Dropdown overlay={() => dropdownMenu(item)} placement="bottomRight" trigger={['click']}>
+              <Dropdown
+                overlay={() => dropdownMenu(item)}
+                placement="bottomRight"
+                trigger={["click"]}
+              >
                 <button className="action-dropdown-trigger">
                   <FontAwesomeIcon icon={faEllipsis} />
                 </button>
@@ -228,7 +257,7 @@ export default function SubCategoryList() {
       });
       return;
     }
-    
+
     if (!status || status === "") {
       notification.open({
         message: "Oops!",
@@ -244,7 +273,7 @@ export default function SubCategoryList() {
       const result = await dispatch(
         changeSubCategoryStatus({ editId: id, status })
       ).unwrap();
-      
+
       notification.open({
         message: "Success",
         description: result.message || `Status changed successfully.`,
@@ -252,13 +281,14 @@ export default function SubCategoryList() {
         icon: <CheckCircleOutlined style={{ color: "green" }} />,
         duration: 2,
       });
-      
+
       // Refresh the list after status change
       getList();
     } catch (error) {
       notification.open({
         message: "Oops!",
-        description: error || `Operation not perform yet! please try in some time.`,
+        description:
+          error || `Operation not perform yet! please try in some time.`,
         placement: "topRight",
         icon: <InfoCircleOutlined style={{ color: "red" }} />,
         duration: 2,
@@ -278,8 +308,9 @@ export default function SubCategoryList() {
             <span>Edit</span>
           </button>
         )}
-        {(PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y") && (
-          items?.status === "A" ? (
+        {(PERMISSION?.change_status === "Y" ||
+          PERMISSION?.fullAccess === "Y") &&
+          (items?.status === "A" ? (
             <button
               className="action-dropdown-item danger"
               onClick={() => {
@@ -299,8 +330,7 @@ export default function SubCategoryList() {
               <FontAwesomeIcon icon={faThumbsUp} />
               <span>Activate</span>
             </button>
-          )
-        )}
+          ))}
       </div>
     );
   };
@@ -331,7 +361,7 @@ export default function SubCategoryList() {
         behavior: "smooth",
       });
     }
-    window.scrollTo({top: 0,behavior: "smooth"});
+    window.scrollTo({ top: 0, behavior: "smooth" });
     document.title = "Farmer Store || Admin || Sub-Category's List";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showRequest, LIMIT]);
@@ -340,11 +370,11 @@ export default function SubCategoryList() {
     <>
       <div className="admin-page-container" ref={targetRef}>
         <Top_navbar title="Sub-Categories" />
-        
-        <div className="page-header">
-          {/* <h1 className="page-title">Sub-Category Management</h1> */}
-          {/* <p className="page-subtitle">Manage your sub-categories, view their details, and track their activity</p> */}
-        </div>
+
+        {/* <div className="page-header">
+          <h1 className="page-title">Sub-Category Management</h1>
+          <p className="page-subtitle">Manage your sub-categories, view their details, and track their activity</p>
+        </div> */}
 
         <div className="content-card">
           <div className="tabs-header">
@@ -389,8 +419,9 @@ export default function SubCategoryList() {
                 <FontAwesomeIcon icon={faRefresh} />
                 Refresh
               </button>
-              
-              {(PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y") && (
+
+              {(PERMISSION?.add_edit === "Y" ||
+                PERMISSION?.fullAccess === "Y") && (
                 <button
                   className="action-button primary"
                   onClick={() => handleEdit()}
@@ -438,4 +469,3 @@ export default function SubCategoryList() {
     </>
   );
 }
-

@@ -11,11 +11,11 @@ import {
   SafetyOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import {
   addeditdata,
-  getPermission
+  getPermission,
 } from "../../../controllers/subAdmin/subAdminControllers";
 
 import LoadingEffect from "../../../components/Loading/LoadingEffect";
@@ -32,99 +32,99 @@ const UserListEditPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   /***************  Define Permission States ***************/
-  const [assignPermission, setAssignPermission] = useState('');
+  const [assignPermission, setAssignPermission] = useState("");
 
   const [module_permissions, setPermissions] = useState({
     users: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      points: 'N',
-      export: 'N'
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      points: "N",
+      export: "N",
     },
     influencer: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      filter: 'N',
-      bulk_upload: 'N',
-      profile: 'N',
-      export : "N"
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      filter: "N",
+      bulk_upload: "N",
+      profile: "N",
+      export: "N",
     },
     products: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      filter: 'N',
-      delete: 'N',
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      filter: "N",
+      delete: "N",
     },
     industry: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
     },
     categories: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      filter: 'N',
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      filter: "N",
     },
     subCategories: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      filter: 'N',
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      filter: "N",
     },
     banners: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      filter: 'N',
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      filter: "N",
     },
     faqs: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      delete: 'N',
-      filter: 'N',
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      delete: "N",
+      filter: "N",
     },
     contact_shops: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      delete: 'N',
-      filter: 'N',
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      delete: "N",
+      filter: "N",
     },
     articles: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      delete: 'N',
-      filter: 'N',
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      delete: "N",
+      filter: "N",
     },
     ingredients: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      delete: 'N',
-      filter: 'N',
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      delete: "N",
+      filter: "N",
     },
     events: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      delete: 'N',
-      filter: 'N',
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      delete: "N",
+      filter: "N",
     },
     promocodes: {
-      list: 'N',
-      add_edit: 'N',
-      change_status: 'N',
-      filter: 'N',
+      list: "N",
+      add_edit: "N",
+      change_status: "N",
+      filter: "N",
     },
     transaction: {
-      list: 'N',
-      filter: 'N',
+      list: "N",
+      filter: "N",
     },
   });
 
@@ -143,7 +143,6 @@ const UserListEditPage = () => {
     }));
   };
 
-
   /*********************************************************
    *  This function is use to handle form submit
    *********************************************************/
@@ -151,68 +150,72 @@ const UserListEditPage = () => {
     event.preventDefault();
     try {
       const form = new FormData(event.target);
-      if (ADDEDITDATA?.id && ADDEDITDATA?.id !== "undefined" && ADDEDITDATA?.id !== null) {
+      if (
+        ADDEDITDATA?.id &&
+        ADDEDITDATA?.id !== "undefined" &&
+        ADDEDITDATA?.id !== null
+      ) {
         form.append("edit_id", ADDEDITDATA?.id);
       }
-      form.append('phone', ADDEDITDATA?.phone);
+      form.append("phone", ADDEDITDATA?.phone);
       const isValidate = validateFormData(form);
       const permissions = [
         {
-          module : 'users',
-          permissions_json : JSON.stringify(module_permissions?.users)
+          module: "users",
+          permissions_json: JSON.stringify(module_permissions?.users),
         },
         {
-          module : 'influencer',
-          permissions_json : JSON.stringify(module_permissions?.influencer)
+          module: "influencer",
+          permissions_json: JSON.stringify(module_permissions?.influencer),
         },
         {
-          module : 'products',
-          permissions_json : JSON.stringify(module_permissions?.products)
+          module: "products",
+          permissions_json: JSON.stringify(module_permissions?.products),
         },
         {
-          module : 'industry',
-          permissions_json : JSON.stringify(module_permissions?.industry)
+          module: "industry",
+          permissions_json: JSON.stringify(module_permissions?.industry),
         },
         {
-          module : 'categories',
-          permissions_json : JSON.stringify(module_permissions?.categories)
+          module: "categories",
+          permissions_json: JSON.stringify(module_permissions?.categories),
         },
         {
-          module : 'subCategories',
-          permissions_json : JSON.stringify(module_permissions?.subCategories)
+          module: "subCategories",
+          permissions_json: JSON.stringify(module_permissions?.subCategories),
         },
         {
-          module : 'banners',
-          permissions_json : JSON.stringify(module_permissions?.banners)
+          module: "banners",
+          permissions_json: JSON.stringify(module_permissions?.banners),
         },
         {
-          module : 'faqs',
-          permissions_json : JSON.stringify(module_permissions?.faqs)
+          module: "faqs",
+          permissions_json: JSON.stringify(module_permissions?.faqs),
         },
         {
-          module : 'contact_shops',
-          permissions_json : JSON.stringify(module_permissions?.contact_shops)
+          module: "contact_shops",
+          permissions_json: JSON.stringify(module_permissions?.contact_shops),
         },
         {
-          module : 'articles',
-          permissions_json : JSON.stringify(module_permissions?.articles)
+          module: "articles",
+          permissions_json: JSON.stringify(module_permissions?.articles),
         },
         {
-          module : 'ingredients',
-          permissions_json : JSON.stringify(module_permissions?.ingredients)
+          module: "ingredients",
+          permissions_json: JSON.stringify(module_permissions?.ingredients),
         },
         {
-          module : 'events',
-          permissions_json : JSON.stringify(module_permissions?.events)
+          module: "events",
+          permissions_json: JSON.stringify(module_permissions?.events),
         },
         {
-          module : 'promocodes',
-          permissions_json : JSON.stringify(module_permissions?.promocodes)
+          module: "promocodes",
+          permissions_json: JSON.stringify(module_permissions?.promocodes),
         },
         {
-          module : 'transaction',
-          permissions_json : JSON.stringify(module_permissions?.transaction)
-        }
+          module: "transaction",
+          permissions_json: JSON.stringify(module_permissions?.transaction),
+        },
       ];
       if (isValidate) {
         const rowData = {};
@@ -260,7 +263,7 @@ const UserListEditPage = () => {
    *********************************************************/
   const validateFormData = (formData) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const vendor_country_code = '+971';
+    const vendor_country_code = "+971";
     if (!formData.get("name")?.trim()) {
       setError((prevError) => ({
         ...prevError,
@@ -268,7 +271,7 @@ const UserListEditPage = () => {
       }));
       return false;
     }
-    
+
     if (!formData.get("email")?.trim()) {
       setError((prevError) => ({
         ...prevError,
@@ -283,212 +286,222 @@ const UserListEditPage = () => {
       }));
       return false;
     }
-    
+
     return true;
   };
 
   const getUserpermission = async () => {
     try {
       setIsLoading(true);
-      const option = { admin_id: ADDEDITDATA?.id }
+      const option = { admin_id: ADDEDITDATA?.id };
       const res = await getPermission(option);
-      if (res.status === true && res.result !== 'undefined' && res.result?.length > 0) {
+      if (
+        res.status === true &&
+        res.result !== "undefined" &&
+        res.result?.length > 0
+      ) {
         const updatedPermissions = { ...module_permissions };
-        res?.result.forEach((item)=>{
-        const moduleName = item.module;
-        const parsedPermissions = JSON.parse(item.permissions_json || "{}");
+        res?.result.forEach((item) => {
+          const moduleName = item.module;
+          const parsedPermissions = JSON.parse(item.permissions_json || "{}");
 
-        if (updatedPermissions[moduleName]) {
-          // merge Y/N from DB into default structure
-          updatedPermissions[moduleName] = {
-            ...updatedPermissions[moduleName],
-            ...parsedPermissions,
-          };
-        }
-      })
-      setPermissions((pre)=>({
-        ...pre,
-        ...updatedPermissions 
-      }))
+          if (updatedPermissions[moduleName]) {
+            // merge Y/N from DB into default structure
+            updatedPermissions[moduleName] = {
+              ...updatedPermissions[moduleName],
+              ...parsedPermissions,
+            };
+          }
+        });
+        setPermissions((pre) => ({
+          ...pre,
+          ...updatedPermissions,
+        }));
         // setInvoicePermission(res.result?.invoice);
         // setCustomerDuePermission(res.result?.customer_due);
         // setAnalyserPermission(res.result?.analyser);
       } else {
-        setAssignPermission([])
+        setAssignPermission([]);
       }
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
     } finally {
-        setIsLoading(false);
-
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (ADDEDITDATA?.id) {
       getUserpermission();
     }
-    document.title = `Farmer Store || ${ADDEDITDATA?.id ? "Edit" : "Add"
-      } Sub Admin`;
+    document.title = `Farmer Store || ${
+      ADDEDITDATA?.id ? "Edit" : "Add"
+    } Sub Admin`;
   }, []);
 
-/*********************************************************
-*  Handles permissions dynamically for any section/type
-*********************************************************/
-const handlePermission = (type, value) => {
-  try {
-    setPermissions(prev => ({
-      ...prev,
-      [type]: {
-        ...prev[type],
-        [value]: prev[type][value] === 'Y' ? 'N' : 'Y',
-      },
-    }));
-  } catch (error) {
-    console.error('Error handling permission:', error);
-  }
-};
+  /*********************************************************
+   *  Handles permissions dynamically for any section/type
+   *********************************************************/
+  const handlePermission = (type, value) => {
+    try {
+      setPermissions((prev) => ({
+        ...prev,
+        [type]: {
+          ...prev[type],
+          [value]: prev[type][value] === "Y" ? "N" : "Y",
+        },
+      }));
+    } catch (error) {
+      console.error("Error handling permission:", error);
+    }
+  };
 
-/*********************************************************
-*  Check all permissions (set all to 'Y')
-*********************************************************/
-const handleCheckAllPermissions = () => {
-  try {
-    const allChecked = {};
-    Object.keys(module_permissions).forEach(module => {
-      allChecked[module] = {};
-      Object.keys(module_permissions[module]).forEach(permission => {
-        allChecked[module][permission] = 'Y';
+  /*********************************************************
+   *  Check all permissions (set all to 'Y')
+   *********************************************************/
+  const handleCheckAllPermissions = () => {
+    try {
+      const allChecked = {};
+      Object.keys(module_permissions).forEach((module) => {
+        allChecked[module] = {};
+        Object.keys(module_permissions[module]).forEach((permission) => {
+          allChecked[module][permission] = "Y";
+        });
       });
-    });
-    setPermissions(allChecked);
-    notification.success({
-      message: "Success",
-      description: "All permissions have been checked.",
-      placement: "topRight",
-    });
-  } catch (error) {
-    console.error('Error checking all permissions:', error);
-    notification.error({
-      message: "Error",
-      description: "Failed to check all permissions.",
-      placement: "topRight",
-    });
-  }
-};
+      setPermissions(allChecked);
+      notification.success({
+        message: "Success",
+        description: "All permissions have been checked.",
+        placement: "topRight",
+      });
+    } catch (error) {
+      console.error("Error checking all permissions:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to check all permissions.",
+        placement: "topRight",
+      });
+    }
+  };
 
-/*********************************************************
-*  Reset all permissions (set all to 'N')
-*********************************************************/
-const handleResetAllPermissions = () => {
-  Modal.confirm({
-    title: 'Reset All Permissions',
-    content: 'Are you sure you want to reset all permissions? This will uncheck all permission checkboxes.',
-    okText: 'Yes, Reset All',
-    okType: 'danger',
-    cancelText: 'Cancel',
-    onOk() {
-      try {
-        const allReset = {};
-        Object.keys(module_permissions).forEach(module => {
-          allReset[module] = {};
-          Object.keys(module_permissions[module]).forEach(permission => {
-            allReset[module][permission] = 'N';
+  /*********************************************************
+   *  Reset all permissions (set all to 'N')
+   *********************************************************/
+  const handleResetAllPermissions = () => {
+    Modal.confirm({
+      title: "Reset All Permissions",
+      content:
+        "Are you sure you want to reset all permissions? This will uncheck all permission checkboxes.",
+      okText: "Yes, Reset All",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk() {
+        try {
+          const allReset = {};
+          Object.keys(module_permissions).forEach((module) => {
+            allReset[module] = {};
+            Object.keys(module_permissions[module]).forEach((permission) => {
+              allReset[module][permission] = "N";
+            });
           });
-        });
-        setPermissions(allReset);
-        notification.success({
-          message: "Success",
-          description: "All permissions have been reset.",
-          placement: "topRight",
-        });
-      } catch (error) {
-        console.error('Error resetting all permissions:', error);
+          setPermissions(allReset);
+          notification.success({
+            message: "Success",
+            description: "All permissions have been reset.",
+            placement: "topRight",
+          });
+        } catch (error) {
+          console.error("Error resetting all permissions:", error);
+          notification.error({
+            message: "Error",
+            description: "Failed to reset all permissions.",
+            placement: "topRight",
+          });
+        }
+      },
+    });
+  };
+
+  /*********************************************************
+   *  Check all permissions for a specific module
+   *********************************************************/
+  const handleCheckModulePermissions = (moduleName) => {
+    try {
+      if (!module_permissions[moduleName]) {
         notification.error({
           message: "Error",
-          description: "Failed to reset all permissions.",
+          description: `Module "${moduleName}" not found.`,
           placement: "topRight",
         });
+        return;
       }
-    },
-  });
-};
 
-/*********************************************************
-*  Check all permissions for a specific module
-*********************************************************/
-const handleCheckModulePermissions = (moduleName) => {
-  try {
-    if (!module_permissions[moduleName]) {
+      setPermissions((prev) => ({
+        ...prev,
+        [moduleName]: Object.keys(prev[moduleName]).reduce(
+          (acc, permission) => {
+            acc[permission] = "Y";
+            return acc;
+          },
+          {}
+        ),
+      }));
+
+      // notification.success({
+      //   message: "Success",
+      //   description: `All ${moduleName} permissions have been checked.`,
+      //   placement: "topRight",
+      // });
+    } catch (error) {
+      console.error("Error checking module permissions:", error);
       notification.error({
         message: "Error",
-        description: `Module "${moduleName}" not found.`,
+        description: `Failed to check ${moduleName} permissions.`,
         placement: "topRight",
       });
-      return;
     }
-    
-    setPermissions(prev => ({
-      ...prev,
-      [moduleName]: Object.keys(prev[moduleName]).reduce((acc, permission) => {
-        acc[permission] = 'Y';
-        return acc;
-      }, {}),
-    }));
-    
-    // notification.success({
-    //   message: "Success",
-    //   description: `All ${moduleName} permissions have been checked.`,
-    //   placement: "topRight",
-    // });
-  } catch (error) {
-    console.error('Error checking module permissions:', error);
-    notification.error({
-      message: "Error",
-      description: `Failed to check ${moduleName} permissions.`,
-      placement: "topRight",
-    });
-  }
-};
+  };
 
-/*********************************************************
-*  Uncheck all permissions for a specific module
-*********************************************************/
-const handleUncheckModulePermissions = (moduleName) => {
-  try {
-    if (!module_permissions[moduleName]) {
+  /*********************************************************
+   *  Uncheck all permissions for a specific module
+   *********************************************************/
+  const handleUncheckModulePermissions = (moduleName) => {
+    try {
+      if (!module_permissions[moduleName]) {
+        notification.error({
+          message: "Error",
+          description: `Module "${moduleName}" not found.`,
+          placement: "topRight",
+        });
+        return;
+      }
+
+      setPermissions((prev) => ({
+        ...prev,
+        [moduleName]: Object.keys(prev[moduleName]).reduce(
+          (acc, permission) => {
+            acc[permission] = "N";
+            return acc;
+          },
+          {}
+        ),
+      }));
+
+      // notification.success({
+      //   message: "Success",
+      //   description: `All ${moduleName} permissions have been unchecked.`,
+      //   placement: "topRight",
+      // });
+    } catch (error) {
+      console.error("Error unchecking module permissions:", error);
       notification.error({
         message: "Error",
-        description: `Module "${moduleName}" not found.`,
+        description: `Failed to uncheck ${moduleName} permissions.`,
         placement: "topRight",
       });
-      return;
     }
-    
-    setPermissions(prev => ({
-      ...prev,
-      [moduleName]: Object.keys(prev[moduleName]).reduce((acc, permission) => {
-        acc[permission] = 'N';
-        return acc;
-      }, {}),
-    }));
-    
-    // notification.success({
-    //   message: "Success",
-    //   description: `All ${moduleName} permissions have been unchecked.`,
-    //   placement: "topRight",
-    // });
-  } catch (error) {
-    console.error('Error unchecking module permissions:', error);
-    notification.error({
-      message: "Error",
-      description: `Failed to uncheck ${moduleName} permissions.`,
-      placement: "topRight",
-    });
-  }
-};
-
+  };
 
   return (
     <div className="admin-page-container">
@@ -496,19 +509,27 @@ const handleUncheckModulePermissions = (moduleName) => {
         <div className="d-flex justify-content-between align-items-center">
           <div>
             <h1 className="page-title">
-              {loginUserData?.id && loginUserData?.admin_type === 'Super Admin' 
-                ? "Profile Settings" 
-                : ADDEDITDATA?.id ? "Edit Administrator" : "Add New Administrator"}
+              {loginUserData?.id && loginUserData?.admin_type === "Super Admin"
+                ? "Profile Settings"
+                : ADDEDITDATA?.id
+                ? "Edit Administrator"
+                : "Add New Administrator"}
             </h1>
             <p className="page-subtitle">
-              {loginUserData?.id && loginUserData?.admin_type === 'Super Admin'
+              {loginUserData?.id && loginUserData?.admin_type === "Super Admin"
                 ? "Manage your profile information and settings"
-                : ADDEDITDATA?.id 
-                  ? "Update administrator information and permissions" 
-                  : "Create a new administrator account with appropriate permissions"}
+                : ADDEDITDATA?.id
+                ? "Update administrator information and permissions"
+                : "Create a new administrator account with appropriate permissions"}
             </p>
           </div>
-          <Link to={loginUserData?.admin_type === 'Super Admin' ? "/sub-admin/list" : "/admin/dashboard"}>
+          <Link
+            to={
+              loginUserData?.admin_type === "Super Admin"
+                ? "/sub-admin/list"
+                : "/admin/dashboard"
+            }
+          >
             <button className="action-button secondary">
               <ArrowLeftOutlined />
               Back
@@ -526,7 +547,7 @@ const handleUncheckModulePermissions = (moduleName) => {
                 Administrator Information
               </h3>
               <div className="row">
-                <div className="col-md-6 col-12 mb-3">
+                <div className="col-md-4 col-12 mb-3">
                   <div className="form-group">
                     <label htmlFor="name" className="form-label required">
                       Full Name
@@ -546,7 +567,7 @@ const handleUncheckModulePermissions = (moduleName) => {
                   </div>
                 </div>
 
-                <div className="col-md-6 col-12 mb-3">
+                <div className="col-md-4 col-12 mb-3">
                   <div className="form-group">
                     <label htmlFor="email" className="form-label required">
                       Email Address
@@ -566,10 +587,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     )}
                   </div>
                 </div>
-              </div>
 
-              <div className="row">
-                <div className="col-md-6 col-12 mb-3">
+                <div className="col-md-4 col-12 mb-3">
                   <div className="form-group">
                     <label htmlFor="phone" className="form-label required">
                       Phone Number
@@ -601,7 +620,7 @@ const handleUncheckModulePermissions = (moduleName) => {
                     type="button"
                     className="action-button secondary"
                     onClick={handleCheckAllPermissions}
-                    style={{ fontSize: '14px', padding: '8px 16px' }}
+                    style={{ fontSize: "14px", padding: "8px 16px" }}
                   >
                     <CheckCircleOutlined />
                     Check All
@@ -610,14 +629,14 @@ const handleUncheckModulePermissions = (moduleName) => {
                     type="button"
                     className="action-button secondary"
                     onClick={handleResetAllPermissions}
-                    style={{ fontSize: '14px', padding: '8px 16px' }}
+                    style={{ fontSize: "14px", padding: "8px 16px" }}
                   >
                     <InfoCircleOutlined />
                     Reset All
                   </button>
                 </div>
               </div>
-              
+
               {/* Users Permission */}
               <div className="permission-module">
                 <div className="d-flex justify-content-between align-items-center mb-2">
@@ -629,8 +648,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('users')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleCheckModulePermissions("users")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -638,8 +657,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('users')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleUncheckModulePermissions("users")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -648,7 +667,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('users', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("users", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -657,14 +679,21 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">View Customers</label>
-                        <p className="permission-description">View customer list and details</p>
+                        <label className="permission-label">
+                          View Customers
+                        </label>
+                        <p className="permission-description">
+                          View customer list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('users', 'add_edit')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("users", "add_edit")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -673,30 +702,46 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Add/Edit Customers</label>
-                        <p className="permission-description">Create and modify customer accounts</p>
+                        <label className="permission-label">
+                          Add/Edit Customers
+                        </label>
+                        <p className="permission-description">
+                          Create and modify customer accounts
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('users', 'change_status')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("users", "change_status")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.users?.change_status === "Y"}
+                          checked={
+                            module_permissions?.users?.change_status === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Change Status</label>
-                        <p className="permission-description">Activate/deactivate customers</p>
+                        <label className="permission-label">
+                          Change Status
+                        </label>
+                        <p className="permission-description">
+                          Activate/deactivate customers
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('users', 'points')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("users", "points")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -705,14 +750,21 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Manage Points</label>
-                        <p className="permission-description">Add or modify customer points</p>
+                        <label className="permission-label">
+                          Manage Points
+                        </label>
+                        <p className="permission-description">
+                          Add or modify customer points
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('users', 'export')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("users", "export")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -721,12 +773,15 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Manage Export</label>
-                        <p className="permission-description">Export customers data</p>
+                        <label className="permission-label">
+                          Manage Export
+                        </label>
+                        <p className="permission-description">
+                          Export customers data
+                        </p>
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
 
@@ -741,8 +796,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('products')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleCheckModulePermissions("products")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -750,8 +805,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('products')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleUncheckModulePermissions("products")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -760,7 +815,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('products', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("products", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -769,46 +827,73 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">View Products</label>
-                        <p className="permission-description">View product list and details</p>
+                        <label className="permission-label">
+                          View Products
+                        </label>
+                        <p className="permission-description">
+                          View product list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('products', 'add_edit')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("products", "add_edit")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.products?.add_edit === "Y"}
+                          checked={
+                            module_permissions?.products?.add_edit === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Add/Edit Products</label>
-                        <p className="permission-description">Create and modify products</p>
+                        <label className="permission-label">
+                          Add/Edit Products
+                        </label>
+                        <p className="permission-description">
+                          Create and modify products
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('products', 'change_status')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("products", "change_status")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.products?.change_status === "Y"}
+                          checked={
+                            module_permissions?.products?.change_status === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Change Status</label>
-                        <p className="permission-description">Activate/deactivate products</p>
+                        <label className="permission-label">
+                          Change Status
+                        </label>
+                        <p className="permission-description">
+                          Activate/deactivate products
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('products', 'filter')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("products", "filter")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -817,14 +902,21 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Filter Products</label>
-                        <p className="permission-description">Search and filter product data</p>
+                        <label className="permission-label">
+                          Filter Products
+                        </label>
+                        <p className="permission-description">
+                          Search and filter product data
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('products', 'delete')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("products", "delete")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -833,8 +925,12 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Delete Products</label>
-                        <p className="permission-description">Delete products from the system</p>
+                        <label className="permission-label">
+                          Delete Products
+                        </label>
+                        <p className="permission-description">
+                          Delete products from the system
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -852,8 +948,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('categories')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleCheckModulePermissions("categories")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -861,8 +957,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('categories')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() =>
+                        handleUncheckModulePermissions("categories")
+                      }
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -871,7 +969,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('categories', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("categories", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -880,56 +981,90 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">View Categories</label>
-                        <p className="permission-description">View category list and details</p>
+                        <label className="permission-label">
+                          View Categories
+                        </label>
+                        <p className="permission-description">
+                          View category list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('categories', 'add_edit')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("categories", "add_edit")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.categories?.add_edit === "Y"}
+                          checked={
+                            module_permissions?.categories?.add_edit === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Add/Edit Categories</label>
-                        <p className="permission-description">Create and modify categories</p>
+                        <label className="permission-label">
+                          Add/Edit Categories
+                        </label>
+                        <p className="permission-description">
+                          Create and modify categories
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('categories', 'change_status')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("categories", "change_status")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.categories?.change_status === "Y"}
+                          checked={
+                            module_permissions?.categories?.change_status ===
+                            "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Change Status</label>
-                        <p className="permission-description">Activate/deactivate categories</p>
+                        <label className="permission-label">
+                          Change Status
+                        </label>
+                        <p className="permission-description">
+                          Activate/deactivate categories
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('categories', 'filter')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("categories", "filter")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.categories?.filter === "Y"}
+                          checked={
+                            module_permissions?.categories?.filter === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Filter Categories</label>
-                        <p className="permission-description">Search and filter category data</p>
+                        <label className="permission-label">
+                          Filter Categories
+                        </label>
+                        <p className="permission-description">
+                          Search and filter category data
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -947,8 +1082,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('subCategories')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() =>
+                        handleCheckModulePermissions("subCategories")
+                      }
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -956,8 +1093,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('subCategories')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() =>
+                        handleUncheckModulePermissions("subCategories")
+                      }
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -966,65 +1105,108 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('subCategories', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("subCategories", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.subCategories?.list === "Y"}
+                          checked={
+                            module_permissions?.subCategories?.list === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">View Sub-Categories</label>
-                        <p className="permission-description">View sub-category list and details</p>
+                        <label className="permission-label">
+                          View Sub-Categories
+                        </label>
+                        <p className="permission-description">
+                          View sub-category list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('subCategories', 'add_edit')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("subCategories", "add_edit")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.subCategories?.add_edit === "Y"}
+                          checked={
+                            module_permissions?.subCategories?.add_edit === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Add/Edit Sub-Categories</label>
-                        <p className="permission-description">Create and modify sub-categories</p>
+                        <label className="permission-label">
+                          Add/Edit Sub-Categories
+                        </label>
+                        <p className="permission-description">
+                          Create and modify sub-categories
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('subCategories', 'change_status')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("subCategories", "change_status")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.subCategories?.change_status === "Y"}
+                          checked={
+                            module_permissions?.subCategories?.change_status ===
+                            "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Change Status</label>
-                        <p className="permission-description">Activate/deactivate sub-categories</p>
+                        <label className="permission-label">
+                          Change Status
+                        </label>
+                        <p className="permission-description">
+                          Activate/deactivate sub-categories
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('subCategories', 'filter')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("subCategories", "filter")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.subCategories?.filter === "Y"}
+                          checked={
+                            module_permissions?.subCategories?.filter === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Filter Sub-Categories</label>
-                        <p className="permission-description">Search and filter sub-category data</p>
+                        <label className="permission-label">
+                          Filter Sub-Categories
+                        </label>
+                        <p className="permission-description">
+                          Search and filter sub-category data
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1042,8 +1224,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('banners')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleCheckModulePermissions("banners")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -1051,8 +1233,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('banners')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleUncheckModulePermissions("banners")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -1061,7 +1243,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('banners', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("banners", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1071,45 +1256,70 @@ const handleUncheckModulePermissions = (moduleName) => {
                       </div>
                       <div className="permission-content">
                         <label className="permission-label">View Banners</label>
-                        <p className="permission-description">View banner list and details</p>
+                        <p className="permission-description">
+                          View banner list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('banners', 'add_edit')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("banners", "add_edit")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.banners?.add_edit === "Y"}
+                          checked={
+                            module_permissions?.banners?.add_edit === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Add/Edit Banners</label>
-                        <p className="permission-description">Create and modify banners</p>
+                        <label className="permission-label">
+                          Add/Edit Banners
+                        </label>
+                        <p className="permission-description">
+                          Create and modify banners
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('banners', 'change_status')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("banners", "change_status")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.banners?.change_status === "Y"}
+                          checked={
+                            module_permissions?.banners?.change_status === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Change Status</label>
-                        <p className="permission-description">Activate/deactivate banners</p>
+                        <label className="permission-label">
+                          Change Status
+                        </label>
+                        <p className="permission-description">
+                          Activate/deactivate banners
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('banners', 'filter')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("banners", "filter")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1118,8 +1328,12 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Filter Banners</label>
-                        <p className="permission-description">Search and filter banner data</p>
+                        <label className="permission-label">
+                          Filter Banners
+                        </label>
+                        <p className="permission-description">
+                          Search and filter banner data
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1137,8 +1351,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('faqs')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleCheckModulePermissions("faqs")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -1146,8 +1360,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('faqs')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleUncheckModulePermissions("faqs")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -1156,7 +1370,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('faqs', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("faqs", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1166,13 +1383,18 @@ const handleUncheckModulePermissions = (moduleName) => {
                       </div>
                       <div className="permission-content">
                         <label className="permission-label">View FAQs</label>
-                        <p className="permission-description">View FAQ list and details</p>
+                        <p className="permission-description">
+                          View FAQ list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('faqs', 'add_edit')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("faqs", "add_edit")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1181,30 +1403,46 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Add/Edit FAQs</label>
-                        <p className="permission-description">Create and modify FAQs</p>
+                        <label className="permission-label">
+                          Add/Edit FAQs
+                        </label>
+                        <p className="permission-description">
+                          Create and modify FAQs
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('faqs', 'change_status')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("faqs", "change_status")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.faqs?.change_status === "Y"}
+                          checked={
+                            module_permissions?.faqs?.change_status === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Change Status</label>
-                        <p className="permission-description">Activate/deactivate FAQs</p>
+                        <label className="permission-label">
+                          Change Status
+                        </label>
+                        <p className="permission-description">
+                          Activate/deactivate FAQs
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('faqs', 'delete')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("faqs", "delete")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1214,13 +1452,18 @@ const handleUncheckModulePermissions = (moduleName) => {
                       </div>
                       <div className="permission-content">
                         <label className="permission-label">Delete FAQs</label>
-                        <p className="permission-description">Delete FAQs from the system</p>
+                        <p className="permission-description">
+                          Delete FAQs from the system
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('faqs', 'filter')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("faqs", "filter")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1230,7 +1473,9 @@ const handleUncheckModulePermissions = (moduleName) => {
                       </div>
                       <div className="permission-content">
                         <label className="permission-label">Filter FAQs</label>
-                        <p className="permission-description">Search and filter FAQ data</p>
+                        <p className="permission-description">
+                          Search and filter FAQ data
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1248,8 +1493,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('contact_shops')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() =>
+                        handleCheckModulePermissions("contact_shops")
+                      }
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -1257,8 +1504,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('contact_shops')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() =>
+                        handleUncheckModulePermissions("contact_shops")
+                      }
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -1267,81 +1516,135 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('contact_shops', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("contact_shops", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.contact_shops?.list === "Y"}
+                          checked={
+                            module_permissions?.contact_shops?.list === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">View Contact Shops</label>
-                        <p className="permission-description">View contact shop list and details</p>
+                        <label className="permission-label">
+                          View Contact Shops
+                        </label>
+                        <p className="permission-description">
+                          View contact shop list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('contact_shops', 'add_edit')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("contact_shops", "add_edit")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.contact_shops?.add_edit === "Y"}
+                          checked={
+                            module_permissions?.contact_shops?.add_edit === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Add/Edit Contact Shops</label>
-                        <p className="permission-description">Create and modify contact shops</p>
+                        <label className="permission-label">
+                          Add/Edit Contact Shops
+                        </label>
+                        <p className="permission-description">
+                          Create and modify contact shops
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('contact_shops', 'change_status')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("contact_shops", "change_status")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.contact_shops?.change_status === "Y"}
+                          checked={
+                            module_permissions?.contact_shops?.change_status ===
+                            "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Change Status</label>
-                        <p className="permission-description">Activate/deactivate contact shops</p>
+                        <label className="permission-label">
+                          Change Status
+                        </label>
+                        <p className="permission-description">
+                          Activate/deactivate contact shops
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('contact_shops', 'delete')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("contact_shops", "delete")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.contact_shops?.delete === "Y"}
+                          checked={
+                            module_permissions?.contact_shops?.delete === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Delete Contact Shops</label>
-                        <p className="permission-description">Delete contact shops from the system</p>
+                        <label className="permission-label">
+                          Delete Contact Shops
+                        </label>
+                        <p className="permission-description">
+                          Delete contact shops from the system
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('contact_shops', 'filter')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("contact_shops", "filter")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.contact_shops?.filter === "Y"}
+                          checked={
+                            module_permissions?.contact_shops?.filter === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Filter Contact Shops</label>
-                        <p className="permission-description">Search and filter contact shop data</p>
+                        <label className="permission-label">
+                          Filter Contact Shops
+                        </label>
+                        <p className="permission-description">
+                          Search and filter contact shop data
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1359,8 +1662,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('articles')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleCheckModulePermissions("articles")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -1368,8 +1671,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('articles')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleUncheckModulePermissions("articles")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -1378,7 +1681,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('articles', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("articles", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1387,46 +1693,73 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">View Articles</label>
-                        <p className="permission-description">View article list and details</p>
+                        <label className="permission-label">
+                          View Articles
+                        </label>
+                        <p className="permission-description">
+                          View article list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('articles', 'add_edit')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("articles", "add_edit")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.articles?.add_edit === "Y"}
+                          checked={
+                            module_permissions?.articles?.add_edit === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Add/Edit Articles</label>
-                        <p className="permission-description">Create and modify articles</p>
+                        <label className="permission-label">
+                          Add/Edit Articles
+                        </label>
+                        <p className="permission-description">
+                          Create and modify articles
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('articles', 'change_status')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("articles", "change_status")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.articles?.change_status === "Y"}
+                          checked={
+                            module_permissions?.articles?.change_status === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Change Status</label>
-                        <p className="permission-description">Activate/deactivate articles</p>
+                        <label className="permission-label">
+                          Change Status
+                        </label>
+                        <p className="permission-description">
+                          Activate/deactivate articles
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('articles', 'delete')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("articles", "delete")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1435,14 +1768,21 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Delete Articles</label>
-                        <p className="permission-description">Delete articles from the system</p>
+                        <label className="permission-label">
+                          Delete Articles
+                        </label>
+                        <p className="permission-description">
+                          Delete articles from the system
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('articles', 'filter')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("articles", "filter")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1451,8 +1791,12 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Filter Articles</label>
-                        <p className="permission-description">Search and filter article data</p>
+                        <label className="permission-label">
+                          Filter Articles
+                        </label>
+                        <p className="permission-description">
+                          Search and filter article data
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1470,8 +1814,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('ingredients')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() =>
+                        handleCheckModulePermissions("ingredients")
+                      }
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -1479,8 +1825,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('ingredients')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() =>
+                        handleUncheckModulePermissions("ingredients")
+                      }
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -1489,81 +1837,131 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('ingredients', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("ingredients", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.ingredients?.list === "Y"}
+                          checked={
+                            module_permissions?.ingredients?.list === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">View Ingredients</label>
-                        <p className="permission-description">View ingredient list and details</p>
+                        <label className="permission-label">
+                          View Ingredients
+                        </label>
+                        <p className="permission-description">
+                          View ingredient list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('ingredients', 'add_edit')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("ingredients", "add_edit")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.ingredients?.add_edit === "Y"}
+                          checked={
+                            module_permissions?.ingredients?.add_edit === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Add/Edit Ingredients</label>
-                        <p className="permission-description">Create and modify ingredients</p>
+                        <label className="permission-label">
+                          Add/Edit Ingredients
+                        </label>
+                        <p className="permission-description">
+                          Create and modify ingredients
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('ingredients', 'change_status')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("ingredients", "change_status")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.ingredients?.change_status === "Y"}
+                          checked={
+                            module_permissions?.ingredients?.change_status ===
+                            "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Change Status</label>
-                        <p className="permission-description">Activate/deactivate ingredients</p>
+                        <label className="permission-label">
+                          Change Status
+                        </label>
+                        <p className="permission-description">
+                          Activate/deactivate ingredients
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('ingredients', 'delete')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("ingredients", "delete")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.ingredients?.delete === "Y"}
+                          checked={
+                            module_permissions?.ingredients?.delete === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Delete Ingredients</label>
-                        <p className="permission-description">Delete ingredients from the system</p>
+                        <label className="permission-label">
+                          Delete Ingredients
+                        </label>
+                        <p className="permission-description">
+                          Delete ingredients from the system
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('ingredients', 'filter')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("ingredients", "filter")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.ingredients?.filter === "Y"}
+                          checked={
+                            module_permissions?.ingredients?.filter === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Filter Ingredients</label>
-                        <p className="permission-description">Search and filter ingredient data</p>
+                        <label className="permission-label">
+                          Filter Ingredients
+                        </label>
+                        <p className="permission-description">
+                          Search and filter ingredient data
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1581,8 +1979,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('events')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleCheckModulePermissions("events")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -1590,8 +1988,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('events')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleUncheckModulePermissions("events")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -1600,7 +1998,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('events', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("events", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1610,13 +2011,18 @@ const handleUncheckModulePermissions = (moduleName) => {
                       </div>
                       <div className="permission-content">
                         <label className="permission-label">View Events</label>
-                        <p className="permission-description">View event list and details</p>
+                        <p className="permission-description">
+                          View event list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('events', 'add_edit')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("events", "add_edit")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1625,30 +2031,48 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Add/Edit Events</label>
-                        <p className="permission-description">Create and modify events</p>
+                        <label className="permission-label">
+                          Add/Edit Events
+                        </label>
+                        <p className="permission-description">
+                          Create and modify events
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('events', 'change_status')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("events", "change_status")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.events?.change_status === "Y"}
+                          checked={
+                            module_permissions?.events?.change_status === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Change Status</label>
-                        <p className="permission-description">Activate/deactivate events</p>
+                        <label className="permission-label">
+                          Change Status
+                        </label>
+                        <p className="permission-description">
+                          Activate/deactivate events
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('events', 'delete')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("events", "delete")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1657,14 +2081,21 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Delete Events</label>
-                        <p className="permission-description">Delete events from the system</p>
+                        <label className="permission-label">
+                          Delete Events
+                        </label>
+                        <p className="permission-description">
+                          Delete events from the system
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('events', 'filter')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("events", "filter")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1673,8 +2104,12 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Filter Events</label>
-                        <p className="permission-description">Search and filter event data</p>
+                        <label className="permission-label">
+                          Filter Events
+                        </label>
+                        <p className="permission-description">
+                          Search and filter event data
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1692,8 +2127,8 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('promocodes')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() => handleCheckModulePermissions("promocodes")}
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -1701,8 +2136,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('promocodes')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() =>
+                        handleUncheckModulePermissions("promocodes")
+                      }
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -1711,7 +2148,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('promocodes', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("promocodes", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
@@ -1720,56 +2160,90 @@ const handleUncheckModulePermissions = (moduleName) => {
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">View Promocodes</label>
-                        <p className="permission-description">View promocode list and details</p>
+                        <label className="permission-label">
+                          View Promocodes
+                        </label>
+                        <p className="permission-description">
+                          View promocode list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('promocodes', 'add_edit')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("promocodes", "add_edit")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.promocodes?.add_edit === "Y"}
+                          checked={
+                            module_permissions?.promocodes?.add_edit === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Add/Edit Promocodes</label>
-                        <p className="permission-description">Create and modify promocodes</p>
+                        <label className="permission-label">
+                          Add/Edit Promocodes
+                        </label>
+                        <p className="permission-description">
+                          Create and modify promocodes
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('promocodes', 'change_status')}>
+                    <div
+                      className="permission-item"
+                      onClick={() =>
+                        handlePermission("promocodes", "change_status")
+                      }
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.promocodes?.change_status === "Y"}
+                          checked={
+                            module_permissions?.promocodes?.change_status ===
+                            "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Change Status</label>
-                        <p className="permission-description">Activate/deactivate promocodes</p>
+                        <label className="permission-label">
+                          Change Status
+                        </label>
+                        <p className="permission-description">
+                          Activate/deactivate promocodes
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('promocodes', 'filter')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("promocodes", "filter")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.promocodes?.filter === "Y"}
+                          checked={
+                            module_permissions?.promocodes?.filter === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Filter Promocodes</label>
-                        <p className="permission-description">Search and filter promocode data</p>
+                        <label className="permission-label">
+                          Filter Promocodes
+                        </label>
+                        <p className="permission-description">
+                          Search and filter promocode data
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1787,8 +2261,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleCheckModulePermissions('transaction')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() =>
+                        handleCheckModulePermissions("transaction")
+                      }
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <CheckCircleOutlined />
                       Check All
@@ -1796,8 +2272,10 @@ const handleUncheckModulePermissions = (moduleName) => {
                     <button
                       type="button"
                       className="action-button secondary"
-                      onClick={() => handleUncheckModulePermissions('transaction')}
-                      style={{ fontSize: '12px', padding: '4px 12px' }}
+                      onClick={() =>
+                        handleUncheckModulePermissions("transaction")
+                      }
+                      style={{ fontSize: "12px", padding: "4px 12px" }}
                     >
                       <InfoCircleOutlined />
                       Uncheck All
@@ -1806,33 +2284,49 @@ const handleUncheckModulePermissions = (moduleName) => {
                 </div>
                 <div className="row">
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('transaction', 'list')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("transaction", "list")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.transaction?.list === "Y"}
+                          checked={
+                            module_permissions?.transaction?.list === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
                         <label className="permission-label">View Orders</label>
-                        <p className="permission-description">View order list and details</p>
+                        <p className="permission-description">
+                          View order list and details
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-lg-4 col-md-6 col-12 mb-3">
-                    <div className="permission-item" onClick={() => handlePermission('transaction', 'filter')}>
+                    <div
+                      className="permission-item"
+                      onClick={() => handlePermission("transaction", "filter")}
+                    >
                       <div className="permission-checkbox">
                         <input
                           type="checkbox"
-                          checked={module_permissions?.transaction?.filter === "Y"}
+                          checked={
+                            module_permissions?.transaction?.filter === "Y"
+                          }
                           readOnly
                         />
                       </div>
                       <div className="permission-content">
-                        <label className="permission-label">Filter Orders</label>
-                        <p className="permission-description">Search and filter order data</p>
+                        <label className="permission-label">
+                          Filter Orders
+                        </label>
+                        <p className="permission-description">
+                          Search and filter order data
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1846,7 +2340,13 @@ const handleUncheckModulePermissions = (moduleName) => {
                   <button
                     type="button"
                     className="action-button secondary"
-                    onClick={() => navigate(loginUserData?.admin_type === 'Super Admin' ? "/sub-admin/list" : "/admin/dashboard")}
+                    onClick={() =>
+                      navigate(
+                        loginUserData?.admin_type === "Super Admin"
+                          ? "/sub-admin/list"
+                          : "/admin/dashboard"
+                      )
+                    }
                   >
                     Cancel
                   </button>
@@ -1863,7 +2363,9 @@ const handleUncheckModulePermissions = (moduleName) => {
                     ) : (
                       <>
                         <SaveOutlined />
-                        {ADDEDITDATA?.id ? "Update Administrator" : "Create Administrator"}
+                        {ADDEDITDATA?.id
+                          ? "Update Administrator"
+                          : "Create Administrator"}
                       </>
                     )}
                   </button>

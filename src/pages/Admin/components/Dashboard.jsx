@@ -1,17 +1,25 @@
 import "../main_dashboard.css";
 import Top_navbar from "./Top_navbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faUsers, 
-  faShoppingCart, 
-  faBox, 
+import {
+  faUsers,
+  faShoppingCart,
+  faBox,
   faChartLine,
   faDollarSign,
   faTruck,
   faLeaf,
-  faClock
+  faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -25,7 +33,7 @@ const Dashboard = () => {
       icon: faUsers,
       color: "#39B54A",
       bgColor: "rgba(57, 181, 74, 0.1)",
-      onClick: () => navigate("/admin/users/list")
+      onClick: () => navigate("/admin/users/list"),
     },
     {
       title: "Today's Orders",
@@ -35,7 +43,7 @@ const Dashboard = () => {
       icon: faShoppingCart,
       color: "#3B82F6",
       bgColor: "rgba(59, 130, 246, 0.1)",
-      onClick: () => navigate("/admin/orders/list")
+      onClick: () => navigate("/admin/orders/list"),
     },
     {
       title: "Total Products",
@@ -45,7 +53,7 @@ const Dashboard = () => {
       icon: faBox,
       color: "#F59E0B",
       bgColor: "rgba(245, 158, 11, 0.1)",
-      onClick: () => navigate("/admin/products/list")
+      onClick: () => navigate("/admin/products/list"),
     },
     {
       title: "Total Promo Codes",
@@ -55,8 +63,8 @@ const Dashboard = () => {
       icon: faDollarSign,
       color: "#10B981",
       bgColor: "rgba(16, 185, 129, 0.1)",
-      onClick: () => navigate("/admin/promocodes/list")
-    }
+      onClick: () => navigate("/admin/promocodes/list"),
+    },
   ];
 
   const quickActions = [
@@ -65,29 +73,67 @@ const Dashboard = () => {
       description: "Add fresh organic products to inventory",
       icon: faLeaf,
       color: "#39B54A",
-      onClick: () => navigate("/admin/products/addeditdata")
+      onClick: () => navigate("/admin/products/addeditdata"),
     },
     {
       title: "View Orders",
       description: "Check pending and completed orders",
       icon: faTruck,
       color: "#3B82F6",
-      onClick: () => navigate("/admin/orders/list")
+      onClick: () => navigate("/admin/orders/list"),
     },
     {
       title: "Customer Management",
       description: "Manage customer accounts and data",
       icon: faUsers,
       color: "#8B5CF6",
-      onClick: () => navigate("/admin/users/list")
+      onClick: () => navigate("/admin/users/list"),
     },
     {
       title: "Analytics",
       description: "View store performance and insights",
       icon: faChartLine,
       color: "#F59E0B",
-      onClick: () => navigate("/admin/dashboard")
-    }
+      onClick: () => navigate("/admin/dashboard"),
+    },
+  ];
+
+  const data = [
+    {
+      name: "MON",
+      products: 2400,
+      amt: 2400,
+    },
+    {
+      name: "TUE",
+      products: 1398,
+      amt: 2210,
+    },
+    {
+      name: "WED",
+      products: 9800,
+      amt: 2290,
+    },
+    {
+      name: "THU",
+      products: 3908,
+      amt: 2000,
+    },
+    {
+      name: "FRI",
+      products: 4800,
+      amt: 2181,
+    },
+    {
+      name: "SAT",
+      products: 3800,
+      amt: 2500,
+    },
+    {
+      name: "SUN",
+      products: 4300,
+      amt: 2100,
+    },
   ];
 
   return (
@@ -103,7 +149,10 @@ const Dashboard = () => {
           {statsCards.map((card, index) => (
             <div key={index} className="stat-card" onClick={card.onClick}>
               <div className="stat-card-header">
-                <div className="stat-icon" style={{ backgroundColor: card.bgColor, color: card.color }}>
+                <div
+                  className="stat-icon"
+                  style={{ backgroundColor: card.bgColor, color: card.color }}
+                >
                   <FontAwesomeIcon icon={card.icon} />
                 </div>
                 <div className={`stat-change ${card.changeType}`}>
@@ -123,7 +172,11 @@ const Dashboard = () => {
             <h2 className="section-title">Quick Actions</h2>
             <div className="quick-actions-grid">
               {quickActions.map((action, index) => (
-                <div key={index} className="quick-action-card" onClick={action.onClick}>
+                <div
+                  key={index}
+                  className="quick-action-card"
+                  onClick={action.onClick}
+                >
                   <div className="action-icon" style={{ color: action.color }}>
                     <FontAwesomeIcon icon={action.icon} />
                   </div>
@@ -136,6 +189,41 @@ const Dashboard = () => {
             </div>
           </div>
 
+          <div className="chart-wrapper">
+            <h2 className="section-title">Products Sell</h2>
+            <AreaChart
+              style={{
+                width: "100%",
+                // maxWidth: "700px",
+                maxHeight: "700vh",
+                aspectRatio: 1.618,
+              }}
+              responsive
+              data={data}
+              margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#39b54a" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#39b54a" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis width="auto" />
+              <Tooltip />
+              <Area
+                type="monotone"
+                dataKey="products"
+                stroke="#39b54a"
+                fillOpacity={1}
+                fill="url(#colorPv)"
+                isAnimationActive={true}
+              />
+            </AreaChart>
+
+          </div>
+
           <div className="recent-activity-section">
             <h2 className="section-title">Recent Activity</h2>
             <div className="activity-card">
@@ -144,7 +232,9 @@ const Dashboard = () => {
                   <FontAwesomeIcon icon={faShoppingCart} />
                 </div>
                 <div className="activity-content">
-                  <p className="activity-text">New order #1234 received from John Doe</p>
+                  <p className="activity-text">
+                    New order #1234 received from John Doe
+                  </p>
                   <span className="activity-time">2 minutes ago</span>
                 </div>
               </div>
@@ -153,7 +243,9 @@ const Dashboard = () => {
                   <FontAwesomeIcon icon={faBox} />
                 </div>
                 <div className="activity-content">
-                  <p className="activity-text">Organic Tomatoes stock updated</p>
+                  <p className="activity-text">
+                    Organic Tomatoes stock updated
+                  </p>
                   <span className="activity-time">15 minutes ago</span>
                 </div>
               </div>
@@ -162,7 +254,9 @@ const Dashboard = () => {
                   <FontAwesomeIcon icon={faUsers} />
                 </div>
                 <div className="activity-content">
-                  <p className="activity-text">New customer Sarah Wilson registered</p>
+                  <p className="activity-text">
+                    New customer Sarah Wilson registered
+                  </p>
                   <span className="activity-time">1 hour ago</span>
                 </div>
               </div>
@@ -171,7 +265,9 @@ const Dashboard = () => {
                   <FontAwesomeIcon icon={faTruck} />
                 </div>
                 <div className="activity-content">
-                  <p className="activity-text">Order #1230 marked as delivered</p>
+                  <p className="activity-text">
+                    Order #1230 marked as delivered
+                  </p>
                   <span className="activity-time">2 hours ago</span>
                 </div>
               </div>

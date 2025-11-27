@@ -330,10 +330,10 @@ export default function UsersList() {
       <div className="admin-page-container" ref={targetRef}>
         <Top_navbar title="Customers" />
         
-        <div className="page-header">
-          {/* <h1 className="page-title">Customer Management</h1> */}
-          {/* <p className="page-subtitle">Manage your customers, view their details, and track their activity</p> */}
-        </div>
+        {/* <div className="page-header">
+          <h1 className="page-title">Customer Management</h1>
+          <p className="page-subtitle">Manage your customers, view their details, and track their activity</p>
+        </div> */}
 
         <div className="content-card">
           <div className="tabs-header">

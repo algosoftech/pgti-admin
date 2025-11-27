@@ -428,10 +428,10 @@ export default function OrdersList() {
       <div className="admin-page-container" ref={targetRef}>
         <Top_navbar title="Orders" />
         
-        <div className="page-header">
-          {/* <h1 className="page-title">Order Management</h1> */}
-          {/* <p className="page-subtitle">Manage orders, view details, and track order status</p> */}
-        </div>
+        {/* <div className="page-header">
+          <h1 className="page-title">Order Management</h1>
+          <p className="page-subtitle">Manage orders, view details, and track order status</p>
+        </div> */}
 
         <div className="content-card">
           <div className="tabs-header">

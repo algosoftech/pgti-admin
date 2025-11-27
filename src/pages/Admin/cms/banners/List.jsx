@@ -245,10 +245,10 @@ export default function BannerList() {
       <div className="admin-page-container" ref={targetRef}>
         <Top_navbar title="Banners" />
         
-        <div className="page-header">
-          {/* <h1 className="page-title">Banner Management</h1> */}
-          {/* <p className="page-subtitle">Manage your banners, view their details, and track their activity</p> */}
-        </div>
+        {/* <div className="page-header">
+          <h1 className="page-title">Banner Management</h1>
+          <p className="page-subtitle">Manage your banners, view their details, and track their activity</p>
+        </div> */}
 
         <div className="content-card">
           <div className="tabs-header">

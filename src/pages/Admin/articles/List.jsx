@@ -17,7 +17,11 @@ import EnhancedTable from "../../../components/EnhancedTable/EnhancedTable";
 
 import { useNavigate } from "react-router-dom";
 
-import { InfoCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  InfoCircleOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 
 import moment from "moment";
 import { usePermissions } from "../../../controllers/PermissionContext";
@@ -54,7 +58,7 @@ export default function ArticleList() {
   const PERMISSION = usePermissions("articles");
   const [activeTab, setActiveTab] = useState("all");
   const [categories, setCategories] = useState([]);
-  
+
   // Server-side filter state
   const [serverColumnFilters, setServerColumnFilters] = useState({
     title: "",
@@ -91,7 +95,7 @@ export default function ArticleList() {
     setActiveTab(tab);
     dispatch(setShowRequest(tab === "all" ? "" : tab.toUpperCase()));
   };
-  
+
   const handleEdit = async (item = {}) => {
     navigate("/admin/articles/addeditdata", { state: item });
   };
@@ -100,13 +104,13 @@ export default function ArticleList() {
   const columns = useMemo(
     () => [
       {
-        id: 'select',
+        id: "select",
         header: ({ table }) => (
           <input
             type="checkbox"
             checked={table.getIsAllRowsSelected()}
             onChange={table.getToggleAllRowsSelectedHandler()}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           />
         ),
         cell: ({ row }) => (
@@ -114,7 +118,7 @@ export default function ArticleList() {
             type="checkbox"
             checked={row.getIsSelected()}
             onChange={row.getToggleSelectedHandler()}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           />
         ),
         size: 60,
@@ -123,8 +127,8 @@ export default function ArticleList() {
         enableGlobalFilter: false,
       },
       {
-        accessorKey: 'index',
-        header: '#',
+        accessorKey: "index",
+        header: "#",
         cell: ({ row }) => row.index + SKIP + 1,
         size: 110,
         enableSorting: true,
@@ -132,17 +136,19 @@ export default function ArticleList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'title',
-        header: 'Title',
-        cell: ({ getValue }) => <div className="font-weight-600">{getValue() || "N/A"}</div>,
+        accessorKey: "title",
+        header: "Title",
+        cell: ({ getValue }) => (
+          <div className="font-weight-600">{getValue() || "N/A"}</div>
+        ),
         size: 250,
         enableSorting: true,
         enableColumnFilter: true,
         enableHiding: true,
       },
       {
-        accessorKey: 'sort_description',
-        header: 'Short Description',
+        accessorKey: "sort_description",
+        header: "Short Description",
         cell: ({ getValue }) => {
           const desc = getValue() || "N/A";
           return (
@@ -158,8 +164,8 @@ export default function ArticleList() {
         enableColumnFilter: false,
       },
       {
-        accessorKey: 'image',
-        header: 'Image',
+        accessorKey: "image",
+        header: "Image",
         cell: ({ getValue, row }) => {
           const image = getValue();
           return image ? (
@@ -184,8 +190,8 @@ export default function ArticleList() {
         enableColumnFilter: false,
       },
       {
-        accessorKey: 'category_name',
-        header: 'Category',
+        accessorKey: "category_name",
+        header: "Category",
         cell: ({ getValue }) => (
           <div className="font-weight-600">
             {getValue() ? getValue() : "N/A"}
@@ -197,20 +203,29 @@ export default function ArticleList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'tags',
-        header: 'Tags',
+        accessorKey: "tags",
+        header: "Tags",
         cell: ({ getValue }) => {
           const tags = getValue();
           if (!tags) return <span className="text-muted">N/A</span>;
-          const tagArray = typeof tags === 'string' ? tags.split(',').map(t => t.trim()) : tags;
+          const tagArray =
+            typeof tags === "string"
+              ? tags.split(",").map((t) => t.trim())
+              : tags;
           return (
             <div style={{ maxWidth: "200px" }}>
               {tagArray.slice(0, 2).map((tag, idx) => (
-                <span key={idx} className="tag-badge" style={{ marginRight: "4px", marginBottom: "4px" }}>
+                <span
+                  key={idx}
+                  className="tag-badge"
+                  style={{ marginRight: "4px", marginBottom: "4px" }}
+                >
                   {tag}
                 </span>
               ))}
-              {tagArray.length > 2 && <span className="text-muted">+{tagArray.length - 2}</span>}
+              {tagArray.length > 2 && (
+                <span className="text-muted">+{tagArray.length - 2}</span>
+              )}
             </div>
           );
         },
@@ -220,13 +235,18 @@ export default function ArticleList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'created_at',
-        header: 'Created',
-        accessorFn: (row) => moment(row.created_at).format("MMM DD, YYYY HH:mm"),
+        accessorKey: "created_at",
+        header: "Created",
+        accessorFn: (row) =>
+          moment(row.created_at).format("MMM DD, YYYY HH:mm"),
         cell: ({ row }) => (
           <>
-            <div className="text-muted">{moment(row.original.created_at).format("MMM DD, YYYY")}</div>
-            <div className="text-muted small">{moment(row.original.created_at).format("HH:mm")}</div>
+            <div className="text-muted">
+              {moment(row.original.created_at).format("MMM DD, YYYY")}
+            </div>
+            <div className="text-muted small">
+              {moment(row.original.created_at).format("HH:mm")}
+            </div>
           </>
         ),
         size: 250,
@@ -237,11 +257,15 @@ export default function ArticleList() {
         enableHiding: true,
       },
       {
-        accessorKey: 'status',
-        header: 'Status',
-        accessorFn: (row) => row.status === "A" ? "Active" : "Inactive",
+        accessorKey: "status",
+        header: "Status",
+        accessorFn: (row) => (row.status === "A" ? "Active" : "Inactive"),
         cell: ({ row }) => (
-          <span className={`status-badge ${row.original.status === "A" ? "active" : "inactive"}`}>
+          <span
+            className={`status-badge ${
+              row.original.status === "A" ? "active" : "inactive"
+            }`}
+          >
             {row.original.status === "A" ? "Active" : "Inactive"}
           </span>
         ),
@@ -253,13 +277,20 @@ export default function ArticleList() {
         enableHiding: true,
       },
       {
-        id: 'actions',
-        header: 'Actions',
+        id: "actions",
+        header: "Actions",
         cell: ({ row }) => {
           const item = row.original;
-          return (PERMISSION?.add_edit === "Y" || PERMISSION?.change_status === "Y" || PERMISSION?.delete === "Y" || PERMISSION?.fullAccess === "Y") ? (
+          return PERMISSION?.add_edit === "Y" ||
+            PERMISSION?.change_status === "Y" ||
+            PERMISSION?.delete === "Y" ||
+            PERMISSION?.fullAccess === "Y" ? (
             <div className="action-dropdown">
-              <Dropdown overlay={() => dropdownMenu(item)} placement="bottomRight" trigger={['click']}>
+              <Dropdown
+                overlay={() => dropdownMenu(item)}
+                placement="bottomRight"
+                trigger={["click"]}
+              >
                 <button className="action-dropdown-trigger">
                   <FontAwesomeIcon icon={faEllipsis} />
                 </button>
@@ -280,13 +311,17 @@ export default function ArticleList() {
 
   /*********************************************************
    *  This function is use to fetch articles list
-   *********************************************************/ 
+   *********************************************************/
   const getList = () => {
     const options = {
       type: "",
       condition: {
-        ...(serverColumnFilters.title ? { title: serverColumnFilters.title } : null),
-        ...(serverColumnFilters.category_name ? { category_name: serverColumnFilters.category_name } : null),
+        ...(serverColumnFilters.title
+          ? { title: serverColumnFilters.title }
+          : null),
+        ...(serverColumnFilters.category_name
+          ? { category_name: serverColumnFilters.category_name }
+          : null),
         ...(showRequest ? { status: showRequest } : null),
       },
       skip: SKIP ? SKIP : 0,
@@ -309,7 +344,7 @@ export default function ArticleList() {
       });
       return;
     }
-    
+
     if (!status || status === "") {
       notification.open({
         message: "Oops!",
@@ -325,7 +360,7 @@ export default function ArticleList() {
       const result = await dispatch(
         changeArticleStatus({ editId: id, status })
       ).unwrap();
-      
+
       notification.open({
         message: "Success",
         description: result.message || `Status changed successfully.`,
@@ -333,13 +368,14 @@ export default function ArticleList() {
         icon: <CheckCircleOutlined style={{ color: "green" }} />,
         duration: 2,
       });
-      
+
       // Refresh the list after status change
       getList();
     } catch (error) {
       notification.open({
         message: "Oops!",
-        description: error || `Operation not perform yet! please try in some time.`,
+        description:
+          error || `Operation not perform yet! please try in some time.`,
         placement: "topRight",
         icon: <InfoCircleOutlined style={{ color: "red" }} />,
         duration: 2,
@@ -352,18 +388,20 @@ export default function ArticleList() {
    *********************************************************/
   const handleDelete = (item) => {
     Modal.confirm({
-      title: 'Are you sure you want to delete this article?',
+      title: "Are you sure you want to delete this article?",
       icon: <ExclamationCircleOutlined />,
-      content: `Title: ${item?.title?.substring(0, 50)}${item?.title?.length > 50 ? '...' : ''}`,
-      okText: 'Yes, Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
+      content: `Title: ${item?.title?.substring(0, 50)}${
+        item?.title?.length > 50 ? "..." : ""
+      }`,
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
       onOk: async () => {
         try {
           const result = await dispatch(
             deleteArticleAction({ editId: item.id })
           ).unwrap();
-          
+
           notification.open({
             message: "Success",
             description: result.message || `Article deleted successfully.`,
@@ -371,7 +409,7 @@ export default function ArticleList() {
             icon: <CheckCircleOutlined style={{ color: "green" }} />,
             duration: 2,
           });
-          
+
           // Refresh the list after delete
           getList();
         } catch (error) {
@@ -399,8 +437,9 @@ export default function ArticleList() {
             <span>Edit</span>
           </button>
         )}
-        {(PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y") && (
-          items?.status === "A" ? (
+        {(PERMISSION?.change_status === "Y" ||
+          PERMISSION?.fullAccess === "Y") &&
+          (items?.status === "A" ? (
             <button
               className="action-dropdown-item danger"
               onClick={() => {
@@ -420,8 +459,7 @@ export default function ArticleList() {
               <FontAwesomeIcon icon={faThumbsUp} />
               <span>Activate</span>
             </button>
-          )
-        )}
+          ))}
         {(PERMISSION?.delete === "Y" || PERMISSION?.fullAccess === "Y") && (
           <button
             className="action-dropdown-item danger"
@@ -461,7 +499,7 @@ export default function ArticleList() {
         behavior: "smooth",
       });
     }
-    window.scrollTo({top: 0,behavior: "smooth"});
+    window.scrollTo({ top: 0, behavior: "smooth" });
     document.title = "Farmer Store || Admin || Articles List";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showRequest, LIMIT]);
@@ -470,11 +508,11 @@ export default function ArticleList() {
     <>
       <div className="admin-page-container" ref={targetRef}>
         <Top_navbar title="Articles" />
-        
-        <div className="page-header">
-          {/* <h1 className="page-title">Article Management</h1> */}
-          {/* <p className="page-subtitle">Manage your articles, view their details, and track their activity</p> */}
-        </div>
+
+        {/* <div className="page-header">
+          <h1 className="page-title">Article Management</h1>
+          <p className="page-subtitle">Manage your articles, view their details, and track their activity</p>
+        </div> */}
 
         <div className="content-card">
           <div className="tabs-header">
@@ -507,8 +545,9 @@ export default function ArticleList() {
                 <FontAwesomeIcon icon={faRefresh} />
                 Refresh
               </button>
-              
-              {(PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y") && (
+
+              {(PERMISSION?.add_edit === "Y" ||
+                PERMISSION?.fullAccess === "Y") && (
                 <button
                   className="action-button primary"
                   onClick={() => handleEdit()}
@@ -556,4 +595,3 @@ export default function ArticleList() {
     </>
   );
 }
-

@@ -35,7 +35,7 @@ import EnhancedTable from "../../../components/EnhancedTable/EnhancedTable";
 
 /**
  * ProductList Component - Uses EnhancedTable for Advanced TanStack React Table Features
- * 
+ *
  * This component uses the reusable EnhancedTable component which provides:
  * 1. ✅ Column Sorting - Click column headers to sort (CLIENT-SIDE: ascending/descending)
  * 2. ✅ Column Resizing - Drag the right edge of column headers to resize
@@ -49,7 +49,7 @@ import EnhancedTable from "../../../components/EnhancedTable/EnhancedTable";
  * 10. ✅ Column Pinning - Freeze columns to left or right while scrolling
  * 11. ✅ Fullscreen Mode - Expand table to fill entire screen
  * 12. ✅ Column Visibility - Show/hide columns via modal
- * 
+ *
  * Filtering & Pagination modes:
  * - Global search: CLIENT-SIDE (instant, no API calls, searches loaded data)
  * - Column filters: SERVER-SIDE (debounced 500ms, sends to API)
@@ -79,7 +79,7 @@ export default function ProductList() {
   const [subCategories, setSubCategories] = useState([]);
   const PERMISSION = usePermissions("products");
   const [activeTab, setActiveTab] = useState("all");
-  
+
   // Filter state (server-side column filters)
   const [serverColumnFilters, setServerColumnFilters] = useState({
     title: "",
@@ -92,7 +92,7 @@ export default function ProductList() {
     setActiveTab(tab);
     dispatch(setShowRequest(tab === "all" ? "" : tab.toUpperCase()));
   };
-  
+
   const handleEdit = async (item = {}) => {
     navigate("/admin/products/addeditdata", { state: item });
   };
@@ -133,14 +133,14 @@ export default function ProductList() {
   const columns = useMemo(
     () => [
       {
-        id: 'select',
+        id: "select",
         header: ({ table }) => (
           <input
             type="checkbox"
             checked={table.getIsAllRowsSelected()}
             indeterminate={table.getIsSomeRowsSelected()}
             onChange={table.getToggleAllRowsSelectedHandler()}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           />
         ),
         cell: ({ row }) => (
@@ -149,7 +149,7 @@ export default function ProductList() {
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
             onChange={row.getToggleSelectedHandler()}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           />
         ),
         size: 60,
@@ -158,32 +158,30 @@ export default function ProductList() {
         enableGlobalFilter: false, // Don't search checkbox column
       },
       {
-        accessorKey: 'index',
-        header: '#',
+        accessorKey: "index",
+        header: "#",
         cell: ({ row }) => row.index + SKIP + 1,
         size: 100,
         enableSorting: true,
         enableGlobalFilter: false, // Don't search index column
       },
       {
-        accessorKey: 'title',
-        header: 'Product',
+        accessorKey: "title",
+        header: "Product",
         cell: ({ getValue }) => (
           <div className="font-weight-600">{getValue()}</div>
         ),
         size: 250,
         enableSorting: true,
-        enableColumnFilter: true, 
+        enableColumnFilter: true,
         enableResizing: true,
         enableGlobalFilter: true,
       },
       {
-        accessorKey: 'category_name',
-        header: 'Category',
+        accessorKey: "category_name",
+        header: "Category",
         cell: ({ getValue }) => (
-          <div className="font-weight-500">
-            {getValue()}
-          </div>
+          <div className="font-weight-500">{getValue()}</div>
         ),
         size: 180,
         enableSorting: true,
@@ -192,22 +190,20 @@ export default function ProductList() {
         enableGlobalFilter: true,
       },
       {
-        accessorKey: 'sub_category_name',
-        header: 'Sub-Category',
+        accessorKey: "sub_category_name",
+        header: "Sub-Category",
         cell: ({ getValue }) => (
-          <div className="font-weight-500">
-            {getValue()}
-          </div>
+          <div className="font-weight-500">{getValue()}</div>
         ),
         size: 220,
         enableSorting: true,
-        enableColumnFilter: true, 
+        enableColumnFilter: true,
         enableResizing: true,
         enableGlobalFilter: true,
       },
       {
-        accessorKey: 'image',
-        header: 'Image',
+        accessorKey: "image",
+        header: "Image",
         cell: ({ getValue, row }) => {
           const image = getValue();
           const imageArray = image ? JSON.parse(image) : [];
@@ -228,13 +224,14 @@ export default function ProductList() {
         },
         size: 100,
         enableSorting: false,
-        enableGlobalFilter: false, 
-        enableColumnFilter: false
+        enableGlobalFilter: false,
+        enableColumnFilter: false,
       },
       {
-        accessorKey: 'created_at',
-        header: 'Created',
-        accessorFn: (row) => moment(row.created_at).format("MMM DD, YYYY HH:mm"),
+        accessorKey: "created_at",
+        header: "Created",
+        accessorFn: (row) =>
+          moment(row.created_at).format("MMM DD, YYYY HH:mm"),
         cell: ({ row }) => {
           const date = row.original.created_at;
           return (
@@ -255,36 +252,38 @@ export default function ProductList() {
         enableGlobalFilter: true,
       },
       {
-        accessorKey: 'status',
-        header: 'Status',
-        accessorFn: (row) => row.status === "A" ? "Active" : "Inactive",
+        accessorKey: "status",
+        header: "Status",
+        accessorFn: (row) => (row.status === "A" ? "Active" : "Inactive"),
         cell: ({ row }) => {
           const status = row.original.status;
           return (
-            <span className={`status-badge ${status === "A" ? "active" : "inactive"}`}>
+            <span
+              className={`status-badge ${
+                status === "A" ? "active" : "inactive"
+              }`}
+            >
               {status === "A" ? "Active" : "Inactive"}
             </span>
           );
         },
         size: 120,
         enableSorting: true,
-        enableColumnFilter: false
+        enableColumnFilter: false,
       },
       {
-        id: 'actions',
-        header: 'Actions',
+        id: "actions",
+        header: "Actions",
         cell: ({ row }) => {
           const item = row.original;
-          return (
-            PERMISSION?.add_edit === "Y" || 
-            PERMISSION?.change_status === "Y" || 
-            PERMISSION?.fullAccess === "Y"
-          ) ? (
+          return PERMISSION?.add_edit === "Y" ||
+            PERMISSION?.change_status === "Y" ||
+            PERMISSION?.fullAccess === "Y" ? (
             <div className="action-dropdown">
               <Dropdown
                 overlay={() => dropdownMenu(item)}
                 placement="bottomRight"
-                trigger={['click']}
+                trigger={["click"]}
               >
                 <button className="action-dropdown-trigger">
                   <FontAwesomeIcon icon={faEllipsis} />
@@ -304,20 +303,21 @@ export default function ProductList() {
     [SKIP, categories, subCategories, PERMISSION]
   );
 
-
   /*********************************************************
    *  This function is use to fetch product list with server-side column filters
    *********************************************************/
   const getList = () => {
-    const {title, category_name, sub_category_name} = serverColumnFilters;
+    const { title, category_name, sub_category_name } = serverColumnFilters;
     const options = {
       type: "",
       condition: {
         // Server-side column filters
         ...(title ? { title: title } : null),
         ...(category_name ? { category_name: category_name } : null),
-        ...(sub_category_name ? { sub_category_name: sub_category_name } : null),
-        
+        ...(sub_category_name
+          ? { sub_category_name: sub_category_name }
+          : null),
+
         // Tab filter (status)
         ...(showRequest ? { status: showRequest } : null),
       },
@@ -331,9 +331,9 @@ export default function ProductList() {
     dispatch(setLimit(Number(limit)));
     // Scroll to top when limit changes
     if (targetRef.current) {
-    targetRef.current.scrollIntoView({
-      behavior: "smooth",
-    });
+      targetRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
     }
   };
 
@@ -351,7 +351,7 @@ export default function ProductList() {
       });
       return;
     }
-    
+
     if (!status || status === "") {
       notification.open({
         message: "Oops!",
@@ -367,7 +367,7 @@ export default function ProductList() {
       const result = await dispatch(
         changeProductStatus({ editId: id, status })
       ).unwrap();
-      
+
       notification.open({
         message: "Success",
         description: result.message || `Status changed successfully.`,
@@ -375,13 +375,14 @@ export default function ProductList() {
         icon: <CheckCircleOutlined style={{ color: "green" }} />,
         duration: 2,
       });
-      
+
       // Refresh the list after status change
       getList();
     } catch (error) {
       notification.open({
         message: "Oops!",
-        description: error || `Operation not perform yet! please try in some time.`,
+        description:
+          error || `Operation not perform yet! please try in some time.`,
         placement: "topRight",
         icon: <InfoCircleOutlined style={{ color: "red" }} />,
         duration: 2,
@@ -401,8 +402,9 @@ export default function ProductList() {
             <span>Edit</span>
           </button>
         )}
-        {(PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y") && (
-          items?.status === "A" ? (
+        {(PERMISSION?.change_status === "Y" ||
+          PERMISSION?.fullAccess === "Y") &&
+          (items?.status === "A" ? (
             <button
               className="action-dropdown-item danger"
               onClick={() => {
@@ -422,12 +424,10 @@ export default function ProductList() {
               <FontAwesomeIcon icon={faThumbsUp} />
               <span>Activate</span>
             </button>
-          )
-        )}
+          ))}
       </div>
     );
   };
-
 
   /*********************************************************
    *  Debounce effect for server-side COLUMN filters only
@@ -456,7 +456,7 @@ export default function ProductList() {
         behavior: "smooth",
       });
     }
-    window.scrollTo({top: 0,behavior: "smooth"});
+    window.scrollTo({ top: 0, behavior: "smooth" });
     document.title = "Farmer Store || Admin || Product's List";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showRequest, LIMIT]);
@@ -465,11 +465,11 @@ export default function ProductList() {
     <>
       <div className="admin-page-container" ref={targetRef}>
         <Top_navbar title="Products" />
-        
-        <div className="page-header">
-          {/* <h1 className="page-title">Product Management</h1> */}
-          {/* <p className="page-subtitle">Manage your products, view their details, and track their activity</p> */}
-        </div>
+
+        {/* <div className="page-header">
+          <h1 className="page-title">Product Management</h1>
+          <p className="page-subtitle">Manage your products, view their details, and track their activity</p>
+        </div> */}
 
         <div className="content-card">
           <div className="tabs-header">
@@ -496,7 +496,7 @@ export default function ProductList() {
 
             <div className="tabs-actions">
               <ShowData setLimit={handleLimitChange} limit={LIMIT} />
-              
+
               <button
                 className="action-button secondary"
                 onClick={() => getList()}
@@ -504,8 +504,9 @@ export default function ProductList() {
                 <FontAwesomeIcon icon={faRefresh} />
                 Refresh Data
               </button>
-              
-              {(PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y") && (
+
+              {(PERMISSION?.add_edit === "Y" ||
+                PERMISSION?.fullAccess === "Y") && (
                 <button
                   className="action-button primary"
                   onClick={() => handleEdit()}
@@ -553,4 +554,3 @@ export default function ProductList() {
     </>
   );
 }
-

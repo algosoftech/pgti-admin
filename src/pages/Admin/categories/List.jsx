@@ -340,10 +340,10 @@ export default function CategoryList() {
       <div className="admin-page-container" ref={targetRef}>
         <Top_navbar title="Categories" />
         
-        <div className="page-header">
-          {/* <h1 className="page-title">Category Management</h1> */}
-          {/* <p className="page-subtitle">Manage your categories, view their details, and track their activity</p> */}
-        </div>
+        {/* <div className="page-header">
+          <h1 className="page-title">Category Management</h1>
+          <p className="page-subtitle">Manage your categories, view their details, and track their activity</p>
+        </div> */}
 
         <div className="content-card">
           <div className="tabs-header">

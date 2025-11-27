@@ -1,5 +1,5 @@
 /* Modern Sidebar Styles */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 * {
   box-sizing: border-box;
@@ -16,17 +16,18 @@
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   border-right: 1px solid #e2e8f0;
   box-shadow: 4px 0 20px rgba(45, 80, 22, 0.08);
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 @media (min-width: 769px) {
   .sidebar {
-    position: relative;
+    position: sticky;
+    top: 0;
     height: 100vh;
   }
 }
@@ -40,23 +41,23 @@
 }
 
 .top_section {
-  padding: 24px 20px;
+  padding: 14px 20px;
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, #39B54A, #2d8f3a);
+  background: linear-gradient(135deg, #39b54a, #2d8f3a);
   position: relative;
 }
 
 .top_section::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #39B54A, #2d8f3a);
+  background: linear-gradient(90deg, #39b54a, #2d8f3a);
 }
 
 .sidebar-brand {
@@ -67,7 +68,7 @@
 }
 
 .brand-icon {
-  font-size: 32px;
+  font-size: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,6 +77,10 @@
   background: rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   backdrop-filter: blur(10px);
+}
+
+.sidebar-closed .brand-icon{
+  margin-left: -5px;
 }
 
 .brand-text {
@@ -87,7 +92,7 @@
   font-weight: 700;
   margin: 0;
   line-height: 1.2;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .brand-subtitle {
@@ -100,7 +105,8 @@
 }
 
 .sidebar-toggle {
-  background: rgba(255, 255, 255, 0.2);
+  margin-left: 5px;
+  background: #39b54a;
   border: none;
   color: white;
   width: 36px;
@@ -114,9 +120,19 @@
   backdrop-filter: blur(10px);
 }
 
+.sidebar-closed .sidebar-toggle{
+  margin-left: 10px;
+  z-index: 999999;
+  position: sticky;
+}
+
 .sidebar-toggle:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #39b54a;
   transform: scale(1.05);
+}
+
+.sidebar-toggle svg {
+  color: #fff !important;
 }
 
 .my_sidebar_all_section {
@@ -157,7 +173,7 @@
   font-size: 14px;
   transition: all 0.2s ease;
   position: relative;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .link:hover {
@@ -167,21 +183,33 @@
 }
 
 .link.active {
-  background: linear-gradient(135deg, #39B54A, #2d8f3a);
+  background: linear-gradient(135deg, #39b54a, #2d8f3a);
   color: white;
   box-shadow: 0 4px 12px rgba(57, 181, 74, 0.3);
 }
 
 .link.active::before {
-  content: '';
+  content: "";
   position: absolute;
   left: -12px;
   top: 50%;
   transform: translateY(-50%);
   width: 4px;
   height: 20px;
-  background: #39B54A;
+  background: #39b54a;
   border-radius: 0 2px 2px 0;
+}
+
+.sidebar_top_tab.active svg {
+  color: #fff;
+}
+
+.sidebar-closed .sidebar_top_tab {
+  margin: 4px 4px !important;
+}
+
+.sidebar_top_tab .icon {
+  overflow: visible;
 }
 
 .icon {
@@ -190,8 +218,13 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  margin-right: 12px;
+  /* margin-right: 12px; */
   font-size: 16px;
+}
+
+.side_bar_categories.arrow-hidden .ant-collapse-expand-icon {
+  padding-inline-end: 0 !important;
+  margin-right: -5px;
 }
 
 .link_text {
@@ -225,7 +258,7 @@
   color: #4a5568;
   font-weight: 500;
   font-size: 14px;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .my_collapse_icon .ant-collapse-header:hover {
@@ -251,7 +284,7 @@
 .sidebar_collapse_iohomeoutline {
   margin-right: 12px;
   font-size: 16px;
-  color: #39B54A;
+  color: #39b54a;
 }
 
 .sidebar_collapse_iohomeoutline_categoires {
@@ -286,12 +319,12 @@
 
 .sub_link:hover {
   background: rgba(57, 181, 74, 0.1);
-  border-left-color: #39B54A;
+  border-left-color: #39b54a;
 }
 
 .sub_link.active {
   background: rgba(57, 181, 74, 0.15);
-  border-left-color: #39B54A;
+  border-left-color: #39b54a;
   color: #2d5016;
 }
 
@@ -299,8 +332,8 @@
 .custom_profile_class_productList {
   margin-top: auto;
   margin: 20px 12px;
-  background: linear-gradient(135deg, #39B54A, #2d8f3a);
-  border-radius: 16px;
+  background: linear-gradient(135deg, #39b54a, #2d8f3a);
+  border-radius: 99px;
   padding: 16px;
   color: white;
   transition: all 0.3s ease;
@@ -342,6 +375,15 @@
   border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
+.sidebar__user__icon {
+  color: #fff !important;
+  font-size: 18px;
+}
+
+.custom_profile_class_productList:hover .sidebar__user__icon {
+  color: #39b54a !important;
+}
+
 .user_profile_pic_Admin_panel {
   font-size: 14px;
   font-weight: 600;
@@ -361,9 +403,21 @@
 }
 
 .side_bar_fagreaterthan {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.8) !important;
   font-size: 12px;
   transition: transform 0.2s ease;
+}
+
+.custom_profile_class_productList:hover .side_bar_fagreaterthan {
+  color: #39b54a !important;
+}
+
+.custom_profile_class_productList:hover .user_profile_pic_Admin_panel {
+  color: #111;
+}
+
+.custom_profile_class_productList:hover .user_profile_pic_Admin_panel_ {
+  color: #626262;
 }
 
 .custom_profile_class_productList:hover .side_bar_fagreaterthan {
@@ -384,7 +438,7 @@ main {
   .sidebar-open main {
     margin-left: 0;
   }
-  
+
   .sidebar-closed main {
     margin-left: 0;
   }
@@ -400,7 +454,7 @@ main {
   height: 44px;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(135deg, #39B54A, #2d8f3a);
+  background: linear-gradient(135deg, #39b54a, #2d8f3a);
   color: white;
   display: flex;
   align-items: center;
@@ -683,7 +737,7 @@ main {
 /* Focus states for accessibility */
 .link:focus,
 .sidebar-toggle:focus {
-  outline: 2px solid #39B54A;
+  outline: 2px solid #39b54a;
   outline-offset: 2px;
 }
 
@@ -692,10 +746,10 @@ main {
   .link {
     border: 1px solid transparent;
   }
-  
+
   .link:hover,
   .link.active {
-    border-color: #39B54A;
+    border-color: #39b54a;
   }
 }
 
@@ -706,7 +760,7 @@ main {
   .custom_profile_class_productList {
     transition: none;
   }
-  
+
   .link {
     animation: none;
   }
