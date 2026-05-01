@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" role="img" aria-label="News card image 1">
+  <rect width="400" height="260" fill="#21364f"/>
+  <rect x="20" y="20" width="360" height="220" rx="10" fill="#315b84"/>
+  <rect x="40" y="45" width="130" height="150" rx="8" fill="#98b6cf"/>
+  <rect x="190" y="45" width="170" height="18" rx="4" fill="#dfe9f3"/>
+  <rect x="190" y="74" width="150" height="18" rx="4" fill="#dfe9f3"/>
+  <rect x="190" y="103" width="162" height="18" rx="4" fill="#dfe9f3"/>
+  <rect x="190" y="132" width="120" height="18" rx="4" fill="#dfe9f3"/>
+  <rect x="40" y="204" width="320" height="14" rx="4" fill="#7fa2bf"/>
+</svg>
