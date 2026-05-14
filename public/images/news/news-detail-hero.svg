@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 520" role="img" aria-label="Golf team celebrating">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f2a4a"/>
+      <stop offset="100%" stop-color="#1c4d7f"/>
+    </linearGradient>
+  </defs>
+  <rect width="860" height="520" rx="24" fill="url(#bg)"/>
+  <rect x="24" y="40" width="812" height="300" rx="18" fill="#2f5f94"/>
+  <circle cx="120" cy="178" r="50" fill="#d8e8f6"/>
+  <circle cx="220" cy="170" r="46" fill="#d8e8f6"/>
+  <circle cx="308" cy="176" r="44" fill="#d8e8f6"/>
+  <circle cx="404" cy="170" r="49" fill="#d8e8f6"/>
+  <circle cx="504" cy="176" r="45" fill="#d8e8f6"/>
+  <circle cx="596" cy="171" r="46" fill="#d8e8f6"/>
+  <circle cx="694" cy="178" r="49" fill="#d8e8f6"/>
+  <rect x="60" y="260" width="740" height="50" rx="10" fill="#143b66"/>
+  <text x="430" y="384" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="42" font-weight="700">72 THE LEAGUE</text>
+  <text x="430" y="430" text-anchor="middle" fill="#bcd4eb" font-family="Arial, sans-serif" font-size="28" font-weight="600">CHAMPIONS 2026</text>
+</svg>
