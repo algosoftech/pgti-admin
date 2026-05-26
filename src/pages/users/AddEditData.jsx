@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { notification } from "antd";
+import { Input, notification } from "antd";
 import {
   InfoCircleOutlined, CheckCircleOutlined, ArrowLeftOutlined, SaveOutlined,
   UserOutlined, PhoneOutlined, IdcardOutlined, TrophyOutlined, LockOutlined,
+  EyeInvisibleOutlined, EyeTwoTone,
 } from "@ant-design/icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ImageUploadField from "components/ui/ImageUploadField";
@@ -13,11 +14,9 @@ import { LIMITS, IMAGE_SPECS } from "utils/fieldValidation";
 import { COUNTRY_DIAL_CODES } from "utils/countryDialCodes";
 import "styles/admin-pages.css";
 
-const NATIONALITIES = [
-  "Indian", "Australian", "American", "British", "South African",
-  "Canadian", "New Zealander", "Scottish", "Irish", "Spanish",
-  "German", "French", "Japanese", "Korean", "Thai", "Other",
-];
+const NATIONALITIES = Array.from(new Set(COUNTRY_DIAL_CODES.map((item) => item.name))).sort((left, right) =>
+  left.localeCompare(right)
+);
 
 const HOME_CLUBS = [
   "Delhi Golf Club", "Royal Calcutta Golf Club", "Bombay Presidency Golf Club",
@@ -59,6 +58,16 @@ const resolveCountryCode = (player = {}) => {
   return matchedByCountryName?.dialCode || DEFAULT_COUNTRY_CODE;
 };
 
+const resolveNationalityMeta = (nationality = "") => {
+  const normalized = String(nationality || "").trim().toLowerCase();
+  return COUNTRY_DIAL_CODES.find((item) => item.name.toLowerCase() === normalized) || null;
+};
+
+const resolveFlagUrl = (nationality = "") => {
+  const meta = resolveNationalityMeta(nationality);
+  return meta?.code ? `https://flagcdn.com/w80/${meta.code.toLowerCase()}.png` : "";
+};
+
 const buildInitialPlayerState = (player = {}) => ({
   ...{
     full_name: "",
@@ -89,12 +98,14 @@ const buildInitialPlayerState = (player = {}) => ({
     profile_image: "",
     about_info: "",
     status: "A",
+    is_alumni: false,
     password: "",
   },
   ...player,
   mobile_country_code: resolveCountryCode(player),
   nationality: player.nationality || "Indian",
-  country: player.country || player.nationality || "India",
+  country: player.country || player.nationality || "Indian",
+  is_alumni: Boolean(player.is_alumni),
 });
 
 const SectionCard = ({ icon, title, children }) => (
@@ -127,8 +138,14 @@ export default function AddEditUsers() {
   }, [state]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setAddEditData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setAddEditData((prev) => {
+      const nextValue = type === "checkbox" ? checked : value;
+      if (name === "nationality") {
+        return { ...prev, nationality: nextValue, country: nextValue };
+      }
+      return { ...prev, [name]: nextValue };
+    });
   };
 
   const notify = (type, desc) => notification.open({
@@ -184,6 +201,7 @@ export default function AddEditUsers() {
         profile_image: ADDEDITDATA.profile_image || "",
         about_info: ADDEDITDATA.about_info?.trim() || "",
         status: ADDEDITDATA.status || "A",
+        is_alumni: Boolean(ADDEDITDATA.is_alumni),
         ...(!isEdit && ADDEDITDATA.password && { password: ADDEDITDATA.password }),
       };
 
@@ -200,6 +218,8 @@ export default function AddEditUsers() {
       setIsLoading(false);
     }
   };
+
+  const selectedFlagUrl = resolveFlagUrl(ADDEDITDATA.nationality);
 
   return (
     <div className="admin-page-container">
@@ -275,8 +295,24 @@ export default function AddEditUsers() {
               </div>
               <div className="col-md-4 col-12 mb-3">
                 <div className="form-group">
-                  <label className="form-label">Country</label>
-                  <input type="text" name="country" className="form-input" placeholder="e.g. India" value={ADDEDITDATA.country} onChange={handleChange} />
+                  <label className="form-label">Nationality Flag</label>
+                  <div
+                    className="form-input"
+                    style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 48, background: "#f8fafc" }}
+                  >
+                    {selectedFlagUrl ? (
+                      <img
+                        src={selectedFlagUrl}
+                        alt={ADDEDITDATA.nationality}
+                        style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", border: "1px solid #dbe4f0" }}
+                      />
+                    ) : (
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#e2e8f0" }} />
+                    )}
+                    <div style={{ fontSize: 13, color: "#334155" }}>
+                      {ADDEDITDATA.nationality || "Select nationality"}
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="col-md-4 col-12 mb-3">
@@ -300,7 +336,7 @@ export default function AddEditUsers() {
               <div className="col-md-3 col-12 mb-3">
                 <div className="form-group">
                   <label className="form-label required">Country Code</label>
-                  <select name="mobile_country_code" className="form-input" value={ADDEDITDATA.mobile_country_code} onChange={handleChange} disabled={isEdit}>
+                  <select name="mobile_country_code" className="form-input" value={ADDEDITDATA.mobile_country_code} onChange={handleChange}>
                     {COUNTRY_DIAL_CODES.map((item) => (
                       <option key={`${item.code}-${item.dialCode}`} value={item.dialCode}>
                         {item.name} ({item.dialCode})
@@ -312,8 +348,8 @@ export default function AddEditUsers() {
               <div className="col-md-3 col-12 mb-3">
                 <div className="form-group">
                   <label className="form-label required">Mobile Number</label>
-                  <input type="tel" name="mobile" className="form-input" placeholder="Phone number" value={ADDEDITDATA.mobile} onChange={handleChange} disabled={isEdit} />
-                  {isEdit && <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Mobile cannot be changed after registration.</div>}
+                  <input type="tel" name="mobile" className="form-input" placeholder="Phone number" value={ADDEDITDATA.mobile} onChange={handleChange} />
+                  <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Admin can update the registered number and country code if needed.</div>
                 </div>
               </div>
               <div className="col-md-4 col-12 mb-3">
@@ -322,15 +358,24 @@ export default function AddEditUsers() {
                   <input type="email" name="email" className="form-input" placeholder="player@example.com" value={ADDEDITDATA.email} onChange={handleChange} />
                 </div>
               </div>
-              {!isEdit && (
-                <div className="col-md-4 col-12 mb-3">
-                  <div className="form-group">
-                    <label className="form-label required">Initial Password</label>
-                    <input type="password" name="password" className="form-input" placeholder="Set temporary password" value={ADDEDITDATA.password} onChange={handleChange} />
-                    <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Player can change this after first login.</div>
+              <div className="col-md-4 col-12 mb-3">
+                <div className="form-group">
+                  <label className={`form-label ${!isEdit ? "required" : ""}`}>{isEdit ? "New Password" : "Initial Password"}</label>
+                  <Input.Password
+                    name="password"
+                    className="form-input"
+                    placeholder={isEdit ? "Leave blank to keep current password" : "Set temporary password"}
+                    value={ADDEDITDATA.password}
+                    onChange={handleChange}
+                    iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                  />
+                  <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>
+                    {isEdit
+                      ? "Leave this blank if you do not want to change the password."
+                      : "Player can change this after first login."}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </SectionCard>
 
@@ -476,16 +521,28 @@ export default function AddEditUsers() {
                   <select name="status" className="form-input" value={ADDEDITDATA.status} onChange={handleChange}>
                     <option value="A">Active</option>
                     <option value="I">Inactive</option>
-                    <option value="P">Pending Verification</option>
+                  </select>
+                </div>
+              </div>
+              <div className="col-md-4 col-12 mb-3">
+                <div className="form-group">
+                  <label className="form-label">Alumni Section</label>
+                  <select
+                    className="form-input"
+                    value={ADDEDITDATA.is_alumni ? "true" : "false"}
+                    onChange={(e) => setAddEditData((prev) => ({ ...prev, is_alumni: e.target.value === "true" }))}
+                  >
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
                   </select>
                 </div>
               </div>
               {isEdit && (
-                <div className="col-md-8 col-12 mb-3">
+                <div className="col-md-4 col-12 mb-3">
                   <div style={{ padding: "12px 16px", background: "#fffbeb", borderRadius: 10, border: "1px solid #fef08a", marginTop: 24 }}>
                     <div style={{ fontSize: 13, color: "#92400e", display: "flex", alignItems: "center", gap: 6 }}>
                       <LockOutlined />
-                      <span>To reset the player's password, use the <strong>Reset Password</strong> option from the player list actions menu.</span>
+                      <span>You can either set a new password here or use the <strong>Reset Password</strong> option from the player list actions menu.</span>
                     </div>
                   </div>
                 </div>

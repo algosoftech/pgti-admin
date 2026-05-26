@@ -31,6 +31,12 @@ const emptyKeyMilestones = () => ({
   intro: "",
   milestones: [{ year: "", cardTitle: "", description: "" }],
 });
+const emptyValues = () => ({
+  heading: "",
+  subtitle: "",
+  image: "",
+  items: ["", "", "", ""],
+});
 const emptyMission = () => ({
   heading: "",
   subtitle: "",
@@ -95,6 +101,13 @@ function normalizeAboutContent(raw) {
     keyMilestones: parsed?.keyMilestones
       ? { ...emptyKeyMilestones(), ...parsed.keyMilestones, milestones: ensureArray(parsed.keyMilestones.milestones, { year: "", cardTitle: "", description: "" }) }
       : emptyKeyMilestones(),
+    values: parsed?.values
+      ? {
+          ...emptyValues(),
+          ...parsed.values,
+          items: ensureArray(parsed.values.items, "").slice(0, Math.max(4, parsed.values.items?.length || 0)),
+        }
+      : emptyValues(),
     mission: parsed?.mission
       ? { ...emptyMission(), ...parsed.mission, cards: ensureExactly4(parsed.mission.cards, { text: "", accent: "secondary" }) }
       : emptyMission(),
@@ -123,6 +136,7 @@ function hasSavedAboutContent(record) {
     parsed?.heroBanner ||
     parsed?.about ||
     parsed?.keyMilestones ||
+    parsed?.values ||
     parsed?.mission ||
     parsed?.vision ||
     parsed?.legacy ||
@@ -130,17 +144,18 @@ function hasSavedAboutContent(record) {
   );
 }
 
-const SECTION_KEYS = ["general", "heroBanner", "about", "keyMilestones", "mission", "vision", "legacy", "team"];
+const SECTION_KEYS = ["general", "heroBanner", "about", "keyMilestones", "values", "mission", "vision", "legacy", "team"];
 
 const SECTION_META = {
   general: { number: "0", title: "General" },
   heroBanner: { number: "1", title: "Hero Banner" },
   about: { number: "2", title: "About PGTI" },
   keyMilestones: { number: "3", title: "Key Milestones (Journey)" },
-  mission: { number: "4", title: "Our Mission" },
-  vision: { number: "5", title: "Our Vision" },
-  legacy: { number: "6", title: "Legacy & Impact" },
-  team: { number: "7", title: "The Team Behind the Tour" },
+  values: { number: "4", title: "Our Values" },
+  mission: { number: "5", title: "Our Mission" },
+  vision: { number: "6", title: "Our Vision" },
+  legacy: { number: "7", title: "Legacy & Impact" },
+  team: { number: "8", title: "The Team Behind the Tour" },
 };
 
 const SECTION_NAV_ITEMS = SECTION_KEYS.map((key) => ({
@@ -297,6 +312,8 @@ export default function AboutUsAddEditData() {
   const [savedAbout, setSavedAbout] = useState(initialContent.about);
   const [keyMilestones, setKeyMilestones] = useState(initialContent.keyMilestones);
   const [savedKeyMilestones, setSavedKeyMilestones] = useState(initialContent.keyMilestones);
+  const [values, setValues] = useState(initialContent.values);
+  const [savedValues, setSavedValues] = useState(initialContent.values);
   const [mission, setMission] = useState(initialContent.mission);
   const [savedMission, setSavedMission] = useState(initialContent.mission);
   const [vision, setVision] = useState(initialContent.vision);
@@ -316,6 +333,8 @@ export default function AboutUsAddEditData() {
     setSavedAbout(next.about);
     setKeyMilestones(next.keyMilestones);
     setSavedKeyMilestones(next.keyMilestones);
+    setValues(next.values);
+    setSavedValues(next.values);
     setMission(next.mission);
     setSavedMission(next.mission);
     setVision(next.vision);
@@ -383,6 +402,12 @@ export default function AboutUsAddEditData() {
       intro: keyMilestones.intro,
       milestones: keyMilestones.milestones.filter((m) => m.year || m.cardTitle || m.description),
     },
+    values: {
+      heading: values.heading,
+      subtitle: values.subtitle,
+      image: values.image,
+      items: values.items.map((item) => String(item || "").trim()).filter(Boolean),
+    },
     mission: {
       heading: mission.heading,
       subtitle: mission.subtitle,
@@ -439,6 +464,8 @@ export default function AboutUsAddEditData() {
       setAbout(savedAbout);
     } else if (sectionKey === "keyMilestones") {
       setKeyMilestones(savedKeyMilestones);
+    } else if (sectionKey === "values") {
+      setValues(savedValues);
     } else if (sectionKey === "mission") {
       setMission(savedMission);
     } else if (sectionKey === "vision") {
@@ -474,6 +501,7 @@ export default function AboutUsAddEditData() {
             setSavedHeroBanner(heroBanner);
             setSavedAbout(about);
             setSavedKeyMilestones(keyMilestones);
+            setSavedValues(values);
             setSavedMission(mission);
             setSavedVision(vision);
             setSavedLegacy(legacy);
@@ -763,7 +791,79 @@ export default function AboutUsAddEditData() {
         </SectionCard>
         </div>
 
-        {/* 3. Our Mission */}
+        {/* 3. Our Values */}
+        <div ref={(node) => { sectionRefs.current.values = node; }}>
+        <SectionCard
+          sectionKey="values"
+          isOpen={openSections.values}
+          onToggleOpen={() => setOpenSections((prev) => ({ ...prev, values: !prev.values }))}
+          isEditing={activeEditSection === "values"}
+          onEdit={() => startEditingSection("values")}
+          onSave={() => saveSection("values")}
+          onCancel={() => cancelEditingSection("values")}
+          isSaving={savingSection === "values"}
+          onLockedClick={() => notifyReadOnly(SECTION_META.values.title)}
+        >
+          <fieldset disabled={activeEditSection !== "values"} style={{ border: "none", padding: 0, margin: 0 }}>
+            <div className="form-group">
+              <label className="form-label">Heading</label>
+              <input
+                type="text"
+                className="form-input"
+                value={values.heading}
+                onChange={(e) => setValues((prev) => ({ ...prev, heading: e.target.value }))}
+                placeholder="e.g. Our Values"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Subtitle / intro</label>
+              <textarea
+                className="form-input"
+                rows={2}
+                value={values.subtitle}
+                onChange={(e) => setValues((prev) => ({ ...prev, subtitle: e.target.value }))}
+                placeholder="Short introductory line above the values section."
+              />
+              <CharCounter value={values.subtitle} max={LIMITS.short_description.max} />
+            </div>
+            <ImageUploadField
+              label="Values Image"
+              value={values.image}
+              onChange={(url) => setValues((prev) => ({ ...prev, image: url }))}
+              folder="cms/about-us"
+              previewH={120}
+              spec={IMAGE_SPECS['cms/about-us']}
+            />
+            <ImageHint
+              recommended={IMAGE_SPECS['cms/about-us'].recommended}
+              maxSize={`${IMAGE_SPECS['cms/about-us'].maxMB}MB`}
+              note="Image displayed alongside the values statements."
+            />
+            <label className="form-label" style={{ marginTop: 16, display: "block" }}>
+              Value Statements
+            </label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }}>
+              {values.items.map((item, index) => (
+                <textarea
+                  key={`values-item-${index}`}
+                  className="form-input"
+                  rows={2}
+                  value={item}
+                  onChange={(e) =>
+                    setValues((prev) => ({
+                      ...prev,
+                      items: prev.items.map((entry, itemIndex) => (itemIndex === index ? e.target.value : entry)),
+                    }))
+                  }
+                  placeholder={`Value statement ${index + 1}`}
+                />
+              ))}
+            </div>
+          </fieldset>
+        </SectionCard>
+        </div>
+
+        {/* 4. Our Mission */}
         <div ref={(node) => { sectionRefs.current.mission = node; }}>
         <SectionCard
           sectionKey="mission"

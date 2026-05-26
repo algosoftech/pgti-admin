@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import { Dropdown, notification, Modal, Checkbox } from "antd";
 import {
   faEye,
@@ -22,6 +22,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import ProfessionalPagination from 'components/table/Pagination/Pagination';
+import {
+  getPreferredPageSize,
+  PREFERENCES_CHANGED_EVENT,
+} from "utils/preferences";
 import {
   useReactTable,
   getCoreRowModel,
@@ -112,6 +116,7 @@ export default function EnhancedTable({
 
   // Column visibility state
   const [columnVisibility, setColumnVisibility] = useState({});
+  const hasAppliedPreferredLimit = useRef(false);
 
   // Column reordering
   const [draggedColumn, setDraggedColumn] = useState(null);
@@ -194,6 +199,27 @@ export default function EnhancedTable({
     setRowSelection({});
   }, [data]);
 
+  useEffect(() => {
+    if (!onLimitChange) return undefined;
+
+    const applyPreferredLimit = () => {
+      const preferredLimit = getPreferredPageSize();
+      if (Number(limit) !== preferredLimit) {
+        hasAppliedPreferredLimit.current = true;
+        onLimitChange(preferredLimit);
+      }
+    };
+
+    if (!hasAppliedPreferredLimit.current) {
+      applyPreferredLimit();
+    }
+
+    window.addEventListener(PREFERENCES_CHANGED_EVENT, applyPreferredLimit);
+    return () => {
+      window.removeEventListener(PREFERENCES_CHANGED_EVENT, applyPreferredLimit);
+    };
+  }, [limit, onLimitChange]);
+
   // Initialize table instance
   const table = useReactTable({
     data: data || [],
@@ -257,6 +283,40 @@ export default function EnhancedTable({
   });
 
   const selectedCount = Object.keys(rowSelection).length;
+
+  const resolveColumnSize = useCallback((columnLike, fallbackSize) => {
+    const columnId = columnLike?.id || columnLike?.column?.id || "";
+    const rawSize =
+      typeof fallbackSize === "number"
+        ? fallbackSize
+        : typeof columnLike?.getSize === "function"
+        ? columnLike.getSize()
+        : 120;
+
+    if (columnId === "index") return Math.min(rawSize, 54);
+    return rawSize;
+  }, []);
+
+  const getColumnLayoutStyle = useCallback(
+    (columnLike, fallbackSize) => {
+      const width = resolveColumnSize(columnLike, fallbackSize);
+      const pinned = typeof columnLike?.getIsPinned === "function" ? columnLike.getIsPinned() : columnLike?.column?.getIsPinned?.();
+
+      if (pinned) {
+        return {
+          width: `${width}px`,
+          minWidth: `${width}px`,
+          maxWidth: `${width}px`,
+        };
+      }
+
+      return {
+        flex: 1,
+        minWidth: `${width}px`,
+      };
+    },
+    [resolveColumnSize]
+  );
 
   // Export to CSV function
   const handleExport = () => {
@@ -695,9 +755,7 @@ export default function EnhancedTable({
                           onDragOver={handleDragOver}
                           onDrop={() => handleDrop(header.id)}
                           style={{
-                            ...(header.column.getIsPinned()
-                              ? { width: `${header.getSize()}px`, minWidth: `${header.getSize()}px`, maxWidth: `${header.getSize()}px` }
-                              : { flex: 1, minWidth: `${header.getSize()}px` }),
+                              ...getColumnLayoutStyle(header.column, header.getSize()),
                             position: header.column.getIsPinned()
                               ? "sticky"
                               : "relative",
@@ -896,9 +954,7 @@ export default function EnhancedTable({
                             <th
                               key={`${header.id}-filter`}
                               style={{
-                                ...(header.column.getIsPinned()
-                                  ? { width: `${header.getSize()}px`, minWidth: `${header.getSize()}px`, maxWidth: `${header.getSize()}px` }
-                                  : { flex: 1, minWidth: `${header.getSize()}px` }),
+                                ...getColumnLayoutStyle(header.column, header.getSize()),
                                 padding: "8px",
                                 borderTop: "1px solid #e5e7eb",
                                 position: header.column.getIsPinned()
@@ -1097,6 +1153,9 @@ export default function EnhancedTable({
                     return (
                       <tr
                         key={row.id}
+                        ref={(node) => {
+                          if (node) rowVirtualizer.measureElement(node);
+                        }}
                         style={{
                           position: "absolute",
                           transform: `translateY(${virtualRow.start}px)`,
@@ -1108,9 +1167,7 @@ export default function EnhancedTable({
                           <td
                             key={cell.id}
                             style={{
-                              ...(cell.column.getIsPinned()
-                                ? { width: `${cell.column.getSize()}px`, minWidth: `${cell.column.getSize()}px`, maxWidth: `${cell.column.getSize()}px` }
-                                : { flex: 1, minWidth: `${cell.column.getSize()}px` }),
+                              ...getColumnLayoutStyle(cell.column, cell.column.getSize()),
                               position: cell.column.getIsPinned()
                                 ? "sticky"
                                 : "relative",

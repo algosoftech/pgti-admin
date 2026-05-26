@@ -19,6 +19,13 @@
   overflow-x: hidden;
 }
 
+:root {
+  --admin-shell-inline: 32px;
+  --admin-shell-block-start: 18px;
+  --admin-shell-body-inline: 32px;
+  --admin-shell-body-block: 22px;
+}
+
 /* Page Header */
 .page-header {
   background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
@@ -2616,6 +2623,25 @@ svg[data-icon="thumbtack"] {
   min-height: 0;
 }
 
+.admin-page-container > .content-card {
+  margin: var(--admin-shell-block-start) var(--admin-shell-inline) 0;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+  overflow: hidden;
+}
+
+.admin-page-container > .content-card > .content-card-body {
+  padding: var(--admin-shell-body-block) var(--admin-shell-body-inline) 28px;
+  overflow-x: auto;
+}
+
+.admin-page-container > .content-card > .tabs-header {
+  padding-left: var(--admin-shell-body-inline);
+  padding-right: var(--admin-shell-body-inline);
+}
+
 /* Ensure table doesn't break layout */
 .modern-table {
   min-width: 100%;
@@ -2767,6 +2793,12 @@ svg[data-icon="thumbtack"] {
 
 /* Responsive Improvements */
 @media (max-width: 1024px) {
+  :root {
+    --admin-shell-inline: 24px;
+    --admin-shell-body-inline: 24px;
+    --admin-shell-body-block: 20px;
+  }
+
   .tabs-header {
     padding: 20px 24px;
   }
@@ -2789,6 +2821,13 @@ svg[data-icon="thumbtack"] {
 }
 
 @media (max-width: 768px) {
+  :root {
+    --admin-shell-inline: 16px;
+    --admin-shell-block-start: 16px;
+    --admin-shell-body-inline: 18px;
+    --admin-shell-body-block: 18px;
+  }
+
   .content-card {
     margin-inline: 16px;
     margin-top: 16px;
@@ -2836,6 +2875,13 @@ svg[data-icon="thumbtack"] {
 }
 
 @media (max-width: 480px) {
+  :root {
+    --admin-shell-inline: 12px;
+    --admin-shell-block-start: 12px;
+    --admin-shell-body-inline: 14px;
+    --admin-shell-body-block: 16px;
+  }
+
   .content-card {
     margin-inline: 12px;
   }

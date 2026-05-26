@@ -11,6 +11,7 @@ export const fetchUsersList = createAsyncThunk(
         return {
           data: listData?.result || [],
           count: listData?.count || 0,
+          stats: listData?.stats || { total: listData?.count || 0, active: 0, inactive: 0, alumni: 0 },
           totalPages: getPage(listData?.count || 1, options?.limit || 10),
         };
       }
@@ -60,6 +61,7 @@ const initialState = {
   limit: 10,
   skip: 0,
   count: 0,
+  stats: { total: 0, active: 0, inactive: 0, alumni: 0 },
   filter: { from: '', to: '', filter_by: '', search: '' },
   showRequest: '',
 };
@@ -105,12 +107,14 @@ const usersSlice = createSlice({
         state.isLoading = false;
         state.listData = action.payload.data;
         state.count = action.payload.count;
+        state.stats = action.payload.stats || initialState.stats;
         state.totalPages = action.payload.totalPages || getPage(1);
       })
       .addCase(fetchUsersList.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
         state.listData = [];
+        state.stats = initialState.stats;
       });
 
     builder

@@ -33,9 +33,9 @@ export const verifyLoginOtp = async (options) => {
             sessionStorage.setItem('TOKEN', result.token);
             sessionStorage.setItem('ADMIN-INFO', JSON.stringify(result));
 
-            const permission = res.data.response?.permission;
-            if (permission) {
-                const encodedData = await encryptData(JSON.stringify(permission));
+            const permissions = res.data.response?.permissions || res.data.response?.permission;
+            if (permissions) {
+                const encodedData = await encryptData(JSON.stringify(permissions));
                 sessionStorage.setItem('ADMIN-PERMISSION', JSON.stringify(encodedData));
             }
             return { status: true, message: `Welcome Back! ${result.name}` };

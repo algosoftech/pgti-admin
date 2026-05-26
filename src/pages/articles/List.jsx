@@ -38,7 +38,6 @@ import {
   setLimit,
   setShowRequest,
 } from 'store/slices/articles.slice';
-import { list as fetchCategories } from 'services/category.service';
 import { getArticleListingBanner } from 'services/articles.service';
 import { resolvePreviewMediaUrl } from "services/media.service";
 
@@ -63,7 +62,6 @@ export default function ArticleList() {
 
   const PERMISSION = usePermissions("articles");
   const [activeTab, setActiveTab] = useState("all");
-  const [categories, setCategories] = useState([]);
   const [listingBanner, setListingBanner] = useState(null);
   const [bannerPreviewOpen, setBannerPreviewOpen] = useState(false);
   const canEdit = user?.admin_type === "Super Admin" || PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y";
@@ -76,31 +74,6 @@ export default function ArticleList() {
     category: "",
     status: "",
   });
-
-  // Fetch categories for display
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const result = await fetchCategories({
-          type: "",
-          condition: { status: "A" },
-          skip: 0,
-          limit: 1000,
-        });
-        if (result.status === true && result.result) {
-          setCategories(result.result);
-        }
-      } catch (error) {
-        console.error("Error loading categories:", error);
-      }
-    };
-    loadCategories();
-  }, []);
-
-  const getCategoryName = (categoryId) => {
-    const category = categories.find((cat) => cat.id === categoryId);
-    return category?.name || "Unknown Category";
-  };
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -347,7 +320,7 @@ export default function ArticleList() {
         enableGlobalFilter: false,
       },
     ],
-    [SKIP, categories, canDelete, canEdit, canStatus]
+    [SKIP, canDelete, canEdit, canStatus]
   );
 
   /*********************************************************

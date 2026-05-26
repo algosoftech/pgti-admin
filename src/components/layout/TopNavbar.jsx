@@ -1,5 +1,5 @@
 import "components/layout/dashboard.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LogoutConformationPopup from 'components/layout/LogoutPopup';
 import PreferencesModal from 'components/layout/PreferencesModal';
@@ -14,6 +14,14 @@ import {
   faSun,
   faMoon
 } from "@fortawesome/free-solid-svg-icons";
+
+const readAdminInfo = () => {
+  try {
+    return JSON.parse(sessionStorage.getItem("ADMIN-INFO") || "null");
+  } catch {
+    return null;
+  }
+};
 
 const Top_navbar = ({ title = "Dashboard" }) => {
   // const [isSticky, setSticky] = useState(false);
@@ -42,9 +50,15 @@ const Top_navbar = ({ title = "Dashboard" }) => {
   };
 
   const navigate = useNavigate();
-  const user = JSON.parse(sessionStorage.getItem("ADMIN-INFO"));
+  const [user, setUser] = useState(readAdminInfo);
   const [popUpOpen, setPopUpOpen] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
+
+  useEffect(() => {
+    const syncAdminInfo = () => setUser(readAdminInfo());
+    window.addEventListener("admin-profile-updated", syncAdminInfo);
+    return () => window.removeEventListener("admin-profile-updated", syncAdminInfo);
+  }, []);
 
   const togglePopUp = () => setPopUpOpen(!popUpOpen);
 
@@ -71,7 +85,7 @@ const Top_navbar = ({ title = "Dashboard" }) => {
                 <FontAwesomeIcon icon={faSearch} className="search-icon" />
                 <input
                   type="text"
-                  placeholder="Search customers, orders, products..."
+                  placeholder="Search players, tournaments, articles..."
                   className="search-input"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -127,7 +141,7 @@ const Top_navbar = ({ title = "Dashboard" }) => {
                       className="menu-item"
                       to="javascript:void(0)"
                       onClick={() => {
-                        navigate("/admin/accounts/addeditdata", { state: { ...user, editId: user?.id } });
+                        navigate("/admin/profile");
                         setIsDropdownOpen(false);
                       }}
                     >

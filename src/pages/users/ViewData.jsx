@@ -51,9 +51,9 @@ const StatusBadge = ({ status }) => {
   const map = {
     A: { label: "Active",              bg: "#f0fdf4", color: "#16a34a", border: "#86efac" },
     I: { label: "Inactive",            bg: "#fef2f2", color: "#dc2626", border: "#fca5a5" },
-    P: { label: "Pending Verification", bg: "#fffbeb", color: "#d97706", border: "#fcd34d" },
+    alumni: { label: "Alumni",         bg: "#f5f3ff", color: "#7c3aed", border: "#c4b5fd" },
   };
-  const s = map[status] || map.I;
+  const s = status === "alumni" ? map.alumni : (map[status] || map.I);
   return (
     <span style={{ fontSize: 13, fontWeight: 600, background: s.bg, color: s.color, border: `1px solid ${s.border}`, padding: "4px 14px", borderRadius: 20 }}>
       {s.label}
@@ -139,7 +139,7 @@ export default function ViewData() {
               )}
 
               <div style={{ marginBottom: 16 }}>
-                <StatusBadge status={player.status} />
+                <StatusBadge status={player.is_alumni ? "alumni" : player.status} />
               </div>
 
               {player.player_type && (
@@ -227,6 +227,7 @@ export default function ViewData() {
           {/* Account */}
           <SectionCard title="Account Information" icon={<IdcardOutlined />}>
             <InfoRow icon={<IdcardOutlined />}    label="Account Status"  value={<StatusBadge status={player.status} />} />
+            <InfoRow icon={<StarOutlined />}      label="Alumni Section"  value={player.is_alumni ? "Yes" : "No"} />
             <InfoRow icon={<CalendarOutlined />}  label="Registration Date" value={player.created_at ? moment(player.created_at).format("DD MMM YYYY, hh:mm A") : null} />
             <InfoRow icon={<CalendarOutlined />}  label="Last Updated"   value={player.updated_at ? moment(player.updated_at).format("DD MMM YYYY, hh:mm A") : null} />
           </SectionCard>

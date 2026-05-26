@@ -307,7 +307,6 @@ export default function IndianGolfAddEditData() {
       <div className="page-body">
         <div className="modern-form">
 
-          {/* 0. General */}
           <div ref={(node) => { sectionRefs.current.general = node; }}>
             <SectionCard sectionKey="general" isOpen={openSections.general}
               onToggleOpen={() => setOpenSections((prev) => ({ ...prev, general: !prev.general }))}
@@ -327,7 +326,6 @@ export default function IndianGolfAddEditData() {
             </SectionCard>
           </div>
 
-          {/* 1. Hero Banner */}
           <div ref={(node) => { sectionRefs.current.heroBanner = node; }}>
             <SectionCard sectionKey="heroBanner" isOpen={openSections.heroBanner}
               onToggleOpen={() => setOpenSections((prev) => ({ ...prev, heroBanner: !prev.heroBanner }))}
@@ -374,7 +372,6 @@ export default function IndianGolfAddEditData() {
             </SectionCard>
           </div>
 
-          {/* 2. Introduction Section */}
           <div ref={(node) => { sectionRefs.current.introSection = node; }}>
             <SectionCard sectionKey="introSection" isOpen={openSections.introSection}
               onToggleOpen={() => setOpenSections((prev) => ({ ...prev, introSection: !prev.introSection }))}
@@ -418,7 +415,6 @@ export default function IndianGolfAddEditData() {
             </SectionCard>
           </div>
 
-          {/* 3. Great Moments Timeline */}
           <div ref={(node) => { sectionRefs.current.greatMoments = node; }}>
             <SectionCard sectionKey="greatMoments" isOpen={openSections.greatMoments}
               onToggleOpen={() => setOpenSections((prev) => ({ ...prev, greatMoments: !prev.greatMoments }))}
@@ -517,7 +513,6 @@ export default function IndianGolfAddEditData() {
           </div>
         </div>
 
-        {/* Quick Jump */}
         <div style={{ position: "fixed", right: 20, top: "50%", transform: "translateY(-50%)", zIndex: 1200, display: "flex", alignItems: "center", gap: 12 }}>
           {quickJumpOpen && (
             <div style={{ width: 240, maxHeight: "70vh", overflowY: "auto", background: "#ffffff", border: "1px solid #dbe7f5", borderRadius: 24, boxShadow: "0 18px 44px rgba(15, 23, 42, 0.16)", padding: "14px 12px" }}>

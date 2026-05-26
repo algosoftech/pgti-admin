@@ -3,7 +3,7 @@ import { Dropdown, notification, Modal } from "antd";
 import {
   faEdit, faEye, faThumbsUp, faThumbsDown,
   faPlus, faRefresh, faTrash, faEllipsis, faKey,
-  faUsers, faUserCheck, faUserXmark, faUserClock,
+  faUsers, faUserCheck, faUserXmark, faUserGraduate,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Top_navbar from "components/layout/TopNavbar";
@@ -27,6 +27,19 @@ import { getPlayersListingBanner, resetPlayerPassword } from "services/users.ser
 const IMAGE_BASE = (() => {
   const b = process.env.REACT_APP_IMAGE_BASE_URL || '';
   return b.endsWith('/') ? b.slice(0, -1) : b;
+})();
+
+const PLAYER_PRIZE_WS_URL = (() => {
+  const apiBase = (process.env.REACT_APP_API_BASE_URL || "").trim();
+  if (!apiBase) return "";
+
+  try {
+    const parsed = new URL(apiBase, window.location.origin);
+    const protocol = parsed.protocol === "https:" ? "wss:" : "ws:";
+    return `${protocol}//${parsed.host}/ws/player-prize`;
+  } catch {
+    return "";
+  }
 })();
 
 const resolveImg = (v) => {
@@ -64,12 +77,14 @@ export default function UsersList() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const targetRef = useRef(null);
+  const prizeSocketRef = useRef(null);
+  const reconnectTimerRef = useRef(null);
   const user = JSON.parse(sessionStorage.getItem("ADMIN-INFO"));
 
   const {
     listData: ALLLISTDATA, isLoading, currentPage,
     totalPages: TOTALPAGES, limit: LIMIT, skip: SKIP,
-    showRequest, count,
+    showRequest, count, stats,
   } = useAppSelector((state) => state.users);
 
   const PERMISSION = usePermissions("users");
@@ -84,12 +99,6 @@ export default function UsersList() {
   const canEdit = user?.admin_type === "Super Admin" || PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y";
   const canStatus = user?.admin_type === "Super Admin" || PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y";
   const canDelete = user?.admin_type === "Super Admin" || PERMISSION?.delete === "Y" || PERMISSION?.fullAccess === "Y";
-
-  const stats = useMemo(() => ({
-    active:   ALLLISTDATA.filter(u => u.status === "A").length,
-    inactive: ALLLISTDATA.filter(u => u.status === "I").length,
-    pending:  ALLLISTDATA.filter(u => u.status === "P").length,
-  }), [ALLLISTDATA]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -290,8 +299,20 @@ export default function UsersList() {
       header: "Status",
       cell: ({ row }) => {
         const s = row.original.status;
-        const map = { A: ["active", "Active"], I: ["inactive", "Inactive"], P: ["pending", "Pending"] };
-        const [cls, label] = map[s] || ["inactive", s || "—"];
+        const map = { A: ["active", "Active"], I: ["inactive", "Inactive"] };
+        if (row.original.is_alumni) {
+          return (
+            <span
+              className="status-badge"
+              style={{ background: "#f3e8ff", color: "#7c3aed", borderColor: "#d8b4fe" }}
+            >
+              Alumni
+            </span>
+          );
+        }
+        const [cls, label] = row.original.is_alumni
+          ? ["pending", "Alumni"]
+          : (map[s] || ["inactive", s || "—"]);
         return <span className={`status-badge ${cls}`}>{label}</span>;
       },
       size: 110, enableSorting: true,
@@ -351,16 +372,76 @@ export default function UsersList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showRequest, LIMIT]);
 
+  useEffect(() => {
+    if (!PLAYER_PRIZE_WS_URL) return undefined;
+
+    let disposed = false;
+
+    const connect = () => {
+      if (disposed) return;
+
+      try {
+        const socket = new WebSocket(PLAYER_PRIZE_WS_URL);
+        prizeSocketRef.current = socket;
+
+        socket.onmessage = (event) => {
+          try {
+            const payload = JSON.parse(event.data || "{}");
+            if (payload?.type !== "player_prize_sync_updated") return;
+
+            getList();
+            notification.open({
+              key: "player-prize-sync-updated",
+              message: "Player rankings updated",
+              description: `Latest prize sync completed${payload?.synced_at ? ` at ${payload.synced_at}` : "."}`,
+              placement: "topRight",
+              icon: <CheckCircleOutlined style={{ color: "green" }} />,
+              duration: 3,
+            });
+          } catch {
+            // ignore malformed messages
+          }
+        };
+
+        socket.onclose = () => {
+          prizeSocketRef.current = null;
+          if (!disposed) {
+            reconnectTimerRef.current = setTimeout(connect, 5000);
+          }
+        };
+
+        socket.onerror = () => {
+          try { socket.close(); } catch {}
+        };
+      } catch {
+        reconnectTimerRef.current = setTimeout(connect, 5000);
+      }
+    };
+
+    connect();
+
+    return () => {
+      disposed = true;
+      if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+      if (prizeSocketRef.current && prizeSocketRef.current.readyState < 2) {
+        prizeSocketRef.current.close();
+      }
+      prizeSocketRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="admin-page-container" ref={targetRef}>
       <Top_navbar title="Player Management" />
 
       {/* Stats */}
       <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 20 }}>
-        <StatCard icon={faUsers}     label="Total Players"        value={count}           color="#1d4ed8" />
-        <StatCard icon={faUserCheck} label="Active Players"       value={stats.active}    color="#16a34a" />
-        <StatCard icon={faUserXmark} label="Inactive Players"     value={stats.inactive}  color="#dc2626" />
-        <StatCard icon={faUserClock} label="Pending Verification" value={stats.pending}   color="#d97706" />
+        <StatCard icon={faUsers}        label="Total Players"    value={stats?.total ?? count} color="#1d4ed8" />
+        <StatCard icon={faUserCheck}    label="Active Players"   value={stats?.active ?? 0}    color="#16a34a" />
+        <StatCard icon={faUserXmark}    label="Inactive Players" value={stats?.inactive ?? 0}  color="#dc2626" />
+        <StatCard icon={faUserGraduate} label="Alumni Players"   value={stats?.alumni ?? 0}    color="#7c3aed" />
       </div>
 
       <div className="content-card">
@@ -370,7 +451,7 @@ export default function UsersList() {
               { key: "all", label: "All Players" },
               { key: "A",   label: "Active" },
               { key: "I",   label: "Inactive" },
-              { key: "P",   label: "Pending" },
+              { key: "alumni", label: "Alumni" },
             ].map(t => (
               <button key={t.key} className={`tab-item ${activeTab === t.key ? "active" : ""}`} onClick={() => handleTabChange(t.key)}>
                 {t.label}

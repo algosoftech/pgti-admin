@@ -16,6 +16,7 @@ export const extractApiError = (res, fallback = 'Something went wrong. Please tr
   // ── 1. Successful HTTP but status:false  (200 + { status: false, message })
   const d = res?.data;
   if (d) {
+    if (d.statusMessage)                    return d.statusMessage;
     if (d.message)                          return d.message;
     if (d.error)                            return d.error;
     if (d.response?.message)                return d.response.message;
@@ -31,6 +32,7 @@ export const extractApiError = (res, fallback = 'Something went wrong. Please tr
   // ── 2. axios error object — .response is the actual HTTP response
   const rd = res?.response?.data;
   if (rd) {
+    if (rd.statusMessage)                   return rd.statusMessage;
     if (rd.message)                         return rd.message;
     if (rd.error)                           return rd.error;
     if (rd.response?.message)               return rd.response.message;

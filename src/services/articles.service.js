@@ -18,6 +18,18 @@ export const list = async (options = {}) => {
     }
 };
 
+export const listArticleCategories = async () => {
+    try {
+        const res = await postRequest({ url: `${BASE}/admin/articles/categories/list`, postData: {} });
+        if (res?.status === 200 && res?.data?.status) {
+            return { status: true, result: res?.data?.response?.result || [] };
+        }
+        return { status: false, message: extractApiError(res, 'Failed to fetch article categories') };
+    } catch (error) {
+        return { status: false, message: error.message || 'Network error' };
+    }
+};
+
 export const addEditArticle = async (options = {}) => {
     try {
         const { editId, ...rest } = options;

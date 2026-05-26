@@ -11,8 +11,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import LoadingEffect from 'components/ui/Loading/LoadingEffect';
-import { addEditArticle } from 'services/articles.service';
-import { list as fetchCategories } from 'services/category.service';
+import { addEditArticle, listArticleCategories } from 'services/articles.service';
 import ImageUploadField from 'components/ui/ImageUploadField';
 import { CharCounter, FieldHint, ImageHint } from 'components/ui/FieldHint';
 import { LIMITS, IMAGE_SPECS, validateLength } from 'utils/fieldValidation';
@@ -36,12 +35,7 @@ const ArticleAddEditPage = () => {
     const loadCategories = async () => {
       try {
         setLoadingCategories(true);
-        const result = await fetchCategories({
-          type: "",
-          condition: { status: "A" },
-          skip: 0,
-          limit: 1000,
-        });
+        const result = await listArticleCategories();
         if (result.status === true && result.result) {
           setCategories(result.result);
         }

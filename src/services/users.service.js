@@ -10,7 +10,12 @@ export const list = async (options = {}) => {
         const page = Math.floor(skip / limit) + 1;
         const res = await postRequest({ url: `${BASE}/admin/users/list`, postData: { page, limit, ...rest } });
         if (res?.status === 200 && res?.data?.status) {
-            return { status: true, result: res?.data?.response?.result, count: res?.data?.response?.count };
+            return {
+                status: true,
+                result: res?.data?.response?.result,
+                count: res?.data?.response?.count,
+                stats: res?.data?.response?.stats || null,
+            };
         }
         return { status: false, message: extractApiError(res, 'Failed to fetch players') };
     } catch (error) {
@@ -100,6 +105,54 @@ export const addEditPlayersListingBanner = async (options = {}) => {
             return { status: true, result: res?.data?.response?.result };
         }
         return { status: false, message: extractApiError(res, 'Failed to save players listing banner') };
+    } catch (error) {
+        return { status: false, message: error.message || 'Request failed' };
+    }
+};
+
+export const getPlayersHandbook = async () => {
+    try {
+        const res = await postRequest({ url: `${BASE}/admin/users/handbook/detail`, postData: {} });
+        if (res?.status === 200 && res?.data?.status) {
+            return { status: true, result: res?.data?.response?.result || null };
+        }
+        return { status: false, message: extractApiError(res, 'Failed to fetch players handbook') };
+    } catch (error) {
+        return { status: false, message: error.message || 'Request failed' };
+    }
+};
+
+export const savePlayersHandbook = async (formData) => {
+    try {
+        const res = await postRequest({ url: `${BASE}/admin/users/handbook/add-edit`, postData: formData });
+        if (res?.status === 200 && res?.data?.status) {
+            return { status: true, result: res?.data?.response?.result || null };
+        }
+        return { status: false, message: extractApiError(res, 'Failed to save players handbook') };
+    } catch (error) {
+        return { status: false, message: error.message || 'Request failed' };
+    }
+};
+
+export const getPlayerPrizeSyncStatus = async () => {
+    try {
+        const res = await postRequest({ url: `${BASE}/admin/users/prize-sync/status`, postData: {} });
+        if (res?.status === 200 && res?.data?.status) {
+            return { status: true, result: res?.data?.response?.result || null };
+        }
+        return { status: false, message: extractApiError(res, 'Failed to fetch player prize sync status') };
+    } catch (error) {
+        return { status: false, message: error.message || 'Request failed' };
+    }
+};
+
+export const runPlayerPrizeSync = async () => {
+    try {
+        const res = await postRequest({ url: `${BASE}/admin/users/prize-sync/run`, postData: {} });
+        if (res?.status === 200 && res?.data?.status) {
+            return { status: true, result: res?.data?.response?.result || null };
+        }
+        return { status: false, message: extractApiError(res, 'Failed to run player prize sync') };
     } catch (error) {
         return { status: false, message: error.message || 'Request failed' };
     }

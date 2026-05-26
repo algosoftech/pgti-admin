@@ -33,6 +33,7 @@ export const IMAGE_SPECS = {
   'cms/tour-partners': { recommended: "200×80 px (logo)", maxMB: 0.5, note: "Transparent PNG preferred for logos." },
   'cms/anti-doping':   { recommended: "800×600 px",  maxMB: 2, note: "Clear image representing the section." },
   'cms/indian-golf':   { recommended: "1200×700 px",  maxMB: 2, note: "High-resolution landscape image." },
+  'cms/growth-of-golf': { recommended: "1200×700 px", maxMB: 2, note: "Historical page artwork, founder-club images, and profile sections for the Growth of Golf page." },
   'cms/golf-facts':    { recommended: "1200×600 px",  maxMB: 2, note: "Wide banner format works best." },
   'cms/gallery':       { recommended: "1200×800 px",  maxMB: 2, note: "Landscape image preferred for photo gallery cards." },
   'cms/listing-banners': { recommended: "1920×600 px", maxMB: 2, note: "Wide hero banner for front listing pages like gallery, news, events, and articles." },
@@ -46,6 +47,19 @@ export const IMAGE_SPECS = {
 };
 
 /* ── Show a limit error notification ─────────────────────────────────────── */
+export const FILE_SPECS = {
+  handbook_pdf: {
+    accepted: ".pdf",
+    maxMB: 25,
+    note: "Upload the latest handbook PDF for the logged-in player dashboard handbook tab.",
+  },
+  ace_import_web: {
+    accepted: ".web",
+    maxMB: 20,
+    note: "Upload the generated ACE/Web Link import file exactly as exported by the legacy system.",
+  },
+};
+
 export const showLimitError = (message) => {
   notification.open({
     message: "Field Limit Error",
@@ -124,5 +138,62 @@ export const validateVideoFile = (file, spec = {}) => {
     });
     return false;
   }
+  return true;
+};
+
+export const validatePdfFile = (file, spec = {}) => {
+  const maxBytes = (spec.maxMB || 25) * 1024 * 1024;
+  if (file.size > maxBytes) {
+    notification.open({
+      message: "PDF Too Large",
+      description: `The selected PDF (${(file.size / 1024 / 1024).toFixed(1)} MB) exceeds the maximum allowed size of ${spec.maxMB || 25} MB.`,
+      placement: "topRight",
+      icon: React.createElement(InfoCircleOutlined, { style: { color: "#ef4444" } }),
+      duration: 5,
+    });
+    return false;
+  }
+
+  const isPdfMime = file.type === "application/pdf";
+  const isPdfName = /\.pdf$/i.test(file.name || "");
+  if (!isPdfMime && !isPdfName) {
+    notification.open({
+      message: "Invalid File Type",
+      description: `Only PDF files are accepted. You uploaded: ${file.type || file.name || "unknown"}.`,
+      placement: "topRight",
+      icon: React.createElement(InfoCircleOutlined, { style: { color: "#ef4444" } }),
+      duration: 4,
+    });
+    return false;
+  }
+
+  return true;
+};
+
+export const validateAceWebFile = (file, spec = {}) => {
+  const maxBytes = (spec.maxMB || 20) * 1024 * 1024;
+  if (file.size > maxBytes) {
+    notification.open({
+      message: "File Too Large",
+      description: `The selected import file (${(file.size / 1024 / 1024).toFixed(1)} MB) exceeds the maximum allowed size of ${spec.maxMB || 20} MB.`,
+      placement: "topRight",
+      icon: React.createElement(InfoCircleOutlined, { style: { color: "#ef4444" } }),
+      duration: 5,
+    });
+    return false;
+  }
+
+  const isWebName = /\.web$/i.test(file.name || "");
+  if (!isWebName) {
+    notification.open({
+      message: "Invalid File Type",
+      description: `Only generated .web files are accepted for ACE import. You uploaded: ${file.name || file.type || "unknown"}.`,
+      placement: "topRight",
+      icon: React.createElement(InfoCircleOutlined, { style: { color: "#ef4444" } }),
+      duration: 4,
+    });
+    return false;
+  }
+
   return true;
 };

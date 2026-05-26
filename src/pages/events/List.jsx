@@ -5,6 +5,7 @@ import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,
   EyeOutlined,
+  FileTextOutlined,
   PictureOutlined,
 } from "@ant-design/icons";
 import {
@@ -393,6 +394,11 @@ export default function EventList() {
             <button className="action-button secondary" onClick={() => getList()}>
               <FontAwesomeIcon icon={faRefresh} /> Refresh
             </button>
+            {canEdit && (
+              <button className="action-button secondary" onClick={() => navigate("/admin/events/ace-import")}>
+                <FileTextOutlined /> Tournament Data Import
+              </button>
+            )}
             {canEdit && (
               <button className="action-button secondary" onClick={handleListingBannerClick}>
                 {listingBanner ? <EyeOutlined /> : <PictureOutlined />}

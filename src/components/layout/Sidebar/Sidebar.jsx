@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Collapse } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,6 +15,7 @@ import {
   faHouse,
   faImages,
   faLock,
+  faMagnifyingGlass,
   faNewspaper,
   faPhone,
   faShieldHalved,
@@ -23,12 +24,22 @@ import {
   faUsers,
   faVideo,
   faBookOpen,
+  faXmark,
+  faArrowsRotate,
 } from "@fortawesome/free-solid-svg-icons";
 import { PermissionContext, usePermissions } from "contexts/PermissionContext";
 import { listArticlePages } from "services/articlePages.service";
 import "./Sidebar.css";
 
 const { Panel } = Collapse;
+
+const readAdminInfo = () => {
+  try {
+    return JSON.parse(sessionStorage.getItem("ADMIN-INFO") || "null");
+  } catch {
+    return null;
+  }
+};
 
 const SidebarItem = ({ to, icon, name, isOpen, end = false, className = "" }) => (
   <NavLink
@@ -46,13 +57,7 @@ const SidebarItem = ({ to, icon, name, isOpen, end = false, className = "" }) =>
 const Sidebar = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const user = useMemo(() => {
-    try {
-      return JSON.parse(sessionStorage.getItem("ADMIN-INFO") || "null");
-    } catch {
-      return null;
-    }
-  }, []);
+  const [user, setUser] = useState(readAdminInfo);
 
   const permissionSnapshot = usePermissions("FULL");
   const { refetchPermissions } = useContext(PermissionContext);
@@ -66,6 +71,14 @@ const Sidebar = ({ children }) => {
   const [permissionData, setPermissionData] = useState({});
   const [openPanel, setOpenPanel] = useState(null);
   const [articlePages, setArticlePages] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchRef = useRef(null);
+
+  useEffect(() => {
+    const syncAdminInfo = () => setUser(readAdminInfo());
+    window.addEventListener("admin-profile-updated", syncAdminInfo);
+    return () => window.removeEventListener("admin-profile-updated", syncAdminInfo);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -123,6 +136,8 @@ const Sidebar = ({ children }) => {
   const isSuperAdmin = user?.admin_type === "Super Admin" || permissionSnapshot?.fullAccess === "Y";
   const hasAccess = (moduleName, action = "list") =>
     isSuperAdmin || permissionData?.[moduleName]?.[action] === "Y";
+  const canAccessImports = hasAccess("imports") || hasAccess("events");
+  const canAccessLiveSync = isSuperAdmin || hasAccess("live_sync") || hasAccess("events") || hasAccess("users");
   const canAccessArticlePages = hasAccess("articles");
 
   useEffect(() => {
@@ -179,6 +194,19 @@ const Sidebar = ({ children }) => {
     loadArticlePages();
   }, [canAccessArticlePages, isOpen, location.pathname]);
 
+  const highlightMatch = useCallback((text, query) => {
+    if (!query) return text;
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return text;
+    return (
+      <>
+        {text.slice(0, idx)}
+        <mark className="sidebar-search-highlight">{text.slice(idx, idx + query.length)}</mark>
+        {text.slice(idx + query.length)}
+      </>
+    );
+  }, []);
+
   const cmsItems = [
     { check: hasAccess("homepage_settings") || hasAccess("FULL"), to: "/admin/cms/homepage/list", icon: faHouse, name: "Homepage Settings" },
     { check: hasAccess("about_us"), to: "/admin/cms/about-us/list", icon: faBookOpen, name: "About Us" },
@@ -193,6 +221,7 @@ const Sidebar = ({ children }) => {
     { check: hasAccess("golf_facts"), to: "/admin/cms/golf-facts/list", icon: faFlag, name: "Golf Facts" },
     { check: hasAccess("highlight_videos"), to: "/admin/cms/highlight-videos/list", icon: faVideo, name: "Highlights & Videos" },
     { check: hasAccess("indian_golf"), to: "/admin/cms/indian-golf/list", icon: faFlag, name: "Indian Golf" },
+    { check: hasAccess("growth_of_golf"), to: "/admin/cms/growth-of-golf/list", icon: faFlag, name: "Growth of Golf" },
     { check: hasAccess("news"), to: "/admin/cms/news/list", icon: faNewspaper, name: "News" },
     { check: hasAccess("privacy_policy"), to: "/admin/cms/privacy-policy/list", icon: faLock, name: "Privacy Policy" },
     { check: hasAccess("cookie_policy"), to: "/admin/cms/cookie-policy/list", icon: faLock, name: "Cookie Policy" },
@@ -236,7 +265,7 @@ const Sidebar = ({ children }) => {
           items: cmsItems,
         }
       : null,
-    hasAccess("contact_us")
+    (hasAccess("inquiries") || hasAccess("contact_us"))
       ? {
           key: "inquiries",
           header: "Inquiries",
@@ -290,6 +319,11 @@ const Sidebar = ({ children }) => {
                     icon: faUsers,
                     name: "Login Activity",
                   },
+                  {
+                    to: "/admin/users/handbook",
+                    icon: faBookOpen,
+                    name: "Handbook",
+                  },
                 ]
               : []),
             ...(hasAccess("tournament_results")
@@ -306,6 +340,51 @@ const Sidebar = ({ children }) => {
       : null,
   ].filter(Boolean);
 
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+
+    const results = [];
+
+    results.push({
+      to: "/admin/dashboard",
+      name: "Dashboard",
+      icon: faHouse,
+      section: null,
+    });
+
+    if (canAccessLiveSync) {
+      results.push({
+        to: "/admin/live-sync",
+        name: "Live Sync",
+        icon: faArrowsRotate,
+        section: null,
+      });
+    }
+
+    collapseItems.forEach((section) => {
+      section.items.forEach((item) => {
+        results.push({
+          to: item.to,
+          name: item.name,
+          icon: item.icon,
+          section: section.header,
+        });
+      });
+    });
+
+    if (canAccessImports) {
+      results.push({
+        to: "/admin/events/ace-import",
+        name: "Imports",
+        icon: faFileLines,
+        section: null,
+      });
+    }
+
+    return results.filter((r) => r.name.toLowerCase().includes(q));
+  }, [searchQuery, collapseItems, canAccessImports, canAccessLiveSync]);
+
   return (
     <>
       {isMobile && (
@@ -321,21 +400,26 @@ const Sidebar = ({ children }) => {
 
       {isMobile && isOpen && <div className="sidebar-overlay" onClick={() => setIsOpen(false)} />}
 
-      <div
-        className={`container-fluid side_bar_main_div ${
-          isOpen ? "sidebar-open" : "sidebar-closed"
-        } ${isMobile ? "mobile-sidebar" : ""}`}
-      >
-        <aside
-          className={`sidebar ${isMobile && isOpen ? "sidebar-mobile-open" : ""}`}
-          style={{ width: isOpen ? "300px" : isMobile ? "0" : "84px" }}
+        <div
+          className={`container-fluid side_bar_main_div ${
+            isOpen ? "sidebar-open" : "sidebar-closed"
+          } ${isMobile ? "mobile-sidebar" : ""}`}
         >
+          <aside
+            className={`sidebar ${isMobile && isOpen ? "sidebar-mobile-open" : ""}`}
+            style={{ width: isOpen ? "var(--sidebar-open-width)" : isMobile ? "0" : "var(--sidebar-collapsed-width)" }}
+          >
           <div className="top_section">
             <div className="sidebar-brand">
-              <div className="brand-icon">PGTI</div>
+              <div className="brand-logo-shell">
+                <img
+                  src="/pgti_dpworld_logo_new.png"
+                  alt="PGTI DP World"
+                  className="brand-logo-image"
+                />
+              </div>
               {isOpen && (
                 <div className="brand-text">
-                  <h3 className="brand-title">PGTI</h3>
                   <p className="brand-subtitle">Admin Portal</p>
                 </div>
               )}
@@ -350,6 +434,65 @@ const Sidebar = ({ children }) => {
           </div>
 
           <div className="my_sidebar_all_section">
+            {isOpen && (
+              <div className="sidebar-search-wrap">
+                <FontAwesomeIcon icon={faMagnifyingGlass} className="sidebar-search-icon" />
+                <input
+                  ref={searchRef}
+                  type="text"
+                  className="sidebar-search-input"
+                  placeholder="Search menu…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Escape" && setSearchQuery("")}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+                {searchQuery && (
+                  <button
+                    className="sidebar-search-clear"
+                    onClick={() => { setSearchQuery(""); searchRef.current?.focus(); }}
+                    type="button"
+                    aria-label="Clear search"
+                  >
+                    <FontAwesomeIcon icon={faXmark} />
+                  </button>
+                )}
+              </div>
+            )}
+
+            {isOpen && searchQuery ? (
+              <div className="sidebar-search-results">
+                {searchResults.length === 0 ? (
+                  <div className="sidebar-search-empty">
+                    <FontAwesomeIcon icon={faMagnifyingGlass} style={{ opacity: 0.3, fontSize: 20, display: "block", marginBottom: 8 }} />
+                    No results for <strong>"{searchQuery}"</strong>
+                  </div>
+                ) : (
+                  searchResults.map((item) => (
+                    <button
+                      key={item.to}
+                      type="button"
+                      className={`sidebar-search-result-item${location.pathname === item.to.split("?")[0] ? " active" : ""}`}
+                      onClick={() => { navigate(item.to); setSearchQuery(""); }}
+                    >
+                      <span className="sidebar-search-result-icon">
+                        <FontAwesomeIcon icon={item.icon} />
+                      </span>
+                      <span className="sidebar-search-result-text">
+                        <span className="sidebar-search-result-name">
+                          {highlightMatch(item.name, searchQuery)}
+                        </span>
+                        {item.section && (
+                          <span className="sidebar-search-result-section">{item.section}</span>
+                        )}
+                      </span>
+                    </button>
+                  ))
+                )}
+              </div>
+            ) : (
+              <>
             <SidebarItem
               to="/admin/dashboard"
               icon={<FontAwesomeIcon icon={faHouse} />}
@@ -374,14 +517,30 @@ const Sidebar = ({ children }) => {
                   key={section.key}
                   className={`side_bar_categories ${isOpen ? "arrow-visible" : "arrow-hidden"}`}
                   header={
-                    <>
-                      <FontAwesomeIcon icon={section.icon} className="sidebar_collapse_iohomeoutline" />
-                      {isOpen && (
+                    isOpen ? (
+                      <>
+                        <FontAwesomeIcon icon={section.icon} className="sidebar_collapse_iohomeoutline" />
                         <span className="sidebar_collapse_iohomeoutline_categoires">
                           {section.header}
                         </span>
-                      )}
-                    </>
+                      </>
+                    ) : (
+                      <div
+                        className={`sidebar-collapsed-cluster ${
+                          section.items.length === 1
+                            ? "sidebar-collapsed-cluster--single"
+                            : "sidebar-collapsed-cluster--grid"
+                        }`}
+                        title={section.header}
+                        aria-label={section.header}
+                      >
+                        {section.items.slice(0, 4).map((item) => (
+                          <span key={item.to} className="sidebar-collapsed-cluster__item">
+                            <FontAwesomeIcon icon={item.icon} />
+                          </span>
+                        ))}
+                      </div>
+                    )
                   }
                 >
                   {section.items.map((item) => (
@@ -398,15 +557,37 @@ const Sidebar = ({ children }) => {
               </Collapse>
             ))}
 
+            {canAccessImports && (
+              <SidebarItem
+                to="/admin/events/ace-import"
+                icon={<FontAwesomeIcon icon={faFileLines} />}
+                name="Imports"
+                isOpen={isOpen}
+                className="sidebar_top_tab"
+              />
+            )}
+
+            {canAccessLiveSync && (
+              <SidebarItem
+                to="/admin/live-sync"
+                icon={<FontAwesomeIcon icon={faArrowsRotate} />}
+                name="Live Sync"
+                isOpen={isOpen}
+                className="sidebar_top_tab"
+              />
+            )}
+              </>
+            )}
+
             <SidebarItem
-              to="/admin/accounts/addeditdata"
+              to="/admin/profile"
               icon={<FontAwesomeIcon icon={faCircleUser} className="sidebar__user__icon" />}
               name={
                 <div
                   className="sidebar_profile_main_content_section"
                   onClick={(event) => {
                     event.preventDefault();
-                    navigate("/admin/accounts/addeditdata", { state: user });
+                    navigate("/admin/profile");
                   }}
                 >
                   <div className="sidebar_profile_main_content">

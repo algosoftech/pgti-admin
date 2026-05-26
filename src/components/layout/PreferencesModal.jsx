@@ -4,53 +4,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faXmark,
   faSlidersH,
-  faBell,
   faTableColumns,
   faShield,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
-
-const STORAGE_KEY = "PGTI_PREFS";
-
-const defaultPrefs = {
-  // Display
-  sidebarCollapsed: false,
-  compactTable: false,
-  // Notifications
-  emailNotifications: true,
-  loginAlerts: true,
-  // Table defaults
-  defaultPageSize: "10",
-  // Session
-  sessionTimeout: "60",
-};
-
-const loadPrefs = () => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? { ...defaultPrefs, ...JSON.parse(stored) } : { ...defaultPrefs };
-  } catch {
-    return { ...defaultPrefs };
-  }
-};
-
-const Toggle = ({ checked, onChange }) => (
-  <button
-    onClick={() => onChange(!checked)}
-    style={{
-      width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer",
-      background: checked ? "linear-gradient(135deg, #1e3a5f, #0369a1)" : "#e2e8f0",
-      position: "relative", transition: "background 0.25s", flexShrink: 0,
-    }}
-  >
-    <span style={{
-      position: "absolute", top: 3, left: checked ? 23 : 3,
-      width: 18, height: 18, borderRadius: "50%", background: "#fff",
-      boxShadow: "0 1px 4px rgba(0,0,0,0.2)", transition: "left 0.25s",
-      display: "block",
-    }} />
-  </button>
-);
+import {
+  defaultPreferences,
+  loadPreferences,
+  savePreferences,
+} from "utils/preferences";
 
 const SectionHeader = ({ icon, title }) => (
   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
@@ -93,23 +55,23 @@ const SelectInput = ({ value, onChange, options }) => (
 );
 
 const PreferencesModal = ({ open, onClose }) => {
-  const [prefs, setPrefs] = useState(loadPrefs);
+  const [prefs, setPrefs] = useState(loadPreferences);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    if (open) { setPrefs(loadPrefs()); setSaved(false); }
+    if (open) { setPrefs(loadPreferences()); setSaved(false); }
   }, [open]);
 
   const set = (key, val) => setPrefs(p => ({ ...p, [key]: val }));
 
   const handleSave = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+    savePreferences(prefs);
     setSaved(true);
     setTimeout(() => { setSaved(false); onClose(); }, 900);
   };
 
   const handleReset = () => {
-    setPrefs({ ...defaultPrefs });
+    setPrefs({ ...defaultPreferences });
   };
 
   return (
@@ -166,9 +128,6 @@ const PreferencesModal = ({ open, onClose }) => {
         {/* Display */}
         <div style={{ marginBottom: 28 }}>
           <SectionHeader icon={faTableColumns} title="Display" />
-          <Row label="Compact Table Rows" desc="Reduce row height in list tables">
-            <Toggle checked={prefs.compactTable} onChange={v => set("compactTable", v)} />
-          </Row>
           <Row label="Default Page Size" desc="Number of records shown per page by default">
             <SelectInput
               value={prefs.defaultPageSize}
@@ -180,17 +139,6 @@ const PreferencesModal = ({ open, onClose }) => {
                 { value: "100", label: "100 per page" },
               ]}
             />
-          </Row>
-        </div>
-
-        {/* Notifications */}
-        <div style={{ marginBottom: 28 }}>
-          <SectionHeader icon={faBell} title="Notifications" />
-          <Row label="Email Notifications" desc="Receive activity summaries via email">
-            <Toggle checked={prefs.emailNotifications} onChange={v => set("emailNotifications", v)} />
-          </Row>
-          <Row label="Login Alerts" desc="Get notified when a new login occurs">
-            <Toggle checked={prefs.loginAlerts} onChange={v => set("loginAlerts", v)} />
           </Row>
         </div>
 

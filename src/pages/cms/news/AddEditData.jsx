@@ -77,6 +77,7 @@ const buildInitialState = (state = {}) => ({
   season: state?.season || currentYear,
   news_month: state?.news_month || undefined,
   sort_order: state?.sort_order ?? 0,
+  about_pgti_content: state?.about_pgti_content || "",
   status: state?.status || "A",
 });
 
@@ -202,6 +203,7 @@ export default function NewsAddEditData() {
         season: ADDEDITDATA.season ? Number(ADDEDITDATA.season) : null,
         news_month: ADDEDITDATA.news_month ? Number(ADDEDITDATA.news_month) : null,
         sort_order: Number(ADDEDITDATA.sort_order || 0),
+        about_pgti_content: ADDEDITDATA.about_pgti_content || "",
         status: ADDEDITDATA.status || "A",
         ...(ADDEDITDATA?.image && { image: ADDEDITDATA.image }),
       };
@@ -482,6 +484,48 @@ export default function NewsAddEditData() {
                       Check this to mark the news as international. It will appear in the International News section on the front-end.
                     </p>
                   </div>
+                </div>
+              </div>
+
+              <div className="form-section">
+                <h3 className="form-section-title">
+                  <FileTextOutlined /> About PGTI Section
+                </h3>
+                <div className="col-md-12 col-12 mb-3 p-0">
+                  <div className="form-group">
+                    <label className="form-label">About PGTI Content</label>
+                    <ReactQuill
+                      theme="snow"
+                      value={ADDEDITDATA?.about_pgti_content || ""}
+                      onChange={(val) => {
+                        setAddEditData((p) => ({ ...p, about_pgti_content: val }));
+                      }}
+                      placeholder="Add the About PGTI text shown at the end of the news detail page..."
+                      style={{ backgroundColor: "white", borderRadius: 8, marginBottom: 8 }}
+                      modules={QUILL_MODULES}
+                    />
+                    <FieldHint text="This rich text block is appended near the end of the news detail view." />
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-section">
+                <h3 className="form-section-title">
+                  <InfoCircleOutlined /> Contact Information Source
+                </h3>
+                <div
+                  style={{
+                    border: "1px solid #dbeafe",
+                    background: "#eff6ff",
+                    borderRadius: 12,
+                    padding: "16px 18px",
+                    color: "#1e3a8a",
+                    fontSize: 14,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Contact information for the end-of-page contact block comes from <strong>CMS / Contact Us</strong>.
+                  Update that module to change the contact content shown with news pages.
                 </div>
               </div>
 
