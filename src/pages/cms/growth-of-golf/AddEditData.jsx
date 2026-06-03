@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 
 import ImageUploadField from "components/ui/ImageUploadField";
+import CmsSetupTopActions from "components/cms/CmsSetupTopActions";
 import { CharCounter, FieldHint, ImageHint } from "components/ui/FieldHint";
 import { addEditGrowthOfGolf, listGrowthOfGolf } from "services/growthOfGolf.service";
 import { uploadMedia } from "services/media.service";
@@ -29,6 +30,7 @@ import {
   stripHtml,
   validatePdfFile,
 } from "utils/fieldValidation";
+import { TOUR_TYPE_OPTIONS, shouldUseExistingTourTypeRecord } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const pdfSpec = FILE_SPECS.handbook_pdf;
@@ -338,6 +340,8 @@ export default function GrowthOfGolfAddEditData() {
   const [id, setId] = useState(location?.state?.id ?? location?.state?.result?.id ?? "");
   const [status, setStatus] = useState(location?.state?.status ?? "A");
   const [savedStatus, setSavedStatus] = useState(location?.state?.status ?? "A");
+  const [tourType, setTourType] = useState(location?.state?.tour_type ?? location?.state?.result?.tour_type ?? "M");
+  const [savedTourType, setSavedTourType] = useState(location?.state?.tour_type ?? location?.state?.result?.tour_type ?? "M");
 
   const [heroBanner, setHeroBanner] = useState(initialContent.heroBanner);
   const [savedHeroBanner, setSavedHeroBanner] = useState(initialContent.heroBanner);
@@ -384,6 +388,11 @@ export default function GrowthOfGolfAddEditData() {
       setStatus(nextStatus);
       setSavedStatus(nextStatus);
     }
+    const nextTourType = record?.tour_type ?? record?.result?.tour_type;
+    if (nextTourType) {
+      setTourType(nextTourType);
+      setSavedTourType(nextTourType);
+    }
   };
 
   useEffect(() => {
@@ -400,7 +409,7 @@ export default function GrowthOfGolfAddEditData() {
         }
 
         setIsFetching(true);
-        const res = await listGrowthOfGolf();
+        const res = await listGrowthOfGolf({ tour_type: tourType });
         if (active && res?.status && res?.result?.id) {
           hydrateForm(res.result);
           setOpenSections(buildSectionOpenState({ openKey: requestedOpenSectionKey }));
@@ -416,7 +425,7 @@ export default function GrowthOfGolfAddEditData() {
       active = false;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requestedOpenSectionKey]);
+  }, [requestedOpenSectionKey, tourType]);
 
   const buildContent = () => ({
     heroBanner,
@@ -452,6 +461,7 @@ export default function GrowthOfGolfAddEditData() {
   const cancelEditingSection = (sectionKey) => {
     if (sectionKey === "general") {
       setStatus(savedStatus);
+      setTourType(savedTourType);
     } else if (sectionKey === "heroBanner") {
       setHeroBanner(savedHeroBanner);
     } else if (sectionKey === "formationSection") {
@@ -471,6 +481,7 @@ export default function GrowthOfGolfAddEditData() {
 
   const persistCurrentStateAsSaved = () => {
     setSavedStatus(status);
+    setSavedTourType(tourType);
     setSavedHeroBanner({ ...heroBanner });
     setSavedFormationSection({ ...formationSection });
     setSavedFounderClubsSection({
@@ -488,6 +499,34 @@ export default function GrowthOfGolfAddEditData() {
     });
   };
 
+  const copyFromMainTour = async () => {
+    try {
+      setIsFetching(true);
+      const res = await listGrowthOfGolf({ tour_type: "M" });
+      if (!res?.status || !res?.result?.id) {
+        notification.warning({
+          message: "Main Tour data not found",
+          description: "Please save the Main Tour Growth of Golf page first.",
+          placement: "topRight",
+          duration: 3,
+        });
+        return;
+      }
+      hydrateForm(res.result);
+      setId("");
+      setTourType("F");
+      setSavedTourType("F");
+      notification.success({
+        message: "Copied from Main Tour",
+        description: "Edit the copied NextGen draft and save to create a separate record.",
+        placement: "topRight",
+        duration: 3,
+      });
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
   const saveSection = (sectionKey) => {
     Modal.confirm({
       title: "Save these changes?",
@@ -499,13 +538,14 @@ export default function GrowthOfGolfAddEditData() {
         try {
           setSavingSection(sectionKey);
           const res = await addEditGrowthOfGolf({
-            ...(id && { editId: id }),
+            ...(shouldUseExistingTourTypeRecord(id, savedTourType, tourType) && { editId: id }),
             status,
+            tour_type: tourType,
             content: JSON.stringify(buildContent()),
           });
 
           if (res?.status === true) {
-            if (!id && res?.result?.id) setId(res.result.id);
+            if (res?.result?.id) setId(res.result.id);
             persistCurrentStateAsSaved();
             setActiveEditSection("");
             notification.success({
@@ -657,6 +697,14 @@ export default function GrowthOfGolfAddEditData() {
         </div>
       </div>
 
+      <CmsSetupTopActions
+        tourType={tourType}
+        onCopyFromMain={copyFromMainTour}
+        onSaveAll={() => saveSection(activeEditSection)}
+        saveAllDisabled={!activeEditSection}
+        isWorking={Boolean(isFetching || savingSection)}
+      />
+
       <div className="page-body">
         <div className="modern-form">
           <div className="content-card" style={{ marginBottom: 24 }}>
@@ -715,6 +763,25 @@ export default function GrowthOfGolfAddEditData() {
                     <option value="A">Active</option>
                     <option value="I">Inactive</option>
                   </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Tour Type</label>
+                  <select className="form-input" value={tourType} onChange={(e) => setTourType(e.target.value)}>
+                    {TOUR_TYPE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                  {tourType === "F" && (
+                    <button
+                      type="button"
+                      className="action-button secondary"
+                      onClick={copyFromMainTour}
+                      disabled={isFetching}
+                      style={{ marginTop: 12 }}
+                    >
+                      Copy from Main Tour
+                    </button>
+                  )}
                 </div>
               </fieldset>
             </SectionCard>

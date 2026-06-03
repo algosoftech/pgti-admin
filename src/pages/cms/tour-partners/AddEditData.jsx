@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { notification } from "antd";
+import { Modal, notification } from "antd";
 import {
   ArrowDownOutlined,
   ArrowLeftOutlined,
@@ -11,11 +11,13 @@ import {
   SaveOutlined,
 } from "@ant-design/icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { addEditTourPartners } from "services/tourPartners.service";
+import { addEditTourPartners, listTourPartners } from "services/tourPartners.service";
 import LoadingEffect from "components/ui/Loading/LoadingEffect";
 import ImageUploadField from "components/ui/ImageUploadField";
+import CmsSetupTopActions from "components/cms/CmsSetupTopActions";
 import { CharCounter, FieldHint, ImageHint } from "components/ui/FieldHint";
 import { IMAGE_SPECS, LIMITS } from "utils/fieldValidation";
+import { TOUR_TYPE_OPTIONS, shouldUseExistingTourTypeRecord } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const ensureArray = (value, fallbackFactory) =>
@@ -162,7 +164,10 @@ export default function TourPartnersAddEditData() {
   const isEdit = Boolean(state?.id);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [id, setId] = useState(state?.id ?? state?.result?.id ?? "");
   const [status, setStatus] = useState(state?.status || "A");
+  const [tourType, setTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
+  const [savedTourType, setSavedTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
   const [hero, setHero] = useState(emptyHero());
   const [tourSection, setTourSection] = useState(emptyTourSection());
   const [pgtiSection, setPgtiSection] = useState(emptyPgtiSection());
@@ -225,6 +230,76 @@ export default function TourPartnersAddEditData() {
 
     document.title = `PGTI || ${isEdit ? "Edit" : "Setup"} Tour Partners Page`;
   }, [isEdit, state?.content]);
+
+  useEffect(() => {
+    let active = true;
+
+    const hydrate = (record = {}) => {
+      const content = parseContent(record?.content);
+      if (!content) return;
+
+      const heroBanner = { ...emptyHero(), ...(content.heroBanner || {}) };
+      const legacyTourSection = content.tourPartnersSection || {};
+      const legacyTourPartners = cleanPartnerDetails(
+        legacyTourSection.partners ||
+          content.partnerCarousel?.map((slide) => ({
+            title: slide.partner_name || slide.title || "",
+            image: slide.image || "",
+            overlay_logo: slide.overlay_logo || "",
+            descriptions: ensureArray(slide.descriptions, () => ""),
+            link_url: slide.link_url || "",
+          })) ||
+          []
+      );
+      const legacyPgtiSection = content.pgtiPartnersSection || {};
+
+      setHero(heroBanner);
+      setTourSection({
+        heading: legacyTourSection.heading || "Tour Partners",
+        description: legacyTourSection.description || "",
+        partners: ensureArray(legacyTourPartners.length ? legacyTourPartners : legacyTourSection.partners, emptyPartnerDetail).map((partner) => ({
+          ...emptyPartnerDetail(),
+          ...partner,
+          descriptions: ensureArray(partner.descriptions, () => ""),
+        })),
+      });
+      setPgtiSection({
+        heading: legacyPgtiSection.heading || "PGTI Partners",
+        description: legacyPgtiSection.description || "",
+        partners: ensureArray(legacyPgtiSection.partners, emptyPartnerDetail).map((partner) => ({
+          ...emptyPartnerDetail(),
+          ...partner,
+          descriptions: ensureArray(partner.descriptions, () => ""),
+        })),
+      });
+      const {
+        heroBanner: _hero,
+        tourPartnersSection: _tour,
+        partnerCarousel: _carousel,
+        pgtiPartnersSection: _pgtiSection,
+        pgtiPartners: _pgtiStrip,
+        ...rest
+      } = content;
+      setLegacyContent(rest);
+      if (record?.id) setId(record.id);
+      if (record?.status) setStatus(record.status);
+      if (record?.tour_type) {
+        setTourType(record.tour_type);
+        setSavedTourType(record.tour_type);
+      }
+    };
+
+    const load = async () => {
+      if (state?.content) return;
+      const res = await listTourPartners({ tour_type: tourType });
+      if (active && res?.status && res?.result?.id) hydrate(res.result);
+    };
+
+    load();
+    return () => {
+      active = false;
+    };
+  }, [state?.content, tourType]);
 
   useEffect(() => {
     setTourOpen((prev) => tourSection.partners.reduce((acc, _item, index) => ({ ...acc, [index]: prev[index] ?? index === 0 }), {}));
@@ -415,6 +490,84 @@ export default function TourPartnersAddEditData() {
     return "";
   };
 
+  const copyFromMainTour = async () => {
+    try {
+      setIsLoading(true);
+      const res = await listTourPartners({ tour_type: "M" });
+      if (!res?.status || !res?.result?.id) {
+        notification.warning({
+          message: "Main Tour data not found",
+          description: "Please save the Main Tour Tour Partners page first.",
+          placement: "topRight",
+          duration: 3,
+        });
+        return;
+      }
+
+      const content = parseContent(res.result?.content);
+      if (!content) {
+        notifyError("Main Tour Tour Partners content is not available to copy.");
+        return;
+      }
+
+      const heroBanner = { ...emptyHero(), ...(content.heroBanner || {}) };
+      const legacyTourSection = content.tourPartnersSection || {};
+      const legacyTourPartners = cleanPartnerDetails(
+        legacyTourSection.partners ||
+          content.partnerCarousel?.map((slide) => ({
+            title: slide.partner_name || slide.title || "",
+            image: slide.image || "",
+            overlay_logo: slide.overlay_logo || "",
+            descriptions: ensureArray(slide.descriptions, () => ""),
+            link_url: slide.link_url || "",
+          })) ||
+          []
+      );
+      const legacyPgtiSection = content.pgtiPartnersSection || {};
+
+      setHero(heroBanner);
+      setTourSection({
+        heading: legacyTourSection.heading || "Tour Partners",
+        description: legacyTourSection.description || "",
+        partners: ensureArray(legacyTourPartners.length ? legacyTourPartners : legacyTourSection.partners, emptyPartnerDetail).map((partner) => ({
+          ...emptyPartnerDetail(),
+          ...partner,
+          descriptions: ensureArray(partner.descriptions, () => ""),
+        })),
+      });
+      setPgtiSection({
+        heading: legacyPgtiSection.heading || "PGTI Partners",
+        description: legacyPgtiSection.description || "",
+        partners: ensureArray(legacyPgtiSection.partners, emptyPartnerDetail).map((partner) => ({
+          ...emptyPartnerDetail(),
+          ...partner,
+          descriptions: ensureArray(partner.descriptions, () => ""),
+        })),
+      });
+      const {
+        heroBanner: _hero,
+        tourPartnersSection: _tour,
+        partnerCarousel: _carousel,
+        pgtiPartnersSection: _pgtiSection,
+        pgtiPartners: _pgtiStrip,
+        ...rest
+      } = content;
+      setLegacyContent(rest);
+      setStatus(res.result?.status || "A");
+      setId("");
+      setTourType("F");
+      setSavedTourType("F");
+      notification.success({
+        message: "Copied from Main Tour",
+        description: "Edit the copied NextGen draft and save to create a separate record.",
+        placement: "topRight",
+        duration: 3,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -429,16 +582,20 @@ export default function TourPartnersAddEditData() {
 
     try {
       setIsLoading(true);
+      const isExistingRecord = shouldUseExistingTourTypeRecord(id, savedTourType, tourType);
       const response = await addEditTourPartners({
-        ...(isEdit && { editId: state.id }),
+        ...(isExistingRecord && { editId: id }),
         status,
+        tour_type: tourType,
         content: JSON.stringify(buildContent()),
       });
 
       if (response?.status === true) {
+        if (response?.result?.id) setId(response.result.id);
+        setSavedTourType(tourType);
         notification.open({
           message: "Success",
-          description: isEdit ? "Tour Partners page updated successfully." : "Tour Partners page created successfully.",
+          description: isExistingRecord ? "Tour Partners page updated successfully." : "Tour Partners page created successfully.",
           placement: "topRight",
           duration: 2,
           icon: <CheckCircleOutlined style={{ color: "green" }} />,
@@ -470,6 +627,22 @@ export default function TourPartnersAddEditData() {
           </Link>
         </div>
       </div>
+
+      <CmsSetupTopActions
+        tourType={tourType}
+        onCopyFromMain={copyFromMainTour}
+        onSaveAll={() =>
+          Modal.confirm({
+            title: "Save all changes?",
+            content: "Please confirm to save the full Tour Partners page.",
+            okText: "Yes, Save All",
+            cancelText: "Cancel",
+            onOk: () => document.getElementById("tour-partners-save-submit")?.click(),
+          })
+        }
+        saveAllDisabled={false}
+        isWorking={isLoading}
+      />
 
       <div className="page-body">
         <form onSubmit={handleSubmit}>
@@ -677,6 +850,29 @@ export default function TourPartnersAddEditData() {
                 <div className="row">
                   <div className="col-md-4 col-12 mb-3">
                     <div className="form-group">
+                      <label className="form-label">Tour Type</label>
+                      <select className="form-input" value={tourType} onChange={(event) => setTourType(event.target.value)}>
+                        {TOUR_TYPE_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {tourType === "F" && (
+                        <button
+                          type="button"
+                          className="action-button secondary"
+                          onClick={copyFromMainTour}
+                          disabled={isLoading}
+                          style={{ marginTop: 12 }}
+                        >
+                          Copy from Main Tour
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-12 mb-3">
+                    <div className="form-group">
                       <label className="form-label">Page Status</label>
                       <select className="form-input" value={status} onChange={(event) => setStatus(event.target.value)}>
                         <option value="A">Active</option>
@@ -684,7 +880,7 @@ export default function TourPartnersAddEditData() {
                       </select>
                     </div>
                   </div>
-                  <div className="col-md-8 col-12 mb-3">
+                  <div className="col-md-4 col-12 mb-3">
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 10, marginTop: 28 }}>
                       <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", fontSize: 12, color: "#334155" }}>Tour partner cards: <strong>{tourPartnerCount}</strong></div>
                       <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", fontSize: 12, color: "#334155" }}>PGTI partner cards: <strong>{pgtiPartnerCount}</strong></div>
@@ -696,7 +892,7 @@ export default function TourPartnersAddEditData() {
 
                 <div className="form-actions">
                   <button type="button" className="action-button secondary" onClick={() => navigate("/admin/cms/tour-partners/list")}>Cancel</button>
-                  <button type="submit" className="action-button primary" disabled={isLoading}>
+                  <button id="tour-partners-save-submit" type="submit" className="action-button primary" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <div className="loading-spinner small"></div>

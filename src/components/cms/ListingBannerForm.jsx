@@ -13,6 +13,7 @@ import LoadingEffect from "components/ui/Loading/LoadingEffect";
 import ImageUploadField from "components/ui/ImageUploadField";
 import { CharCounter, FieldHint, ImageHint } from "components/ui/FieldHint";
 import { IMAGE_SPECS, LIMITS, validateLength } from "utils/fieldValidation";
+import { TOUR_TYPE_OPTIONS } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const { Option } = Select;
@@ -23,6 +24,7 @@ const buildInitialState = (state = {}) => ({
   subtitle: state?.subtitle || "",
   image: state?.image || "",
   mobile_image: state?.mobile_image || "",
+  tour_type: state?.tour_type || "M",
   status: state?.status || "A",
 });
 
@@ -59,17 +61,20 @@ export default function ListingBannerForm({
   useEffect(() => {
     const load = async () => {
       setIsFetching(true);
-      const res = await loadBanner();
+      const requestedTourType = formData.tour_type || state?.tour_type || "M";
+      const res = await loadBanner(requestedTourType);
       if (res?.status && res.result) {
         setFormData(buildInitialState(res.result));
       } else if (state?.id) {
         setFormData(buildInitialState(state));
+      } else {
+        setFormData((prev) => buildInitialState({ tour_type: requestedTourType, status: prev.status || "A" }));
       }
       setIsFetching(false);
     };
 
     load();
-  }, [loadBanner, state]);
+  }, [loadBanner, state, formData.tour_type]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -125,6 +130,7 @@ export default function ListingBannerForm({
         subtitle: formData.subtitle.trim(),
         image: formData.image,
         mobile_image: formData.mobile_image,
+        tour_type: formData.tour_type || "M",
         status: formData.status || "A",
       });
 
@@ -238,6 +244,24 @@ export default function ListingBannerForm({
                     />
                     <CharCounter value={formData.subtitle} min={LIMITS.short_description.min} max={LIMITS.short_description.max} />
                     <FieldHint text={`This subtitle appears on the hero banner of the front ${entityName.toLowerCase()} listing page.`} />
+                  </div>
+
+                  <div className="col-md-3 col-12 mb-3">
+                    <label className="form-label">Tour Type</label>
+                    <Select
+                      value={formData.tour_type || "M"}
+                      onChange={(value) => setFormData((prev) => ({ ...prev, tour_type: value }))}
+                      className="form-select"
+                      style={{ width: "100%" }}
+                      size="large"
+                    >
+                      {TOUR_TYPE_OPTIONS.map((option) => (
+                        <Option key={option.value} value={option.value}>
+                          {option.label}
+                        </Option>
+                      ))}
+                    </Select>
+                    <FieldHint text={`Controls whether this listing banner is shown on the Main Tour or NextGen ${entityName.toLowerCase()} page.`} />
                   </div>
 
                   <div className="col-md-3 col-12 mb-3">

@@ -18,6 +18,7 @@ import ImageUploadField from "components/ui/ImageUploadField";
 import MultiImageUploadField from "components/ui/MultiImageUploadField";
 import { CharCounter, FieldHint, ImageHint } from "components/ui/FieldHint";
 import { LIMITS, IMAGE_SPECS, stripHtml, validateLength } from "utils/fieldValidation";
+import { TOUR_TYPE_OPTIONS } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const { Option } = Select;
@@ -78,6 +79,7 @@ const buildInitialState = (state = {}) => ({
   news_month: state?.news_month || undefined,
   sort_order: state?.sort_order ?? 0,
   about_pgti_content: state?.about_pgti_content || "",
+  tour_type: state?.tour_type || "M",
   status: state?.status || "A",
 });
 
@@ -103,7 +105,7 @@ export default function NewsAddEditData() {
   useEffect(() => {
     const loadEvents = async () => {
       setLoadingEvents(true);
-      const res = await listEvents({ skip: 0, limit: 1000, condition: { status: "A" } });
+      const res = await listEvents({ skip: 0, limit: 1000, condition: { status: "A", tour_type: ADDEDITDATA.tour_type || "M" } });
       if (res?.status) {
         setEvents(res.result || []);
       } else {
@@ -119,7 +121,7 @@ export default function NewsAddEditData() {
     };
 
     loadEvents();
-  }, []);
+  }, [ADDEDITDATA.tour_type]);
 
   useEffect(() => {
     const hydrateEditData = async () => {
@@ -204,6 +206,7 @@ export default function NewsAddEditData() {
         news_month: ADDEDITDATA.news_month ? Number(ADDEDITDATA.news_month) : null,
         sort_order: Number(ADDEDITDATA.sort_order || 0),
         about_pgti_content: ADDEDITDATA.about_pgti_content || "",
+        tour_type: ADDEDITDATA.tour_type || "M",
         status: ADDEDITDATA.status || "A",
         ...(ADDEDITDATA?.image && { image: ADDEDITDATA.image }),
       };
@@ -382,6 +385,24 @@ export default function NewsAddEditData() {
                       value={ADDEDITDATA?.sort_order ?? 0}
                       onChange={handleChange}
                     />
+                  </div>
+
+                  <div className="col-md-3 col-12 mb-3">
+                    <label className="form-label">Tour Type</label>
+                    <Select
+                      value={ADDEDITDATA.tour_type || "M"}
+                      onChange={(value) => setAddEditData((prev) => ({ ...prev, tour_type: value, event_id: undefined }))}
+                      className="form-select"
+                      style={{ width: "100%" }}
+                      size="large"
+                    >
+                      {TOUR_TYPE_OPTIONS.map((item) => (
+                        <Option key={item.value} value={item.value}>
+                          {item.label}
+                        </Option>
+                      ))}
+                    </Select>
+                    <FieldHint text="Choose whether this news item belongs to PGTI Main Tour or PGTI NextGen." />
                   </div>
 
                   <div className="col-md-3 col-12 mb-3">

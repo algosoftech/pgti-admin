@@ -40,6 +40,7 @@ import {
   setShowRequest,
 } from 'store/slices/faqs.slice';
 import ShowData from 'components/table/ShowData';
+import { getTourTypeLabel } from 'utils/tourType';
 
 export default function FaqList() {
   const dispatch = useAppDispatch();
@@ -73,11 +74,12 @@ export default function FaqList() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    dispatch(setShowRequest(tab === "all" ? "" : tab.toUpperCase()));
+    dispatch(setShowRequest(tab === "A" || tab === "I" ? tab.toUpperCase() : ""));
   };
 
   const handleEdit = async (item = {}) => {
-    navigate("/admin/cms/faqs/addeditdata", { state: item });
+    const state = item?.id ? item : { tour_type: activeTab === "F" ? "F" : "M" };
+    navigate("/admin/cms/faqs/addeditdata", { state });
   };
 
   /*********************************************************
@@ -95,6 +97,7 @@ export default function FaqList() {
           : null),
         ...(serverColumnFilters.tag ? { tag: serverColumnFilters.tag } : null),
         ...(showRequest ? { status: showRequest } : null),
+        ...(activeTab === "F" ? { tour_type: "F" } : null),
       },
       skip: SKIP ? SKIP : 0,
       limit: LIMIT ? LIMIT : 10,
@@ -352,6 +355,18 @@ export default function FaqList() {
         enableColumnFilter: true,
       },
       {
+        accessorKey: "tour_type_label",
+        header: "Tour Type",
+        cell: ({ row }) => (
+          <div className="font-weight-600">
+            {row.original?.tour_type_label || getTourTypeLabel(row.original?.tour_type)}
+          </div>
+        ),
+        size: 150,
+        enableSorting: false,
+        enableColumnFilter: false,
+      },
+      {
         accessorKey: "created_at",
         header: "Created",
         cell: ({ getValue }) => {
@@ -452,6 +467,12 @@ export default function FaqList() {
                 onClick={() => handleTabChange("I")}
               >
                 Inactive
+              </button>
+              <button
+                className={`tab-item ${activeTab === "F" ? "active" : ""}`}
+                onClick={() => handleTabChange("F")}
+              >
+                NextGen
               </button>
             </div>
 

@@ -26,9 +26,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { addEditHomepageSettings, listHomepageSettings } from "services/homepageSettings.service";
 import { resolvePreviewMediaUrl, uploadMedia } from "services/media.service";
 import ImageUploadField from "components/ui/ImageUploadField";
+import CmsSetupTopActions from "components/cms/CmsSetupTopActions";
 import MultiImageUploadField from "components/ui/MultiImageUploadField";
 import { CharCounter, FieldHint, ImageHint } from "components/ui/FieldHint";
 import { IMAGE_SPECS, LIMITS, validateLength, validateVideoFile } from "utils/fieldValidation";
+import { TOUR_TYPE_OPTIONS, shouldUseExistingTourTypeRecord } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const SECTION_OPEN_KEYS = [
@@ -547,6 +549,8 @@ export default function HomepageSettingsAddEdit() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [id, setId] = useState(state?.id ?? "");
+  const [tourType, setTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
+  const [savedTourType, setSavedTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
   const raw = state?.content ?? state?.result?.content ?? state;
   const [form, setForm] = useState(() => parseContent(raw));
   const [savedForm, setSavedForm] = useState(() => parseContent(raw));
@@ -566,9 +570,11 @@ export default function HomepageSettingsAddEdit() {
   useEffect(() => {
     if (!hasInitialStateContent) {
       setIsFetching(true);
-      listHomepageSettings().then((res) => {
+      listHomepageSettings({ tour_type: tourType }).then((res) => {
         if (res?.status && res.result?.id) {
           setId(res.result.id);
+          setTourType(res.result.tour_type || "M");
+          setSavedTourType(res.result.tour_type || "M");
           const parsedContent = parseContent(res.result.content);
           setForm(parsedContent);
           setSavedForm(parsedContent);
@@ -578,7 +584,7 @@ export default function HomepageSettingsAddEdit() {
         setIsFetching(false);
       });
     }
-  }, [hasInitialStateContent, requestedOpenSectionKey]);
+  }, [hasInitialStateContent, requestedOpenSectionKey, tourType]);
 
   useEffect(() => {
     document.title = `PGTI || ${id ? "Edit" : "Setup"} Homepage`;
@@ -639,7 +645,38 @@ export default function HomepageSettingsAddEdit() {
         [sectionKey]: savedForm[sectionKey],
       };
     });
+    setTourType(savedTourType);
     setActiveEditSection((prev) => (prev === sectionKey ? "" : prev));
+  };
+
+  const copyFromMainTour = async () => {
+    try {
+      setIsFetching(true);
+      const res = await listHomepageSettings({ tour_type: "M" });
+      if (!res?.status || !res?.result?.id) {
+        notification.warning({
+          message: "Main Tour data not found",
+          description: "Please save the Main Tour Homepage first, then copy it into NextGen.",
+          placement: "topRight",
+          duration: 3,
+        });
+        return;
+      }
+      const parsedContent = parseContent(res.result.content);
+      setForm(parsedContent);
+      setSavedForm(parsedContent);
+      setId("");
+      setTourType("F");
+      setSavedTourType("F");
+      notification.success({
+        message: "Copied from Main Tour",
+        description: "Main Tour Homepage content is copied into this NextGen draft. Edit what you need and save to create a separate NextGen record.",
+        placement: "topRight",
+        duration: 3,
+      });
+    } finally {
+      setIsFetching(false);
+    }
   };
 
   const setHeroVideoField = (field, value) => {
@@ -968,15 +1005,17 @@ export default function HomepageSettingsAddEdit() {
           setIsLoading(true);
           const content = buildPayloadContent();
           const res = await addEditHomepageSettings({
-            ...(id && { editId: id }),
+            ...(shouldUseExistingTourTypeRecord(id, savedTourType, tourType) && { editId: id }),
             status: "A",
+            tour_type: tourType,
             content: JSON.stringify(content),
           });
 
           if (res.status === true) {
-            if (!id && res.result?.id) setId(res.result.id);
+            if (res.result?.id) setId(res.result.id);
             setSavedForm(content);
             setForm(content);
+            setSavedTourType(tourType);
             setActiveEditSection("");
             notification.open({
               message: "Success",
@@ -1034,6 +1073,14 @@ export default function HomepageSettingsAddEdit() {
         </div>
       </div>
 
+      <CmsSetupTopActions
+        tourType={tourType}
+        onCopyFromMain={copyFromMainTour}
+        onSaveAll={() => saveSection(activeEditSection)}
+        saveAllDisabled={!activeEditSection}
+        isWorking={Boolean(isLoading || savingSection)}
+      />
+
       <div className="page-body">
         <div>
           <div ref={(node) => { sectionRefs.current.hero = node; }}>
@@ -1050,11 +1097,37 @@ export default function HomepageSettingsAddEdit() {
               onCancel={() => cancelEditingSection("hero")}
               isSaving={savingSection === "hero"}
               {...getLockedSectionProps("hero", "Hero Banner")}
-            >
-              <fieldset disabled={activeEditSection !== "hero"} style={{ border: "none", padding: 0, margin: 0 }}>
-              <Toggle
-                checked={form.hero.enabled}
-                onChange={(value) => setSectionField("hero", "enabled", value)}
+              >
+                <fieldset disabled={activeEditSection !== "hero"} style={{ border: "none", padding: 0, margin: 0 }}>
+                <div className="row">
+                  <div className="col-md-4 col-12 mb-3">
+                    <div className="form-group">
+                      <label className="form-label">Tour Type</label>
+                      <select className="form-input" value={tourType} onChange={(e) => setTourType(e.target.value)}>
+                        {TOUR_TYPE_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <FieldHint>Select whether this homepage setup is for the main site or the PGTI NextGen site.</FieldHint>
+                      {tourType === "F" && (
+                        <button
+                          type="button"
+                          className="action-button secondary"
+                          onClick={copyFromMainTour}
+                          disabled={isFetching}
+                          style={{ marginTop: 12 }}
+                        >
+                          Copy from Main Tour
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <Toggle
+                  checked={form.hero.enabled}
+                  onChange={(value) => setSectionField("hero", "enabled", value)}
                 label="Show hero banner section on homepage"
               />
             <input

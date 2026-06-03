@@ -22,8 +22,10 @@ import {
 } from "@ant-design/icons";
 import { Link, useLocation } from "react-router-dom";
 import { addEditFooter, listFooter } from "services/footerCms.service";
+import CmsSetupTopActions from "components/cms/CmsSetupTopActions";
 import { CharCounter } from "components/ui/FieldHint";
 import { LIMITS } from "utils/fieldValidation";
+import { TOUR_TYPE_OPTIONS, shouldUseExistingTourTypeRecord } from "utils/tourType";
 import "styles/admin-pages.css";
 
 /* ── defaults ─────────────────────────────────────────────── */
@@ -230,6 +232,8 @@ export default function FooterCmsAddEditData() {
   const [id, setId] = useState(state?.id ?? "");
   const [status, setStatus] = useState(state?.status ?? "A");
   const [savedStatus, setSavedStatus] = useState(state?.status ?? "A");
+  const [tourType, setTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
+  const [savedTourType, setSavedTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
   const [expandedCol, setExpandedCol] = useState(0);
 
   const rawContent = state?.content ?? state?.result?.content ?? state;
@@ -273,6 +277,8 @@ export default function FooterCmsAddEditData() {
     if (record?.result?.id) setId(record.result.id);
     if (record?.status) { setStatus(record.status); setSavedStatus(record.status); }
     if (record?.result?.status) { setStatus(record.result.status); setSavedStatus(record.result.status); }
+    if (record?.tour_type) { setTourType(record.tour_type); setSavedTourType(record.tour_type); }
+    if (record?.result?.tour_type) { setTourType(record.result.tour_type); setSavedTourType(record.result.tour_type); }
   };
 
   /* ── fetch on mount ────────────────────────────────────── */
@@ -283,7 +289,7 @@ export default function FooterCmsAddEditData() {
       if (state && Object.keys(state).length > 0 && state.id) hydrateForm(state);
       try {
         setIsFetching(true);
-        const res = await listFooter();
+        const res = await listFooter({ tour_type: tourType });
         if (active && res?.status && res?.result?.id) {
           hydrateForm(res.result);
           setOpenSections(buildSectionOpenState({ openKey: requestedOpenSectionKey }));
@@ -296,7 +302,7 @@ export default function FooterCmsAddEditData() {
     load();
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requestedOpenSectionKey]);
+  }, [requestedOpenSectionKey, tourType]);
 
   /* ── build content ─────────────────────────────────────── */
   const buildContent = () => ({ linkColumns, contactInfo, socialLinks, newsletter, appDownload, copyright });
@@ -325,7 +331,10 @@ export default function FooterCmsAddEditData() {
   };
 
   const cancelEditingSection = (sectionKey) => {
-    if (sectionKey === "general") setStatus(savedStatus);
+    if (sectionKey === "general") {
+      setStatus(savedStatus);
+      setTourType(savedTourType);
+    }
     else if (sectionKey === "linkColumns") setLinkColumns(savedLinkColumns);
     else if (sectionKey === "contactInfo") setContactInfo(savedContactInfo);
     else if (sectionKey === "socialLinks") setSocialLinks(savedSocialLinks);
@@ -333,6 +342,34 @@ export default function FooterCmsAddEditData() {
     else if (sectionKey === "appDownload") setAppDownload(savedAppDownload);
     else if (sectionKey === "copyright") setCopyright(savedCopyright);
     setActiveEditSection((prev) => (prev === sectionKey ? "" : prev));
+  };
+
+  const copyFromMainTour = async () => {
+    try {
+      setIsFetching(true);
+      const res = await listFooter({ tour_type: "M" });
+      if (!res?.status || !res?.result?.id) {
+        notification.warning({
+          message: "Main Tour data not found",
+          description: "Please save the Main Tour Footer page first.",
+          placement: "topRight",
+          duration: 3,
+        });
+        return;
+      }
+      hydrateForm(res.result);
+      setId("");
+      setTourType("F");
+      setSavedTourType("F");
+      notification.success({
+        message: "Copied from Main Tour",
+        description: "Edit the copied NextGen draft and save to create a separate record.",
+        placement: "topRight",
+        duration: 3,
+      });
+    } finally {
+      setIsFetching(false);
+    }
   };
 
   const saveSection = (sectionKey) => {
@@ -346,13 +383,15 @@ export default function FooterCmsAddEditData() {
         try {
           setSavingSection(sectionKey);
           const res = await addEditFooter({
-            ...(id && { editId: id }),
+            ...(shouldUseExistingTourTypeRecord(id, savedTourType, tourType) && { editId: id }),
             status,
+            tour_type: tourType,
             content: JSON.stringify(buildContent()),
           });
           if (res?.status === true) {
-            if (!id && res.result?.id) setId(res.result.id);
+            if (res.result?.id) setId(res.result.id);
             setSavedStatus(status);
+            setSavedTourType(tourType);
             setSavedLinkColumns(JSON.parse(JSON.stringify(linkColumns)));
             setSavedContactInfo({ ...contactInfo });
             setSavedSocialLinks({ ...socialLinks });
@@ -464,6 +503,14 @@ export default function FooterCmsAddEditData() {
         </div>
       </div>
 
+      <CmsSetupTopActions
+        tourType={tourType}
+        onCopyFromMain={copyFromMainTour}
+        onSaveAll={() => saveSection(activeEditSection)}
+        saveAllDisabled={!activeEditSection}
+        isWorking={Boolean(isFetching || savingSection)}
+      />
+
       <div className="page-body">
         <div className="modern-form">
 
@@ -481,12 +528,39 @@ export default function FooterCmsAddEditData() {
               onLockedClick={() => notifyReadOnly(SECTION_META.general.title)}
             >
               <fieldset disabled={activeEditSection !== "general"} style={{ border: "none", padding: 0, margin: 0 }}>
-                <div className="form-group">
-                  <label className="form-label">Status</label>
-                  <select className="form-input" value={status} onChange={(e) => setStatus(e.target.value)}>
-                    <option value="A">Active</option>
-                    <option value="I">Inactive</option>
-                  </select>
+                <div className="row">
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
+                      <label className="form-label">Tour Type</label>
+                      <select className="form-input" value={tourType} onChange={(e) => setTourType(e.target.value)}>
+                        {TOUR_TYPE_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {tourType === "F" && (
+                        <button
+                          type="button"
+                          className="action-button secondary"
+                          onClick={copyFromMainTour}
+                          disabled={isFetching}
+                          style={{ marginTop: 12 }}
+                        >
+                          Copy from Main Tour
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
+                      <label className="form-label">Status</label>
+                      <select className="form-input" value={status} onChange={(e) => setStatus(e.target.value)}>
+                        <option value="A">Active</option>
+                        <option value="I">Inactive</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </fieldset>
             </SectionCard>

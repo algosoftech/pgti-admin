@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
+  faChartSimple,
+  faClock,
   faCircleInfo,
   faCircleQuestion,
   faCircleUser,
@@ -146,7 +148,11 @@ const Sidebar = ({ children }) => {
       return;
     }
 
-    if (location.pathname.startsWith("/admin/article-pages") || location.pathname.startsWith("/admin/cms/article-pages")) {
+    if (
+      location.pathname.startsWith("/admin/article-pages") ||
+      location.pathname.startsWith("/admin/cms/article-pages") ||
+      location.pathname.startsWith("/admin/cms/other-article-pages")
+    ) {
       setOpenPanel("article-pages");
       return;
     }
@@ -163,6 +169,20 @@ const Sidebar = ({ children }) => {
 
     if (location.pathname.startsWith("/admin/inquiries")) {
       setOpenPanel("inquiries");
+      return;
+    }
+
+    if (location.pathname.startsWith("/admin/stats") || location.pathname.startsWith("/admin/cms/stats-page")) {
+      setOpenPanel("stats");
+      return;
+    }
+
+    if (
+      location.pathname.startsWith("/admin/tee-time-booking") ||
+      location.pathname.startsWith("/admin/qualifier-booking") ||
+      location.pathname.startsWith("/admin/physio-booking")
+    ) {
+      setOpenPanel("booking");
       return;
     }
 
@@ -218,6 +238,7 @@ const Sidebar = ({ children }) => {
     { check: hasAccess("footer"), to: "/admin/cms/footer/list", icon: faFileLines, name: "Footer" },
     { check: hasAccess("gallery"), to: "/admin/cms/gallery/list", icon: faImages, name: "Gallery" },
     { check: hasAccess("press_release"), to: "/admin/cms/press-release/list", icon: faNewspaper, name: "Press Release" },
+    { check: hasAccess("tv_timings"), to: "/admin/cms/tv-timings/list", icon: faVideo, name: "TV Timings" },
     { check: hasAccess("golf_facts"), to: "/admin/cms/golf-facts/list", icon: faFlag, name: "Golf Facts" },
     { check: hasAccess("highlight_videos"), to: "/admin/cms/highlight-videos/list", icon: faVideo, name: "Highlights & Videos" },
     { check: hasAccess("indian_golf"), to: "/admin/cms/indian-golf/list", icon: faFlag, name: "Indian Golf" },
@@ -233,12 +254,53 @@ const Sidebar = ({ children }) => {
     { check: isSuperAdmin || hasAccess("accounts"), to: "/admin/accounts/list", icon: faUserGear, name: "Sub Admin" },
   ].filter((item) => item.check);
 
+  const statsItems = [
+    { check: hasAccess("stats_page_settings"), to: "/admin/cms/stats-page", icon: faChartSimple, name: "Stats Page Settings" },
+    { check: hasAccess("pgti_career_earning"), to: "/admin/stats/pgti-career-earning", icon: faFileLines, name: "PGTI Career Earning" },
+  ].filter((item) => item.check);
+
+  const bookingGroups = [
+    {
+      title: "Tee Time",
+      items: [
+        { check: isSuperAdmin || hasAccess("tee_time_booking"), to: "/admin/tee-time-booking/windows", icon: faClock, name: "Tee Time Booking" },
+      ],
+    },
+    {
+      title: "Qualifier",
+      items: [
+        { check: isSuperAdmin || hasAccess("qualifier_booking"), to: "/admin/qualifier-booking/settings", icon: faClock, name: "Qualifier Booking Settings" },
+        { check: isSuperAdmin || hasAccess("qualifier_booking_applications"), to: "/admin/qualifier-booking/applications", icon: faClock, name: "Qualifier Booking Applications" },
+      ],
+    },
+    {
+      title: "Physio",
+      items: [
+        { check: isSuperAdmin || hasAccess("physio_create_slots"), to: "/admin/physio-booking/create-slots", icon: faClock, name: "Create Slots" },
+        { check: isSuperAdmin || hasAccess("physio_view_slots"), to: "/admin/physio-booking/view-slots", icon: faClock, name: "View Slots" },
+        { check: isSuperAdmin || hasAccess("physio_bookings"), to: "/admin/physio-booking/bookings", icon: faClock, name: "Physio Bookings" },
+      ],
+    },
+  ]
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => item.check),
+    }))
+    .filter((group) => group.items.length);
+
+  const bookingItems = bookingGroups.flatMap((group) => group.items);
+
   const articlePageItems = canAccessArticlePages
     ? [
         {
           to: "/admin/cms/article-pages/list",
           icon: faBookOpen,
           name: "All Article Pages",
+        },
+        {
+          to: "/admin/cms/other-article-pages/list",
+          icon: faFileLines,
+          name: "Other Article Pages",
         },
         ...articlePages.map((articlePage) => ({
           to: `/admin/cms/article-pages/list?editId=${articlePage.id}`,
@@ -277,6 +339,23 @@ const Sidebar = ({ children }) => {
               name: "Contact Us",
             },
           ],
+        }
+      : null,
+    statsItems.length
+      ? {
+          key: "stats",
+          header: "Stats",
+          icon: faChartSimple,
+          items: statsItems,
+        }
+      : null,
+    bookingItems.length
+      ? {
+          key: "booking",
+          header: "Booking",
+          icon: faClock,
+          items: bookingItems,
+          groups: bookingGroups,
         }
       : null,
     articlePageItems.length
@@ -543,16 +622,45 @@ const Sidebar = ({ children }) => {
                     )
                   }
                 >
-                  {section.items.map((item) => (
-                    <SidebarItem
-                      key={item.to}
-                      to={item.to}
-                      icon={<FontAwesomeIcon icon={item.icon} />}
-                      name={item.name}
-                      isOpen={isOpen}
-                      className="sub_link"
-                    />
-                  ))}
+                  {section.key === "booking" && section.groups?.length ? (
+                    section.groups.map((group) => (
+                      <div key={group.title} style={{ marginBottom: 10 }}>
+                        <div
+                          style={{
+                            padding: "6px 14px 4px",
+                            fontSize: 11,
+                            fontWeight: 800,
+                            letterSpacing: ".06em",
+                            textTransform: "uppercase",
+                            color: "#64748b",
+                          }}
+                        >
+                          {group.title}
+                        </div>
+                        {group.items.map((item) => (
+                          <SidebarItem
+                            key={item.to}
+                            to={item.to}
+                            icon={<FontAwesomeIcon icon={item.icon} />}
+                            name={item.name}
+                            isOpen={isOpen}
+                            className="sub_link"
+                          />
+                        ))}
+                      </div>
+                    ))
+                  ) : (
+                    section.items.map((item) => (
+                      <SidebarItem
+                        key={item.to}
+                        to={item.to}
+                        icon={<FontAwesomeIcon icon={item.icon} />}
+                        name={item.name}
+                        isOpen={isOpen}
+                        className="sub_link"
+                      />
+                    ))
+                  )}
                 </Panel>
               </Collapse>
             ))}
@@ -576,6 +684,7 @@ const Sidebar = ({ children }) => {
                 className="sidebar_top_tab"
               />
             )}
+
               </>
             )}
 

@@ -27,6 +27,7 @@ import ListingBannerPreviewModal from "components/cms/ListingBannerPreviewModal"
 import EnhancedTable from "components/table/EnhancedTable/EnhancedTable";
 import { usePermissions } from "contexts/PermissionContext";
 import { deleteEvent, eventChangeStatus, getEventListingBanner, list as listEvents } from "services/events.service";
+import { getTourTypeLabel } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const getEventState = (item = {}) => {
@@ -87,7 +88,8 @@ export default function EventList() {
       condition: {
         ...(serverColumnFilters.title ? { title: serverColumnFilters.title } : {}),
         ...(serverColumnFilters.location ? { location: serverColumnFilters.location } : {}),
-        ...(activeTab !== "all" ? { status: activeTab } : {}),
+        ...(activeTab === "F" ? { tour_type: "F" } : {}),
+        ...(activeTab !== "all" && activeTab !== "F" ? { status: activeTab } : {}),
       },
     });
 
@@ -100,17 +102,20 @@ export default function EventList() {
     setIsLoading(false);
   };
 
-  const handleEdit = (item = {}) => navigate("/admin/cms/events/addeditdata", { state: item });
+  const handleEdit = (item = {}) => {
+    const state = item?.id ? item : { tour_type: activeTab === "F" ? "F" : "M" };
+    navigate("/admin/cms/events/addeditdata", { state });
+  };
 
   const loadListingBanner = async () => {
-    const response = await getEventListingBanner();
+    const response = await getEventListingBanner(activeTab === "F" ? "F" : "M");
     if (response?.status) {
       setListingBanner(response.result || null);
     }
   };
 
   const openListingBannerEditor = () => {
-    navigate("/admin/cms/events/listing-banner", { state: listingBanner || {} });
+    navigate("/admin/cms/events/listing-banner", { state: listingBanner || { tour_type: activeTab === "F" ? "F" : "M" } });
   };
 
   const handleListingBannerClick = () => {
@@ -322,6 +327,19 @@ export default function EventList() {
         enableHiding: true,
       },
       {
+        accessorKey: "tour_type_label",
+        header: "Tour Type",
+        cell: ({ row }) => (
+          <span style={{ fontSize: 12, background: row.original?.tour_type === "F" ? "#fef3c7" : "#e0f2fe", color: row.original?.tour_type === "F" ? "#b45309" : "#075985", padding: "3px 8px", borderRadius: 999, fontWeight: 700 }}>
+            {row.original?.tour_type_label || getTourTypeLabel(row.original?.tour_type)}
+          </span>
+        ),
+        size: 140,
+        enableSorting: true,
+        enableColumnFilter: false,
+        enableHiding: true,
+      },
+      {
         accessorKey: "status",
         header: "Status",
         accessorFn: (row) => (row.status === "A" ? "Active" : "Inactive"),
@@ -371,7 +389,7 @@ export default function EventList() {
     loadListingBanner();
     document.title = "PGTI || Admin || Events / Tournaments";
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  }, [activeTab]);
 
   return (
     <div className="admin-page-container" ref={targetRef}>
@@ -388,6 +406,9 @@ export default function EventList() {
             </button>
             <button className={`tab-item ${activeTab === "I" ? "active" : ""}`} onClick={() => handleTabChange("I")}>
               Inactive
+            </button>
+            <button className={`tab-item ${activeTab === "F" ? "active" : ""}`} onClick={() => handleTabChange("F")}>
+              NextGen
             </button>
           </div>
           <div className="tabs-actions">

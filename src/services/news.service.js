@@ -57,9 +57,9 @@ export const deleteNews = async (options = {}) => {
     }
 };
 
-export const getNewsListingBanner = async () => {
+export const getNewsListingBanner = async (tourType = "M") => {
     try {
-        const res = await postRequest({ url: `${BASE}/admin/cms/news/banner/detail`, postData: {} });
+        const res = await postRequest({ url: `${BASE}/admin/cms/news/banner/detail`, postData: { tour_type: tourType } });
         if (res?.status === 200 && res?.data?.status) {
             return { status: true, result: res?.data?.response?.result || null };
         }

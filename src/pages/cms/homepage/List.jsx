@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, notification } from "antd";
-import { EditOutlined, HomeOutlined, InfoCircleOutlined, PoweroffOutlined } from "@ant-design/icons";
+import { EditOutlined, HomeOutlined, InfoCircleOutlined, PlusOutlined, PoweroffOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { addEditHomepageSettings, listHomepageSettings } from "services/homepageSettings.service";
 import { usePermissions } from "contexts/PermissionContext";
@@ -42,6 +42,7 @@ export default function HomepageSettingsList() {
   const PERMISSION = usePermissions("FULL");
   const user = JSON.parse(sessionStorage.getItem("ADMIN-INFO"));
   const [data, setData] = useState(null);
+  const [nextGenData, setNextGenData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sectionAction, setSectionAction] = useState({ open: false, key: "" });
   const [isUpdatingSection, setIsUpdatingSection] = useState(false);
@@ -50,18 +51,25 @@ export default function HomepageSettingsList() {
     document.title = "PGTI || Homepage Settings";
     const load = async () => {
       setIsLoading(true);
-      const res = await listHomepageSettings();
-      if (res?.status) setData(res.result || null);
-      else notification.error({ message: res?.message || "Failed to load Homepage Settings" });
+      const [mainRes, nextGenRes] = await Promise.all([
+        listHomepageSettings({ tour_type: "M" }),
+        listHomepageSettings({ tour_type: "F" }),
+      ]);
+      if (mainRes?.status) setData(mainRes.result || null);
+      else notification.error({ message: mainRes?.message || "Failed to load Homepage Settings" });
+      if (nextGenRes?.status) setNextGenData(nextGenRes.result || null);
       setIsLoading(false);
     };
     load();
   }, []);
 
   const canEdit = user?.admin_type === "Super Admin" || PERMISSION?.permissions?.homepage_settings?.list === "Y";
+  const hasMainRecord = Boolean(data?.id);
+  const hasNextGenRecord = Boolean(nextGenData?.id);
+  const displayData = hasMainRecord ? data : (hasNextGenRecord ? nextGenData : null);
   const content = (() => {
-    if (!data?.content) return null;
-    try { return typeof data.content === "string" ? JSON.parse(data.content) : data.content; }
+    if (!displayData?.content) return null;
+    try { return typeof displayData.content === "string" ? JSON.parse(displayData.content) : displayData.content; }
     catch { return null; }
   })();
   const selectedSection = SECTION_LABELS.find((item) => item.key === sectionAction.key) || null;
@@ -79,12 +87,12 @@ export default function HomepageSettingsList() {
   const handleSectionEdit = () => {
     if (!selectedSection) return;
     navigate("/admin/cms/homepage/addeditdata", {
-      state: { ...(data || {}), openSectionKey: normalizeOpenSectionKey(selectedSection.key) },
+      state: { ...(displayData || {}), openSectionKey: normalizeOpenSectionKey(selectedSection.key) },
     });
   };
 
   const handleSectionToggle = async () => {
-    if (!selectedSection || !content || !data?.id) return;
+    if (!selectedSection || !content || !displayData?.id) return;
 
     const toggleField = getSectionToggleField(selectedSection.key);
     const currentEnabled = getSectionEnabled(content, selectedSection.key);
@@ -100,8 +108,9 @@ export default function HomepageSettingsList() {
     try {
       setIsUpdatingSection(true);
       const res = await addEditHomepageSettings({
-        editId: data.id,
-        status: data.status || "A",
+        editId: displayData.id,
+        status: displayData.status || "A",
+        tour_type: displayData.tour_type || "M",
         content: JSON.stringify(updatedContent),
       });
 
@@ -128,13 +137,22 @@ export default function HomepageSettingsList() {
             <h1 className="page-title">Homepage Settings</h1>
             <p className="page-subtitle">Control every section of the public homepage from one place</p>
           </div>
-          <button
-            className="action-button primary"
-            disabled={!canEdit}
-            onClick={() => navigate("/admin/cms/homepage/addeditdata", { state: data || {} })}
-          >
-            <EditOutlined /> {content ? "Edit Homepage" : "Setup Homepage"}
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button
+              className="action-button secondary"
+              disabled={!canEdit}
+              onClick={() => navigate("/admin/cms/homepage/addeditdata", { state: hasMainRecord ? (nextGenData?.id ? nextGenData : { tour_type: "F" }) : { tour_type: "M" } })}
+            >
+              <PlusOutlined /> {hasMainRecord ? (nextGenData?.id ? "Edit NextGen Homepage" : "Add NextGen Homepage") : "Add Main Tour"}
+            </button>
+            <button
+              className="action-button primary"
+              disabled={!canEdit}
+              onClick={() => navigate("/admin/cms/homepage/addeditdata", { state: hasMainRecord ? data : (hasNextGenRecord ? nextGenData : { tour_type: "M" }) })}
+            >
+              <EditOutlined /> {hasMainRecord ? "Edit Homepage" : (hasNextGenRecord ? "Edit NextGen Homepage" : "Setup Homepage")}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -201,11 +219,17 @@ export default function HomepageSettingsList() {
                 display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
                 padding: "12px 4px 0", borderTop: "1px solid #e2e8f0", marginTop: 6,
               }}>
-                <span className={`status-badge ${data?.status === "A" ? "active" : "inactive"}`}>
-                  {data?.status === "A" ? "Active" : "Inactive"}
+                <span className={`status-badge ${displayData?.status === "A" ? "active" : "inactive"}`}>
+                  {displayData?.status === "A" ? "Active" : "Inactive"}
                 </span>
                 <span style={{ color: "#cbd5e1", fontSize: 14 }}>·</span>
-                <span style={{ fontSize: 12, color: "#64748b" }}>Record ID: {data?.id}</span>
+                <span style={{ fontSize: 12, color: "#64748b" }}>Record ID: {displayData?.id}</span>
+                {nextGenData?.id && (
+                  <>
+                    <span style={{ color: "#cbd5e1", fontSize: 14 }}>Â·</span>
+                    <span style={{ fontSize: 12, color: "#64748b" }}>NextGen Record ID: {nextGenData.id}</span>
+                  </>
+                )}
               </div>
             </div>
           ) : (

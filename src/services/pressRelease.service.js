@@ -61,9 +61,9 @@ export const deletePressRelease = async (options = {}) => {
   }
 };
 
-export const getPressReleaseListingBanner = async () => {
+export const getPressReleaseListingBanner = async (tourType = "M") => {
   try {
-    const res = await postRequest({ url: `${BASE}/admin/cms/press-release/banner/detail`, postData: {} });
+    const res = await postRequest({ url: `${BASE}/admin/cms/press-release/banner/detail`, postData: { tour_type: tourType } });
     if (res?.status === 200 && res?.data?.status) {
       return { status: true, result: res?.data?.response?.result || null };
     }

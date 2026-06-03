@@ -15,6 +15,8 @@ import LoadingEffect from "components/ui/Loading/LoadingEffect";
 import {
   getTournamentLiveSyncBatchDetail,
   getTournamentLiveSyncStatus,
+  getLiveTournamentRecordDetail,
+  listLiveTournamentRecords,
   listTournamentLiveSyncBatches,
   runTournamentLiveSync,
 } from "services/events.service";
@@ -133,6 +135,12 @@ export default function LiveSyncMonitor() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detail, setDetail] = useState(null);
+  const [recordOpen, setRecordOpen] = useState(false);
+  const [recordLoading, setRecordLoading] = useState(false);
+  const [recordDetailLoading, setRecordDetailLoading] = useState(false);
+  const [records, setRecords] = useState([]);
+  const [selectedRecordCode, setSelectedRecordCode] = useState("");
+  const [selectedRecordDetail, setSelectedRecordDetail] = useState(null);
 
   const loadData = useCallback(async (nextPage = page, nextLimit = limit) => {
     setIsLoading(true);
@@ -204,6 +212,41 @@ export default function LiveSyncMonitor() {
       notify("Oops!", response?.message || "Failed to run tournament live sync.");
     }
     setRunningTournament(false);
+  };
+
+  const loadLiveRecordDetail = useCallback(async (tourCode) => {
+    if (!tourCode) {
+      setSelectedRecordDetail(null);
+      return;
+    }
+
+    setRecordDetailLoading(true);
+    const response = await getLiveTournamentRecordDetail(tourCode);
+    if (response?.status) {
+      setSelectedRecordDetail(response.result || null);
+    } else {
+      notify("Oops!", response?.message || "Failed to load live tournament record.");
+    }
+    setRecordDetailLoading(false);
+  }, []);
+
+  const openLiveRecordModal = async () => {
+    setRecordOpen(true);
+    setRecordLoading(true);
+    setSelectedRecordDetail(null);
+    const response = await listLiveTournamentRecords();
+    if (response?.status) {
+      const nextRecords = response.result || [];
+      setRecords(nextRecords);
+      const firstCode = nextRecords[0]?.live_tour_code || nextRecords[0]?.tour_code || nextRecords[0]?.id || "";
+      setSelectedRecordCode(firstCode);
+      if (firstCode) {
+        await loadLiveRecordDetail(firstCode);
+      }
+    } else {
+      notify("Oops!", response?.message || "Failed to fetch live tournament records.");
+    }
+    setRecordLoading(false);
   };
 
   const tournamentEndpoints = useMemo(
@@ -362,9 +405,14 @@ export default function LiveSyncMonitor() {
                   </div>
                   <div style={{ marginTop: 6, fontSize: 24, fontWeight: 800, color: "#102a43" }}>Tournament feed monitor</div>
                 </div>
-                <Button type="primary" icon={<PlayCircleOutlined />} loading={runningTournament} onClick={handleRunTournament}>
-                  Run Now
-                </Button>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                  <Button icon={<EyeOutlined />} onClick={openLiveRecordModal}>
+                    Show Live Tournament Record
+                  </Button>
+                  <Button type="primary" icon={<PlayCircleOutlined />} loading={runningTournament} onClick={handleRunTournament}>
+                    Run Now
+                  </Button>
+                </div>
               </div>
 
               <div style={{ marginTop: 18, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
@@ -667,6 +715,144 @@ export default function LiveSyncMonitor() {
                 </table>
               </div>
             </div>
+          </div>
+        )}
+      </Modal>
+
+      <Modal
+        open={recordOpen}
+        onCancel={() => setRecordOpen(false)}
+        footer={null}
+        width={1180}
+        title="Live Tournament Record"
+      >
+        {recordLoading ? (
+          <LoadingEffect />
+        ) : (
+          <div style={{ display: "grid", gap: 18 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 16,
+                flexWrap: "wrap",
+              }}
+            >
+              <div>
+                <div style={{ fontWeight: 800, color: "#102a43", fontSize: 20 }}>Currently cached live tournament payloads</div>
+                <div style={{ color: "#64748b", marginTop: 6 }}>
+                  View the Redis-backed live tournament record exactly as the live API will serve it.
+                </div>
+              </div>
+              <div style={{ minWidth: 320, flex: "0 1 360px" }}>
+                <Select
+                  value={selectedRecordCode || undefined}
+                  placeholder="Select live tournament record"
+                  style={{ width: "100%" }}
+                  onChange={async (value) => {
+                    setSelectedRecordCode(value);
+                    await loadLiveRecordDetail(value);
+                  }}
+                >
+                  {records.map((record) => {
+                    const code = record.live_tour_code || record.tour_code || record.id;
+                    return (
+                      <Option key={code} value={code}>
+                        {record.title || record.tour_name || code}
+                      </Option>
+                    );
+                  })}
+                </Select>
+              </div>
+            </div>
+
+            {!records.length ? (
+              <div style={{ color: "#64748b" }}>No live tournament records are currently cached.</div>
+            ) : recordDetailLoading ? (
+              <LoadingEffect />
+            ) : !selectedRecordDetail ? (
+              <div style={{ color: "#64748b" }}>No live tournament detail available.</div>
+            ) : (
+              <>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                    gap: 12,
+                  }}
+                >
+                  {[
+                    { label: "Live Tour Code", value: selectedRecordDetail?.hero?.live_tour_code || "--" },
+                    { label: "Tournament", value: selectedRecordDetail?.hero?.title || "--" },
+                    { label: "Date Range", value: selectedRecordDetail?.hero?.date_range_display || "--" },
+                    { label: "Entries", value: selectedRecordDetail?.entry_list?.length || 0 },
+                    { label: "Rounds", value: selectedRecordDetail?.leaderboard?.length || 0 },
+                    { label: "Prize Rows", value: selectedRecordDetail?.players_prize_money?.length || 0 },
+                  ].map((item) => (
+                    <div key={item.label} style={{ padding: 14, borderRadius: 14, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                      <div style={{ fontSize: 12, color: "#64748b", textTransform: "uppercase", fontWeight: 700, marginBottom: 6 }}>
+                        {item.label}
+                      </div>
+                      <div style={{ fontWeight: 700, color: "#102a43", wordBreak: "break-word" }}>{item.value || "--"}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "minmax(0, 1.2fr) minmax(0, 0.8fr)",
+                    gap: 16,
+                    alignItems: "start",
+                  }}
+                >
+                  <div style={{ padding: 16, borderRadius: 16, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                    <div style={{ fontWeight: 700, color: "#102a43", marginBottom: 10 }}>Hero Snapshot</div>
+                    <div style={{ display: "grid", gap: 8, color: "#486581", fontSize: 14 }}>
+                      <div><strong style={{ color: "#102a43" }}>Course:</strong> {selectedRecordDetail?.hero?.course_name || "--"}</div>
+                      <div><strong style={{ color: "#102a43" }}>Venue:</strong> {selectedRecordDetail?.hero?.course_venue || "--"}</div>
+                      <div><strong style={{ color: "#102a43" }}>Format:</strong> {selectedRecordDetail?.hero?.tournament_format || "--"}</div>
+                      <div><strong style={{ color: "#102a43" }}>Prize:</strong> {selectedRecordDetail?.hero?.tournament_prize_money_display || "--"}</div>
+                      <div><strong style={{ color: "#102a43" }}>Synced At:</strong> {prettyDate(selectedRecordDetail?.synced_at)}</div>
+                    </div>
+                  </div>
+
+                  <div style={{ padding: 16, borderRadius: 16, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                    <div style={{ fontWeight: 700, color: "#102a43", marginBottom: 10 }}>Current Leader</div>
+                    {selectedRecordDetail?.hero?.leader ? (
+                      <div style={{ display: "grid", gap: 8, color: "#486581", fontSize: 14 }}>
+                        <div><strong style={{ color: "#102a43" }}>Name:</strong> {selectedRecordDetail.hero.leader.player_name || "--"}</div>
+                        <div><strong style={{ color: "#102a43" }}>Score:</strong> {selectedRecordDetail.hero.leader.score_display || selectedRecordDetail.hero.leader.score || "--"}</div>
+                        <div><strong style={{ color: "#102a43" }}>Agg:</strong> {selectedRecordDetail.hero.leader.agg_display || selectedRecordDetail.hero.leader.total_display || selectedRecordDetail.hero.leader.total || "--"}</div>
+                        <div><strong style={{ color: "#102a43" }}>Position:</strong> {selectedRecordDetail.hero.leader.position_display || selectedRecordDetail.hero.leader.position || "--"}</div>
+                      </div>
+                    ) : (
+                      <div style={{ color: "#64748b" }}>Leader data not available yet.</div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 700, color: "#102a43", marginBottom: 8 }}>Payload Preview</div>
+                  <pre
+                    style={{
+                      margin: 0,
+                      padding: 16,
+                      borderRadius: 16,
+                      background: "#0f172a",
+                      color: "#e2e8f0",
+                      fontSize: 12,
+                      lineHeight: 1.6,
+                      maxHeight: 360,
+                      overflow: "auto",
+                    }}
+                  >
+                    {JSON.stringify(selectedRecordDetail, null, 2)}
+                  </pre>
+                </div>
+              </>
+            )}
           </div>
         )}
       </Modal>

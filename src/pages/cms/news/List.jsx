@@ -27,6 +27,7 @@ import { usePermissions } from "contexts/PermissionContext";
 import "styles/admin-pages.css";
 import ListingBannerPreviewModal from "components/cms/ListingBannerPreviewModal";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import { getTourTypeLabel } from "utils/tourType";
 import {
   fetchNewsList,
   changeNewsStatus,
@@ -70,22 +71,23 @@ export default function NewsList() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    dispatch(setShowRequest(tab === "all" ? "" : tab.toUpperCase()));
+    dispatch(setShowRequest(tab === "A" || tab === "I" ? tab : ""));
   };
 
   const handleEdit = (item = {}) => {
-    navigate("/admin/cms/news/addeditdata", { state: item });
+    const state = item?.id ? item : { tour_type: activeTab === "F" ? "F" : "M" };
+    navigate("/admin/cms/news/addeditdata", { state });
   };
 
   const loadListingBanner = async () => {
-    const response = await getNewsListingBanner();
+    const response = await getNewsListingBanner(activeTab === "F" ? "F" : "M");
     if (response?.status) {
       setListingBanner(response.result || null);
     }
   };
 
   const openListingBannerEditor = () => {
-    navigate("/admin/cms/news/listing-banner", { state: listingBanner || {} });
+    navigate("/admin/cms/news/listing-banner", { state: listingBanner || { tour_type: activeTab === "F" ? "F" : "M" } });
   };
 
   const handleListingBannerClick = () => {
@@ -207,6 +209,19 @@ export default function NewsList() {
         enableHiding: true,
       },
       {
+        accessorKey: "tour_type_label",
+        header: "Tour Type",
+        cell: ({ row }) => (
+          <span style={{ fontSize: 12, background: row.original?.tour_type === "F" ? "#fef3c7" : "#e0f2fe", color: row.original?.tour_type === "F" ? "#b45309" : "#075985", padding: "2px 8px", borderRadius: 999, fontWeight: 700 }}>
+            {row.original?.tour_type_label || getTourTypeLabel(row.original?.tour_type)}
+          </span>
+        ),
+        size: 140,
+        enableSorting: true,
+        enableColumnFilter: false,
+        enableHiding: true,
+      },
+      {
         accessorKey: "status",
         header: "Status",
         accessorFn: (row) => (row.status === "A" ? "Active" : "Inactive"),
@@ -253,6 +268,7 @@ export default function NewsList() {
         ...(serverColumnFilters.title ? { title: serverColumnFilters.title } : null),
         ...(serverColumnFilters.location ? { location: serverColumnFilters.location } : null),
         ...(showRequest ? { status: showRequest } : null),
+        ...(activeTab === "F" ? { tour_type: "F" } : null),
       },
       skip: SKIP || 0,
       limit: LIMIT || 10,
@@ -335,7 +351,7 @@ export default function NewsList() {
     window.scrollTo({ top: 0, behavior: "smooth" });
     document.title = "PGTI || Admin || News List";
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, showRequest, LIMIT]);
+  }, [currentPage, showRequest, LIMIT, activeTab]);
 
   return (
     <div className="admin-page-container" ref={targetRef}>
@@ -347,6 +363,7 @@ export default function NewsList() {
             <button className={`tab-item ${activeTab === "all" ? "active" : ""}`} onClick={() => handleTabChange("all")}>All</button>
             <button className={`tab-item ${activeTab === "A" ? "active" : ""}`} onClick={() => handleTabChange("A")}>Active</button>
             <button className={`tab-item ${activeTab === "I" ? "active" : ""}`} onClick={() => handleTabChange("I")}>Inactive</button>
+            <button className={`tab-item ${activeTab === "F" ? "active" : ""}`} onClick={() => handleTabChange("F")}>NextGen</button>
           </div>
           <div className="tabs-actions">
             <button className="action-button secondary" onClick={() => getList()}>

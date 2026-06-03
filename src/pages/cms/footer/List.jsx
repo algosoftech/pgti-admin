@@ -4,6 +4,7 @@ import {
   EditOutlined, AppstoreOutlined, PhoneOutlined,
   ShareAltOutlined, MobileOutlined, CopyrightOutlined,
   NotificationOutlined, FileTextOutlined, InfoCircleOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { listFooter } from "services/footerCms.service";
@@ -51,6 +52,7 @@ const SECTION_LABELS = [
 export default function FooterCmsList() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
+  const [nextGenData, setNextGenData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sectionAction, setSectionAction] = useState({ open: false, key: "" });
 
@@ -58,15 +60,22 @@ export default function FooterCmsList() {
     document.title = "PGTI || Footer CMS";
     const load = async () => {
       setIsLoading(true);
-      const res = await listFooter();
-      if (res?.status) setData(res.result || null);
-      else notification.error({ message: res?.message || "Failed to load Footer data" });
+      const [mainRes, nextGenRes] = await Promise.all([
+        listFooter({ tour_type: "M" }),
+        listFooter({ tour_type: "F" }),
+      ]);
+      if (mainRes?.status) setData(mainRes.result || null);
+      else notification.error({ message: mainRes?.message || "Failed to load Footer data" });
+      if (nextGenRes?.status) setNextGenData(nextGenRes.result || null);
       setIsLoading(false);
     };
     load();
   }, []);
 
-  const isConfigured = !!(data?.id);
+  const hasMainRecord = Boolean(data?.id);
+  const hasNextGenRecord = Boolean(nextGenData?.id);
+  const displayData = hasMainRecord ? data : (hasNextGenRecord ? nextGenData : null);
+  const isConfigured = Boolean(displayData?.id);
   const selectedSection = SECTION_LABELS.find((item) => item.key === sectionAction.key) || null;
 
   return (
@@ -77,12 +86,20 @@ export default function FooterCmsList() {
             <h1 className="page-title">Footer Management</h1>
             <p className="page-subtitle">Manage footer link columns, contact info, social links, and app download settings</p>
           </div>
-          <button
-            className="action-button primary"
-            onClick={() => navigate("/admin/cms/footer/addeditdata", { state: data || {} })}
-          >
-            <EditOutlined /> {isConfigured ? "Edit Footer" : "Setup Footer"}
-          </button>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button
+              className="action-button secondary"
+              onClick={() => navigate("/admin/cms/footer/addeditdata", { state: hasMainRecord ? (hasNextGenRecord ? nextGenData : { tour_type: "F" }) : { tour_type: "M" } })}
+            >
+              <PlusOutlined /> {hasMainRecord ? (hasNextGenRecord ? "Edit NextGen Footer" : "Add NextGen Footer") : "Add Main Tour"}
+            </button>
+            <button
+              className="action-button primary"
+              onClick={() => navigate("/admin/cms/footer/addeditdata", { state: hasMainRecord ? data : (hasNextGenRecord ? nextGenData : { tour_type: "M" }) })}
+            >
+              <EditOutlined /> {hasMainRecord ? "Edit Footer" : (hasNextGenRecord ? "Edit NextGen Footer" : "Setup Footer")}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -156,11 +173,17 @@ export default function FooterCmsList() {
                 display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
                 padding: "12px 4px 0", borderTop: "1px solid #e2e8f0", marginTop: 6,
               }}>
-                <span className={`status-badge ${data?.status === "A" ? "active" : "inactive"}`}>
-                  {data?.status === "A" ? "Active" : "Inactive"}
+                <span className={`status-badge ${displayData?.status === "A" ? "active" : "inactive"}`}>
+                  {displayData?.status === "A" ? "Active" : "Inactive"}
                 </span>
                 <span style={{ color: "#cbd5e1", fontSize: 14 }}>·</span>
-                <span style={{ fontSize: 12, color: "#64748b" }}>Record ID: {data?.id}</span>
+                <span style={{ fontSize: 12, color: "#64748b" }}>Record ID: {displayData?.id}</span>
+                {nextGenData?.id && (
+                  <>
+                    <span style={{ color: "#cbd5e1", fontSize: 14 }}>Â·</span>
+                    <span style={{ fontSize: 12, color: "#64748b" }}>NextGen Record ID: {nextGenData.id}</span>
+                  </>
+                )}
                 <span style={{ color: "#cbd5e1", fontSize: 14 }}>·</span>
                 <span style={{ fontSize: 12, color: "#94a3b8" }}>
                   <InfoCircleOutlined style={{ marginRight: 4 }} />
@@ -207,7 +230,7 @@ export default function FooterCmsList() {
                 className="action-button primary"
                 onClick={() =>
                   navigate("/admin/cms/footer/addeditdata", {
-                    state: { ...(data || {}), openSectionKey: selectedSection.key },
+                    state: { ...(displayData || {}), openSectionKey: selectedSection.key },
                   })
                 }
               >

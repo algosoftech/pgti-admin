@@ -25,6 +25,7 @@ import ListingBannerPreviewModal from "components/cms/ListingBannerPreviewModal"
 import EnhancedTable from "components/table/EnhancedTable/EnhancedTable";
 import { usePermissions } from "contexts/PermissionContext";
 import { changeGalleryStatus, deleteGallery, getGalleryListingBanner, listGallery } from "services/gallery.service";
+import { getTourTypeLabel } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const monthLabel = (value) =>
@@ -77,11 +78,11 @@ export default function GalleryList() {
     });
 
   const loadListingBanner = useCallback(async () => {
-    const response = await getGalleryListingBanner();
+    const response = await getGalleryListingBanner(activeTab === "F" ? "F" : "M");
     if (response?.status) {
       setListingBanner(response.result || null);
     }
-  }, []);
+  }, [activeTab]);
 
   const getList = async (page = currentPage, pageLimit = limit) => {
     setIsLoading(true);
@@ -91,7 +92,8 @@ export default function GalleryList() {
       condition: {
         ...(serverColumnFilters.title ? { title: serverColumnFilters.title } : {}),
         ...(serverColumnFilters.event_title ? { event_title: serverColumnFilters.event_title } : {}),
-        ...(activeTab !== "all" ? { status: activeTab } : {}),
+        ...(activeTab === "A" || activeTab === "I" ? { status: activeTab } : {}),
+        ...(activeTab === "F" ? { tour_type: "F" } : {}),
       },
     });
 
@@ -104,10 +106,13 @@ export default function GalleryList() {
     setIsLoading(false);
   };
 
-  const handleEdit = (item = {}) => navigate("/admin/cms/gallery/addeditdata", { state: item });
+  const handleEdit = (item = {}) => {
+    const state = item?.id ? item : { tour_type: activeTab === "F" ? "F" : "M" };
+    navigate("/admin/cms/gallery/addeditdata", { state });
+  };
 
   const openListingBannerEditor = () => {
-    navigate("/admin/cms/gallery/listing-banner", { state: listingBanner || {} });
+    navigate("/admin/cms/gallery/listing-banner", { state: listingBanner || { tour_type: activeTab === "F" ? "F" : "M" } });
   };
 
   const handleListingBannerClick = async () => {
@@ -256,6 +261,20 @@ export default function GalleryList() {
         enableHiding: true,
       },
       {
+        accessorKey: "tour_type_label",
+        header: "Tour Type",
+        cell: ({ row }) => (
+          <span style={{ fontSize: 12, background: "#eff6ff", color: "#1d4ed8", padding: "4px 10px", borderRadius: 999 }}>
+            {row.original?.tour_type_label || getTourTypeLabel(row.original?.tour_type)}
+          </span>
+        ),
+        size: 140,
+        enableSorting: false,
+        enableGlobalFilter: false,
+        enableColumnFilter: false,
+        enableHiding: true,
+      },
+      {
         accessorKey: "event_title",
         header: "Linked Tournament",
         cell: ({ getValue }) => (
@@ -356,6 +375,9 @@ export default function GalleryList() {
             </button>
             <button className={`tab-item ${activeTab === "I" ? "active" : ""}`} onClick={() => handleTabChange("I")}>
               Inactive
+            </button>
+            <button className={`tab-item ${activeTab === "F" ? "active" : ""}`} onClick={() => handleTabChange("F")}>
+              NextGen
             </button>
           </div>
           <div className="tabs-actions">

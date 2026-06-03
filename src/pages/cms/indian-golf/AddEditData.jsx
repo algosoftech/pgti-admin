@@ -11,9 +11,11 @@ import { Link, useLocation } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ImageUploadField from "components/ui/ImageUploadField";
+import CmsSetupTopActions from "components/cms/CmsSetupTopActions";
 import { addEditIndianGolf, listIndianGolf } from "services/indianGolf.service";
 import { CharCounter, ImageHint } from "components/ui/FieldHint";
 import { LIMITS, IMAGE_SPECS } from "utils/fieldValidation";
+import { TOUR_TYPE_OPTIONS, shouldUseExistingTourTypeRecord } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const emptyItem = () => ({ year: "", title: "", description: "", image: "" });
@@ -155,6 +157,8 @@ export default function IndianGolfAddEditData() {
   const [id, setId] = useState(state?.id ?? state?.result?.id ?? "");
   const [status, setStatus] = useState(state?.status ?? "A");
   const [savedStatus, setSavedStatus] = useState(state?.status ?? "A");
+  const [tourType, setTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
+  const [savedTourType, setSavedTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
 
   const [heroBanner, setHeroBanner] = useState(initial.heroBanner);
   const [savedHeroBanner, setSavedHeroBanner] = useState(initial.heroBanner);
@@ -177,6 +181,8 @@ export default function IndianGolfAddEditData() {
     if (record?.result?.id) setId(record.result.id);
     if (record?.status) { setStatus(record.status); setSavedStatus(record.status); }
     if (record?.result?.status) { setStatus(record.result.status); setSavedStatus(record.result.status); }
+    if (record?.tour_type) { setTourType(record.tour_type); setSavedTourType(record.tour_type); }
+    if (record?.result?.tour_type) { setTourType(record.result.tour_type); setSavedTourType(record.result.tour_type); }
   };
 
   useEffect(() => {
@@ -186,7 +192,7 @@ export default function IndianGolfAddEditData() {
       if (state && Object.keys(state).length > 0 && state.id) hydrateForm(state);
       try {
         setIsFetching(true);
-        const res = await listIndianGolf();
+        const res = await listIndianGolf({ tour_type: tourType });
         if (active && res?.status && res?.result?.id) {
           hydrateForm(res.result);
           setOpenSections(buildSectionOpenState({ openKey: requestedOpenSectionKey }));
@@ -199,7 +205,7 @@ export default function IndianGolfAddEditData() {
     load();
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requestedOpenSectionKey]);
+  }, [requestedOpenSectionKey, tourType]);
 
   const buildContent = () => ({ heroBanner, introSection, greatMoments });
 
@@ -226,11 +232,29 @@ export default function IndianGolfAddEditData() {
   };
 
   const cancelEditingSection = (sectionKey) => {
-    if (sectionKey === "general") setStatus(savedStatus);
+    if (sectionKey === "general") { setStatus(savedStatus); setTourType(savedTourType); }
     else if (sectionKey === "heroBanner") setHeroBanner(savedHeroBanner);
     else if (sectionKey === "introSection") setIntroSection(savedIntroSection);
     else if (sectionKey === "greatMoments") setGreatMoments(savedGreatMoments);
     setActiveEditSection((prev) => (prev === sectionKey ? "" : prev));
+  };
+
+  const copyFromMainTour = async () => {
+    try {
+      setIsFetching(true);
+      const res = await listIndianGolf({ tour_type: "M" });
+      if (!res?.status || !res?.result?.id) {
+        notification.warning({ message: "Main Tour data not found", description: "Please save the Main Tour Indian Golf page first.", placement: "topRight", duration: 3 });
+        return;
+      }
+      hydrateForm(res.result);
+      setId("");
+      setTourType("F");
+      setSavedTourType("F");
+      notification.success({ message: "Copied from Main Tour", description: "Edit the copied NextGen draft and save to create a separate record.", placement: "topRight", duration: 3 });
+    } finally {
+      setIsFetching(false);
+    }
   };
 
   const saveSection = (sectionKey) => {
@@ -244,13 +268,15 @@ export default function IndianGolfAddEditData() {
         try {
           setSavingSection(sectionKey);
           const res = await addEditIndianGolf({
-            ...(id && { editId: id }),
+            ...(shouldUseExistingTourTypeRecord(id, savedTourType, tourType) && { editId: id }),
             status,
+            tour_type: tourType,
             content: JSON.stringify(buildContent()),
           });
           if (res?.status === true) {
-            if (!id && res.result?.id) setId(res.result.id);
+            if (res.result?.id) setId(res.result.id);
             setSavedStatus(status);
+            setSavedTourType(tourType);
             setSavedHeroBanner({ ...heroBanner });
             setSavedIntroSection({ ...introSection });
             setSavedGreatMoments({ ...greatMoments });
@@ -304,6 +330,14 @@ export default function IndianGolfAddEditData() {
         </div>
       </div>
 
+      <CmsSetupTopActions
+        tourType={tourType}
+        onCopyFromMain={copyFromMainTour}
+        onSaveAll={() => saveSection(activeEditSection)}
+        saveAllDisabled={!activeEditSection}
+        isWorking={Boolean(isFetching || savingSection)}
+      />
+
       <div className="page-body">
         <div className="modern-form">
 
@@ -321,6 +355,19 @@ export default function IndianGolfAddEditData() {
                     <option value="A">Active</option>
                     <option value="I">Inactive</option>
                   </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Tour Type</label>
+                  <select className="form-input" value={tourType} onChange={(e) => setTourType(e.target.value)}>
+                    {TOUR_TYPE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                  {tourType === "F" && (
+                    <button type="button" className="action-button secondary" onClick={copyFromMainTour} disabled={isFetching} style={{ marginTop: 12 }}>
+                      Copy from Main Tour
+                    </button>
+                  )}
                 </div>
               </fieldset>
             </SectionCard>

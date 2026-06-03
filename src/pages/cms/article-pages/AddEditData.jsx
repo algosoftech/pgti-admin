@@ -28,6 +28,7 @@ import ImageUploadField from "components/ui/ImageUploadField";
 import { CharCounter, FieldHint, ImageHint } from "components/ui/FieldHint";
 import { addEditArticlePage, listArticlePages } from "services/articlePages.service";
 import { IMAGE_SPECS, LIMITS, stripHtml, validateLength } from "utils/fieldValidation";
+import { TOUR_TYPE_OPTIONS } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const QUILL_MODULES = {
@@ -183,6 +184,7 @@ export default function ArticlePagesAddEditData() {
     author_name: state?.author_name || "",
     sort_order: Number.isFinite(Number(state?.sort_order)) ? Number(state.sort_order) : 0,
     status: state?.status || "A",
+    tour_type: state?.tour_type || "M",
   };
   const initBanner = { hero_image: state?.hero_image || "", mobile_hero_image: state?.mobile_hero_image || "", hero_title: state?.hero_title || "" };
   const initIntro  = {
@@ -224,6 +226,7 @@ export default function ArticlePagesAddEditData() {
       author_name: record.author_name || "",
       sort_order: Number.isFinite(Number(record.sort_order)) ? Number(record.sort_order) : 0,
       status: record.status || "A",
+      tour_type: record.tour_type || "M",
     };
     setArticleBasics(basics); setSavedArticleBasics(basics);
     setSlugTouched(Boolean(record.slug));
@@ -503,6 +506,19 @@ export default function ArticlePagesAddEditData() {
                       type="number" className="form-input" name="sort_order"
                       value={articleBasics.sort_order} onChange={handleBasicsChange} min="0"
                     />
+                  </div>
+                  <div className="col-md-3 col-12 mb-3">
+                    <label className="form-label">Tour Type</label>
+                    <select
+                      className="form-input" name="tour_type"
+                      value={articleBasics.tour_type || "M"} onChange={handleBasicsChange}
+                    >
+                      {TOUR_TYPE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="col-md-3 col-12 mb-3">
                     <label className="form-label">Status</label>

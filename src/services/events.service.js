@@ -60,9 +60,9 @@ export const deleteEvent = async (options = {}) => {
     }
 };
 
-export const getEventListingBanner = async () => {
+export const getEventListingBanner = async (tourType = "M") => {
     try {
-        const res = await postRequest({ url: `${BASE}/admin/events/banner/detail`, postData: {} });
+        const res = await postRequest({ url: `${BASE}/admin/events/banner/detail`, postData: { tour_type: tourType } });
         if (res?.status === 200 && res?.data?.status) {
             return { status: true, result: res?.data?.response?.result || null };
         }
@@ -177,6 +177,30 @@ export const getTournamentLiveSyncBatchDetail = async (id) => {
             return { status: true, result: res?.data?.response?.result || null };
         }
         return { status: false, message: extractApiError(res, 'Failed to fetch tournament live sync batch detail') };
+    } catch (error) {
+        return { status: false, message: error.message || 'Request failed' };
+    }
+};
+
+export const listLiveTournamentRecords = async () => {
+    try {
+        const res = await postRequest({ url: `${BASE}/admin/events/live-sync/records`, postData: {} });
+        if (res?.status === 200 && res?.data?.status) {
+            return { status: true, result: res?.data?.response?.result || [] };
+        }
+        return { status: false, message: extractApiError(res, 'Failed to fetch live tournament records') };
+    } catch (error) {
+        return { status: false, message: error.message || 'Request failed' };
+    }
+};
+
+export const getLiveTournamentRecordDetail = async (tourCode) => {
+    try {
+        const res = await postRequest({ url: `${BASE}/admin/events/live-sync/record-detail`, postData: { tour_code: tourCode } });
+        if (res?.status === 200 && res?.data?.status) {
+            return { status: true, result: res?.data?.response?.result || null };
+        }
+        return { status: false, message: extractApiError(res, 'Failed to fetch live tournament record detail') };
     } catch (error) {
         return { status: false, message: error.message || 'Request failed' };
     }

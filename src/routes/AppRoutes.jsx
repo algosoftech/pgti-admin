@@ -56,6 +56,8 @@ import NewsListingBanner from "pages/cms/news/ListingBanner";
 import ArticlePagesList from "pages/cms/article-pages/List";
 import ArticlePagesAddEditData from "pages/cms/article-pages/AddEditData";
 import ArticlePagesListingBanner from "pages/cms/article-pages/ListingBanner";
+import OtherArticlePagesList from "pages/cms/other-article-pages/List";
+import OtherArticlePagesAddEditData from "pages/cms/other-article-pages/AddEditData";
 
 import GolfFactsList from "pages/cms/golf-facts/List";
 import GolfFactsAddEditData from "pages/cms/golf-facts/AddEditData";
@@ -86,12 +88,23 @@ import GalleryListingBanner from "pages/cms/gallery/ListingBanner";
 import PressReleaseList from "pages/cms/press-release/List";
 import PressReleaseAddEditData from "pages/cms/press-release/AddEditData";
 import PressReleaseListingBanner from "pages/cms/press-release/ListingBanner";
+import TvTimingsList from "pages/cms/tv-timings/List";
+import TvTimingsAddEditData from "pages/cms/tv-timings/AddEditData";
+import StatsPageAddEditData from "pages/cms/stats-page/AddEditData";
+import PgtiCareerEarning from "pages/stats/PgtiCareerEarning";
 
 import EmailTemplatesList from "pages/templates/email-templates/List";
 import EmailTemplatesAddEditData from "pages/templates/email-templates/AddEditData";
 
 import TournamentResultList from "pages/tournament-results/List";
 import AddEditTournamentResult from "pages/tournament-results/AddEditData";
+import TeeTimeWindows from "pages/tee-time-booking/Windows";
+import TeeTimeSheet from "pages/tee-time-booking/Sheet";
+import QualifierBookingSettings from "pages/qualifier-booking/Settings";
+import QualifierBookingApplications from "pages/qualifier-booking/Applications";
+import PhysioCreateSlots from "pages/physio-booking/CreateSlots";
+import PhysioViewSlots from "pages/physio-booking/ViewSlots";
+import PhysioBookings from "pages/physio-booking/Bookings";
 
 const AdminLayout = ({ children }) => (
   <AdminSidebar>{children}</AdminSidebar>
@@ -131,6 +144,10 @@ const AppRoutes = () => (
     <Route path="/admin/cms/press-release/list" element={<AdminLayout><PressReleaseList /></AdminLayout>} />
     <Route path="/admin/cms/press-release/addeditdata" element={<AdminLayout><PressReleaseAddEditData /></AdminLayout>} />
     <Route path="/admin/cms/press-release/listing-banner" element={<AdminLayout><PressReleaseListingBanner /></AdminLayout>} />
+    <Route path="/admin/cms/tv-timings/list" element={<AdminLayout><TvTimingsList /></AdminLayout>} />
+    <Route path="/admin/cms/tv-timings/addeditdata" element={<AdminLayout><TvTimingsAddEditData /></AdminLayout>} />
+    <Route path="/admin/cms/stats-page" element={<AdminLayout><StatsPageAddEditData /></AdminLayout>} />
+    <Route path="/admin/stats/pgti-career-earning" element={<AdminLayout><PgtiCareerEarning /></AdminLayout>} />
 
     {/* Admin – CMS */}
     <Route path="/admin/cms/banners/list" element={<AdminLayout><BannerList /></AdminLayout>} />
@@ -180,6 +197,8 @@ const AppRoutes = () => (
     <Route path="/admin/cms/article-pages/list" element={<AdminLayout><ArticlePagesList /></AdminLayout>} />
     <Route path="/admin/cms/article-pages/addeditdata" element={<AdminLayout><ArticlePagesAddEditData /></AdminLayout>} />
     <Route path="/admin/cms/article-pages/listing-banner" element={<AdminLayout><ArticlePagesListingBanner /></AdminLayout>} />
+    <Route path="/admin/cms/other-article-pages/list" element={<AdminLayout><OtherArticlePagesList /></AdminLayout>} />
+    <Route path="/admin/cms/other-article-pages/addeditdata" element={<AdminLayout><OtherArticlePagesAddEditData /></AdminLayout>} />
 
     {/* Admin – CMS: Golf Facts */}
     <Route path="/admin/cms/golf-facts/list" element={<AdminLayout><GolfFactsList /></AdminLayout>} />
@@ -221,6 +240,13 @@ const AppRoutes = () => (
     <Route path="/admin/tournament-results/addeditdata" element={<AdminLayout><AddEditTournamentResult /></AdminLayout>} />
 
     {/* Catch-all → login */}
+    <Route path="/admin/tee-time-booking/windows" element={<AdminLayout><TeeTimeWindows /></AdminLayout>} />
+    <Route path="/admin/tee-time-booking/sheet" element={<AdminLayout><TeeTimeSheet /></AdminLayout>} />
+    <Route path="/admin/qualifier-booking/settings" element={<AdminLayout><QualifierBookingSettings /></AdminLayout>} />
+    <Route path="/admin/qualifier-booking/applications" element={<AdminLayout><QualifierBookingApplications /></AdminLayout>} />
+    <Route path="/admin/physio-booking/create-slots" element={<AdminLayout><PhysioCreateSlots /></AdminLayout>} />
+    <Route path="/admin/physio-booking/view-slots" element={<AdminLayout><PhysioViewSlots /></AdminLayout>} />
+    <Route path="/admin/physio-booking/bookings" element={<AdminLayout><PhysioBookings /></AdminLayout>} />
     <Route path="*" element={<Navigate to="/login" replace />} />
   </Routes>
 );

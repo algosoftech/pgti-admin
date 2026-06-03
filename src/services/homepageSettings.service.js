@@ -3,9 +3,9 @@ import { postRequest } from 'services/api';
 const _u = process.env.REACT_APP_API_BASE_URL || '';
 const BASE = _u.endsWith('/') ? _u.slice(0, -1) : _u;
 
-export const listHomepageSettings = async () => {
+export const listHomepageSettings = async (options = {}) => {
     try {
-        const res = await postRequest({ url: `${BASE}/admin/cms/homepage/list`, postData: {} });
+        const res = await postRequest({ url: `${BASE}/admin/cms/homepage/list`, postData: { ...options } });
         if (res?.status === 200 && res?.data?.status)
             return { status: true, result: res?.data?.response?.result || {} };
         const data = res?.data ?? res?.response?.data;

@@ -14,6 +14,7 @@ import EnhancedTable from "components/table/EnhancedTable/EnhancedTable";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { usePermissions } from "contexts/PermissionContext";
+import { getTourTypeLabel } from "utils/tourType";
 import "styles/admin-pages.css";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import {
@@ -63,16 +64,18 @@ export default function HighlightVideoList() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    dispatch(setShowRequest(tab === "all" ? "" : tab === "A" ? "A" : "I"));
+    dispatch(setShowRequest(tab === "A" || tab === "I" ? tab : ""));
   };
 
   const handleEdit = useCallback((item = {}) => {
-    navigate("/admin/cms/highlight-videos/addeditdata", { state: item });
-  }, [navigate]);
+    const state = item?.id ? item : { tour_type: activeTab === "F" ? "F" : "M" };
+    navigate("/admin/cms/highlight-videos/addeditdata", { state });
+  }, [activeTab, navigate]);
 
   const getList = useCallback(() => {
     const condition = {};
     if (showRequest) condition.status = showRequest;
+    if (activeTab === "F") condition.tour_type = "F";
     const calculatedSkip = (currentPage - 1) * LIMIT;
     dispatch(
       fetchHighlightVideosList({
@@ -82,7 +85,7 @@ export default function HighlightVideoList() {
         limit: Math.min(100, Math.max(1, LIMIT || 10)),
       })
     );
-  }, [LIMIT, currentPage, dispatch, showRequest]);
+  }, [LIMIT, activeTab, currentPage, dispatch, showRequest]);
 
   const handlePageChange = (page) => {
     dispatch(setCurrentPage(page));
@@ -196,6 +199,15 @@ export default function HighlightVideoList() {
         enableHiding: true,
       },
       {
+        accessorKey: "tour_type_label",
+        header: "Tour Type",
+        cell: ({ row }) => getTourTypeLabel(row.original?.tour_type),
+        size: 140,
+        enableSorting: true,
+        enableColumnFilter: false,
+        enableHiding: true,
+      },
+      {
         accessorKey: "title",
         header: "Title",
         cell: ({ getValue }) => <div className="font-weight-600">{getValue() || "—"}</div>,
@@ -303,6 +315,12 @@ export default function HighlightVideoList() {
               onClick={() => handleTabChange("I")}
             >
               Inactive
+            </button>
+            <button
+              className={`tab-item ${activeTab === "F" ? "active" : ""}`}
+              onClick={() => handleTabChange("F")}
+            >
+              NextGen
             </button>
           </div>
           <div className="tabs-actions">

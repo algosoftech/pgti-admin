@@ -72,11 +72,11 @@ export const deleteArticlePage = async (options = {}) => {
   }
 };
 
-export const getArticlePagesListingBanner = async () => {
+export const getArticlePagesListingBanner = async (tourType = "M") => {
   try {
     const res = await postRequest({
       url: `${BASE}/admin/cms/article-pages/banner/detail`,
-      postData: {},
+      postData: { tour_type: tourType },
     });
     if (res?.status === 200 && res?.data?.status) {
       return { status: true, result: res?.data?.response?.result || null };

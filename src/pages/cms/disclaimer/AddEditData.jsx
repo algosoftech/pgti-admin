@@ -17,8 +17,10 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 import { addEditDisclaimer, listDisclaimer } from "services/disclaimer.service";
+import CmsSetupTopActions from "components/cms/CmsSetupTopActions";
 import { CharCounter } from "components/ui/FieldHint";
 import { LIMITS } from "utils/fieldValidation";
+import { TOUR_TYPE_OPTIONS, shouldUseExistingTourTypeRecord } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const QUILL_MODULES = {
@@ -172,6 +174,8 @@ export default function DisclaimerAddEditData() {
   const [id, setId] = useState(state?.id ?? state?.result?.id ?? "");
   const [status, setStatus] = useState(state?.status ?? "A");
   const [savedStatus, setSavedStatus] = useState(state?.status ?? "A");
+  const [tourType, setTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
+  const [savedTourType, setSavedTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
   const [isFetching, setIsFetching] = useState(false);
   const [savingSection, setSavingSection] = useState("");
   const [activeEditSection, setActiveEditSection] = useState(() => normalizeOpenSectionKey(requestedOpenSectionKey));
@@ -198,6 +202,14 @@ export default function DisclaimerAddEditData() {
       if (record?.result?.status) setStatus(record.result.status);
       if (record?.status) setSavedStatus(record.status);
       if (record?.result?.status) setSavedStatus(record.result.status);
+      if (record?.tour_type) {
+        setTourType(record.tour_type);
+        setSavedTourType(record.tour_type);
+      }
+      if (record?.result?.tour_type) {
+        setTourType(record.result.tour_type);
+        setSavedTourType(record.result.tour_type);
+      }
     };
 
     const loadRecord = async () => {
@@ -205,7 +217,7 @@ export default function DisclaimerAddEditData() {
 
       try {
         setIsFetching(true);
-        const res = await listDisclaimer();
+        const res = await listDisclaimer({ tour_type: tourType });
         if (active && res?.status && res?.result) {
           hydrate(res.result);
           setOpenSections(buildSectionOpenState({ openKey: requestedOpenSectionKey }));
@@ -220,7 +232,7 @@ export default function DisclaimerAddEditData() {
     return () => {
       active = false;
     };
-  }, [requestedOpenSectionKey, state]);
+  }, [requestedOpenSectionKey, state, tourType]);
 
   const notifyReadOnly = (sectionTitle) => {
     notification.open({
@@ -240,7 +252,40 @@ export default function DisclaimerAddEditData() {
   const cancelEditingSection = (sectionKey) => {
     setForm(savedForm);
     setStatus(savedStatus);
+    setTourType(savedTourType);
     setActiveEditSection((prev) => (prev === sectionKey ? "" : prev));
+  };
+
+  const copyFromMainTour = async () => {
+    try {
+      setIsFetching(true);
+      const res = await listDisclaimer({ tour_type: "M" });
+      if (!res?.status || !res?.result?.id) {
+        notification.warning({
+          message: "Main Tour data not found",
+          description: "Please save the Main Tour Disclaimer page first.",
+          placement: "topRight",
+          duration: 3,
+        });
+        return;
+      }
+      const next = parseContent(res.result?.content ?? res.result);
+      setForm(next);
+      setSavedForm(next);
+      setStatus(res.result?.status || "A");
+      setSavedStatus(res.result?.status || "A");
+      setId("");
+      setTourType("F");
+      setSavedTourType("F");
+      notification.success({
+        message: "Copied from Main Tour",
+        description: "Edit the copied NextGen draft and save to create a separate record.",
+        placement: "topRight",
+        duration: 3,
+      });
+    } finally {
+      setIsFetching(false);
+    }
   };
 
   const saveSection = (sectionKey) => {
@@ -265,15 +310,17 @@ export default function DisclaimerAddEditData() {
         try {
           setSavingSection(sectionKey);
           const res = await addEditDisclaimer({
-            ...(id && { editId: id }),
+            ...(shouldUseExistingTourTypeRecord(id, savedTourType, tourType) && { editId: id }),
             status,
+            tour_type: tourType,
             content: JSON.stringify(form),
           });
 
           if (res?.status === true) {
-            if (!id && res.result?.id) setId(res.result.id);
+            if (res.result?.id) setId(res.result.id);
             setSavedForm(form);
             setSavedStatus(status);
+            setSavedTourType(tourType);
             setActiveEditSection("");
             notification.open({
               message: "Success",
@@ -329,6 +376,14 @@ export default function DisclaimerAddEditData() {
         </div>
       </div>
 
+      <CmsSetupTopActions
+        tourType={tourType}
+        onCopyFromMain={copyFromMainTour}
+        onSaveAll={() => saveSection(activeEditSection)}
+        saveAllDisabled={!activeEditSection}
+        isWorking={Boolean(isFetching || savingSection)}
+      />
+
       <div className="page-body">
         <div className="modern-form">
           <div ref={(node) => { sectionRefs.current.header = node; }}>
@@ -345,6 +400,29 @@ export default function DisclaimerAddEditData() {
             >
               <fieldset disabled={activeEditSection !== "header"} style={{ border: "none", padding: 0, margin: 0 }}>
                 <div className="row">
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
+                      <label className="form-label">Tour Type</label>
+                      <select className="form-input" value={tourType} onChange={(e) => setTourType(e.target.value)}>
+                        {TOUR_TYPE_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {tourType === "F" && (
+                        <button
+                          type="button"
+                          className="action-button secondary"
+                          onClick={copyFromMainTour}
+                          disabled={isFetching}
+                          style={{ marginTop: 12 }}
+                        >
+                          Copy from Main Tour
+                        </button>
+                      )}
+                    </div>
+                  </div>
                   <div className="col-md-6 col-12 mb-3">
                     <div className="form-group">
                       <label className="form-label required">Page Title</label>

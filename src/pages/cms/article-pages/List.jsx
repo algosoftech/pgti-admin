@@ -36,6 +36,7 @@ import {
 } from "services/articlePages.service";
 import "styles/admin-pages.css";
 import ListingBannerPreviewModal from "components/cms/ListingBannerPreviewModal";
+import { getTourTypeLabel } from "utils/tourType";
 
 const ARTICLE_SECTION_LABELS = [
   {
@@ -82,7 +83,7 @@ export default function ArticlePagesList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [count, setCount] = useState(0);
-  const activeTab = "all";
+  const [activeTab, setActiveTab] = useState("all");
   const [serverColumnFilters, setServerColumnFilters] = useState({
     title: "",
     slug: "",
@@ -113,6 +114,7 @@ export default function ArticlePagesList() {
       skip: (page - 1) * pageLimit,
       limit: pageLimit,
       status: activeTab === "all" ? undefined : activeTab,
+      ...(activeTab === "F" ? { tour_type: "F", status: undefined } : {}),
       search: serverColumnFilters.title || undefined,
     });
 
@@ -132,6 +134,11 @@ export default function ArticlePagesList() {
       notify(res?.message || "Failed to load article pages.");
     }
     setIsLoading(false);
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setCurrentPage(1);
   };
 
   useEffect(() => {
@@ -175,14 +182,14 @@ export default function ArticlePagesList() {
   const closeSectionPicker = () => setSectionPicker({ open: false, item: null });
 
   const loadListingBanner = async () => {
-    const res = await getArticlePagesListingBanner();
+    const res = await getArticlePagesListingBanner(activeTab === "F" ? "F" : "M");
     if (res?.status) {
       setListingBanner(res.result || null);
     }
   };
 
   const openListingBannerEditor = () => {
-    navigate("/admin/cms/article-pages/listing-banner", { state: listingBanner || {} });
+    navigate("/admin/cms/article-pages/listing-banner", { state: listingBanner || { tour_type: activeTab === "F" ? "F" : "M" } });
   };
 
   const handleListingBannerClick = () => {
@@ -361,6 +368,18 @@ export default function ArticlePagesList() {
       enableColumnFilter: false,
     },
     {
+      accessorKey: "tour_type_label",
+      header: "Tour Type",
+      cell: ({ row }) => (
+        <span style={{ fontSize: 12, background: row.original?.tour_type === "F" ? "#fef3c7" : "#e0f2fe", color: row.original?.tour_type === "F" ? "#b45309" : "#075985", padding: "3px 8px", borderRadius: 999, fontWeight: 700 }}>
+          {row.original?.tour_type_label || getTourTypeLabel(row.original?.tour_type)}
+        </span>
+      ),
+      size: 140,
+      enableSorting: true,
+      enableColumnFilter: false,
+    },
+    {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
@@ -414,7 +433,7 @@ export default function ArticlePagesList() {
               </button>
             )}
             {canEdit && (
-              <button className="action-button primary" onClick={() => navigate("/admin/cms/article-pages/addeditdata")}>
+              <button className="action-button primary" onClick={() => navigate("/admin/cms/article-pages/addeditdata", { state: { tour_type: activeTab === "F" ? "F" : "M" } })}>
                 <FontAwesomeIcon icon={faPlus} />
                 Add Article Page
               </button>
@@ -425,6 +444,22 @@ export default function ArticlePagesList() {
 
       <div className="page-body">
         <div className="content-card">
+          <div className="tabs-header">
+            <div className="tabs-container">
+              <button className={`tab-item ${activeTab === "all" ? "active" : ""}`} onClick={() => handleTabChange("all")}>
+                All
+              </button>
+              <button className={`tab-item ${activeTab === "A" ? "active" : ""}`} onClick={() => handleTabChange("A")}>
+                Active
+              </button>
+              <button className={`tab-item ${activeTab === "I" ? "active" : ""}`} onClick={() => handleTabChange("I")}>
+                Inactive
+              </button>
+              <button className={`tab-item ${activeTab === "F" ? "active" : ""}`} onClick={() => handleTabChange("F")}>
+                NextGen
+              </button>
+            </div>
+          </div>
           <div className="content-card-body">
             <EnhancedTable
               data={rows}

@@ -19,6 +19,7 @@ import Top_navbar from 'components/layout/TopNavbar';
 import { useNavigate } from "react-router-dom";
 
 import { InfoCircleOutlined, CheckCircleOutlined, PictureOutlined } from "@ant-design/icons";
+import { getTourTypeLabel } from "utils/tourType";
 
 import moment from "moment";
 import { usePermissions } from 'contexts/PermissionContext';
@@ -66,11 +67,12 @@ export default function BannerList() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    dispatch(setShowRequest(tab === "all" ? "" : tab.toUpperCase()));
+    dispatch(setShowRequest(tab === "A" || tab === "I" ? tab.toUpperCase() : ""));
   };
   
   const handleEdit = async (item = {}) => {
-    navigate("/admin/cms/banners/addeditdata", { state: item });
+    const state = item?.id ? item : { tour_type: activeTab === "F" ? "F" : "M" };
+    navigate("/admin/cms/banners/addeditdata", { state });
   };
 
   /*********************************************************
@@ -91,6 +93,9 @@ export default function BannerList() {
     }
     if (showRequest) {
       condition.status = showRequest;
+    }
+    if (activeTab === "F") {
+      condition.tour_type = "F";
     }
 
     // Calculate skip based on currentPage and limit
@@ -297,6 +302,12 @@ export default function BannerList() {
               >
                 Inactive
               </button>
+              <button
+                className={`tab-item ${activeTab === "F" ? "active" : ""}`}
+                onClick={() => handleTabChange("F")}
+              >
+                NextGen
+              </button>
             </div>
 
             <div className="tabs-actions">
@@ -341,6 +352,7 @@ export default function BannerList() {
                     <th>Image</th>
                     <th>Type</th>
                     <th>Page</th>
+                    <th>Tour Type</th>
                     <th>Created</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -420,6 +432,13 @@ export default function BannerList() {
                             ) : (
                               <span className="text-muted">N/A</span>
                             )}
+                          </div>
+                        </td>
+                        <td className="banner-page-cell">
+                          <div className="banner-page-text">
+                            <span className="banner-page-badge">
+                              {item?.tour_type_label || getTourTypeLabel(item?.tour_type)}
+                            </span>
                           </div>
                         </td>
                         <td className="banner-date-cell">
@@ -602,4 +621,3 @@ export default function BannerList() {
     </>
   );
 }
-

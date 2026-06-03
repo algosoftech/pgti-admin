@@ -14,6 +14,7 @@ import { LIMITS } from 'utils/fieldValidation';
 import "styles/admin-pages.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVideo } from "@fortawesome/free-solid-svg-icons";
+import { TOUR_TYPE_OPTIONS } from "utils/tourType";
 
 export default function HighlightVideoAddEditPage() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function HighlightVideoAddEditPage() {
   const [formData, setFormData] = useState({
     title: state?.title || "",
     link: state?.link || "",
+    tour_type: state?.tour_type || "M",
     ...state,
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -69,6 +71,7 @@ export default function HighlightVideoAddEditPage() {
       const param = {
         title: title.trim(),
         link: link.trim(),
+        tour_type: formData.tour_type || "M",
       };
       if (formData?.id) param.editId = formData.id;
 
@@ -154,6 +157,27 @@ export default function HighlightVideoAddEditPage() {
                 />
                 <CharCounter value={formData.title} min={LIMITS.title.min} max={LIMITS.title.max} />
                 {error.title && <div className="form-error">{error.title}</div>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="tour_type" className="form-label">
+                  Tour Type
+                </label>
+                <select
+                  name="tour_type"
+                  id="tour_type"
+                  className="form-input"
+                  value={formData.tour_type || "M"}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                >
+                  {TOUR_TYPE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <FieldHint text="Use this to publish the video under the Main Tour or NextGen website context." />
               </div>
 
               <div className="form-group">

@@ -3,6 +3,7 @@ import { Modal, notification } from "antd";
 import {
   BulbOutlined, EditOutlined, FileTextOutlined,
   InfoCircleOutlined, OrderedListOutlined, PictureOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { listGolfFacts } from "services/golfFacts.service";
@@ -32,6 +33,7 @@ const SECTION_LABELS = [
 export default function GolfFactsList() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
+  const [nextGenData, setNextGenData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sectionAction, setSectionAction] = useState({ open: false, key: "" });
 
@@ -39,15 +41,22 @@ export default function GolfFactsList() {
     document.title = "PGTI || Golf Facts CMS";
     const load = async () => {
       setIsLoading(true);
-      const res = await listGolfFacts();
-      if (res?.status) setData(res.result || null);
-      else notification.error({ message: res?.message || "Failed to load Golf Facts data" });
+      const [mainRes, nextGenRes] = await Promise.all([
+        listGolfFacts({ tour_type: "M" }),
+        listGolfFacts({ tour_type: "F" }),
+      ]);
+      if (mainRes?.status) setData(mainRes.result || null);
+      else notification.error({ message: mainRes?.message || "Failed to load Golf Facts data" });
+      if (nextGenRes?.status) setNextGenData(nextGenRes.result || null);
       setIsLoading(false);
     };
     load();
   }, []);
 
-  const isConfigured = !!(data?.id);
+  const hasMainRecord = Boolean(data?.id);
+  const hasNextGenRecord = Boolean(nextGenData?.id);
+  const displayData = hasMainRecord ? data : (hasNextGenRecord ? nextGenData : null);
+  const isConfigured = Boolean(displayData?.id);
   const selectedSection = SECTION_LABELS.find((item) => item.key === sectionAction.key) || null;
 
   return (
@@ -58,12 +67,20 @@ export default function GolfFactsList() {
             <h1 className="page-title">Golf Facts</h1>
             <p className="page-subtitle">Manage all sections of the Golf Facts page</p>
           </div>
-          <button
-            className="action-button primary"
-            onClick={() => navigate("/admin/cms/golf-facts/addeditdata", { state: data || {} })}
-          >
-            <EditOutlined /> {isConfigured ? "Edit Page" : "Setup Page"}
-          </button>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button
+              className="action-button secondary"
+              onClick={() => navigate("/admin/cms/golf-facts/addeditdata", { state: hasMainRecord ? (hasNextGenRecord ? nextGenData : { tour_type: "F" }) : { tour_type: "M" } })}
+            >
+              <PlusOutlined /> {hasMainRecord ? (hasNextGenRecord ? "Edit NextGen Golf Facts" : "Add NextGen Golf Facts") : "Add Main Tour"}
+            </button>
+            <button
+              className="action-button primary"
+              onClick={() => navigate("/admin/cms/golf-facts/addeditdata", { state: hasMainRecord ? data : (hasNextGenRecord ? nextGenData : { tour_type: "M" }) })}
+            >
+              <EditOutlined /> {hasMainRecord ? "Edit Page" : (hasNextGenRecord ? "Edit NextGen Page" : "Setup Page")}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -137,11 +154,17 @@ export default function GolfFactsList() {
                 display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
                 padding: "12px 4px 0", borderTop: "1px solid #e2e8f0", marginTop: 6,
               }}>
-                <span className={`status-badge ${data?.status === "A" ? "active" : "inactive"}`}>
-                  {data?.status === "A" ? "Active" : "Inactive"}
+                <span className={`status-badge ${displayData?.status === "A" ? "active" : "inactive"}`}>
+                  {displayData?.status === "A" ? "Active" : "Inactive"}
                 </span>
                 <span style={{ color: "#cbd5e1", fontSize: 14 }}>·</span>
-                <span style={{ fontSize: 12, color: "#64748b" }}>Record ID: {data?.id}</span>
+                <span style={{ fontSize: 12, color: "#64748b" }}>Record ID: {displayData?.id}</span>
+                {nextGenData?.id && (
+                  <>
+                    <span style={{ color: "#cbd5e1", fontSize: 14 }}>Â·</span>
+                    <span style={{ fontSize: 12, color: "#64748b" }}>NextGen Record ID: {nextGenData.id}</span>
+                  </>
+                )}
                 <span style={{ color: "#cbd5e1", fontSize: 14 }}>·</span>
                 <span style={{ fontSize: 12, color: "#94a3b8" }}>
                   <InfoCircleOutlined style={{ marginRight: 4 }} />
@@ -188,7 +211,7 @@ export default function GolfFactsList() {
                 className="action-button primary"
                 onClick={() =>
                   navigate("/admin/cms/golf-facts/addeditdata", {
-                    state: { ...(data || {}), openSectionKey: selectedSection.key },
+                    state: { ...(displayData || {}), openSectionKey: selectedSection.key },
                   })
                 }
               >

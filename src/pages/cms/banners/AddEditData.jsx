@@ -13,6 +13,7 @@ import { addEditBanner } from 'services/banner.service';
 import ImageUploadField from 'components/ui/ImageUploadField';
 import { ImageHint } from 'components/ui/FieldHint';
 import { IMAGE_SPECS } from 'utils/fieldValidation';
+import { TOUR_TYPE_OPTIONS } from 'utils/tourType';
 import "styles/admin-pages.css";
 
 const BannerAddEditPage = () => {
@@ -57,6 +58,7 @@ const BannerAddEditPage = () => {
         ...(ADDEDITDATA?.image && { image: ADDEDITDATA?.image }),
         ...(formData.get('type') && { type: formData.get('type') }),
         ...(formData.get('page') && { page: formData.get('page') }),
+        tour_type: formData.get('tour_type') || ADDEDITDATA?.tour_type || "M",
       };
 
       const res = await addEditBanner(param);
@@ -164,6 +166,25 @@ const BannerAddEditPage = () => {
                   {error.type && (
                     <div className="form-error">{error.type}</div>
                   )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="tour_type" className="form-label">
+                    Tour Type
+                  </label>
+                  <select
+                    name="tour_type"
+                    id="tour_type"
+                    className="form-input"
+                    value={ADDEDITDATA?.tour_type || "M"}
+                    onChange={handleChange}
+                  >
+                    {TOUR_TYPE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="form-group">

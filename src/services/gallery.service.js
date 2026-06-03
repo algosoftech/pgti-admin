@@ -61,9 +61,9 @@ export const deleteGallery = async (options = {}) => {
   }
 };
 
-export const getGalleryListingBanner = async () => {
+export const getGalleryListingBanner = async (tourType = "M") => {
   try {
-    const res = await postRequest({ url: `${BASE}/admin/cms/gallery/banner/detail`, postData: {} });
+    const res = await postRequest({ url: `${BASE}/admin/cms/gallery/banner/detail`, postData: { tour_type: tourType } });
     if (res?.status === 200 && res?.data?.status) {
       return { status: true, result: res?.data?.response?.result || null };
     }

@@ -12,6 +12,7 @@ import LoadingEffect from 'components/ui/Loading/LoadingEffect';
 import { addEditFaq } from 'services/faq.service';
 import { CharCounter, FieldHint } from 'components/ui/FieldHint';
 import { LIMITS, validateLength } from 'utils/fieldValidation';
+import { TOUR_TYPE_OPTIONS } from 'utils/tourType';
 import "styles/admin-pages.css";
 
 const FaqAddEditPage = () => {
@@ -74,6 +75,7 @@ const FaqAddEditPage = () => {
         question: formData.get('question'),
         answer: formData.get('answer'),
         ...(formData.get('tag') && { tag: formData.get('tag') }),
+        tour_type: formData.get('tour_type') || ADDEDITDATA?.tour_type || "M",
       };
 
       const res = await addEditFaq(param);
@@ -193,6 +195,26 @@ const FaqAddEditPage = () => {
               </div>
 
               <div className="form-group">
+                <label htmlFor="tour_type" className="form-label">
+                  Tour Type
+                </label>
+                <select
+                  name="tour_type"
+                  id="tour_type"
+                  className="form-input"
+                  value={ADDEDITDATA?.tour_type || "M"}
+                  onChange={handleChange}
+                >
+                  {TOUR_TYPE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <FieldHint text="Choose whether this FAQ belongs to PGTI Main Tour or PGTI NextGen." />
+              </div>
+
+              <div className="form-group">
                 <label htmlFor="tag" className="form-label">
                   Tag
                 </label>
@@ -248,4 +270,3 @@ const FaqAddEditPage = () => {
 };
 
 export default FaqAddEditPage;
-

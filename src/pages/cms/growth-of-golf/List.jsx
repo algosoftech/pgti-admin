@@ -6,6 +6,7 @@ import {
   HistoryOutlined,
   InfoCircleOutlined,
   PictureOutlined,
+  PlusOutlined,
   ReadOutlined,
   StarOutlined,
   TrophyOutlined,
@@ -56,6 +57,7 @@ const SECTION_LABELS = [
 export default function GrowthOfGolfList() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
+  const [nextGenData, setNextGenData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sectionAction, setSectionAction] = useState({ open: false, key: "" });
 
@@ -63,15 +65,22 @@ export default function GrowthOfGolfList() {
     document.title = "PGTI || Growth of Golf CMS";
     const load = async () => {
       setIsLoading(true);
-      const res = await listGrowthOfGolf();
-      if (res?.status) setData(res.result || null);
-      else notification.error({ message: res?.message || "Failed to load Growth of Golf data" });
+      const [mainRes, nextGenRes] = await Promise.all([
+        listGrowthOfGolf({ tour_type: "M" }),
+        listGrowthOfGolf({ tour_type: "F" }),
+      ]);
+      if (mainRes?.status) setData(mainRes.result || null);
+      else notification.error({ message: mainRes?.message || "Failed to load Growth of Golf data" });
+      if (nextGenRes?.status) setNextGenData(nextGenRes.result || null);
       setIsLoading(false);
     };
     load();
   }, []);
 
-  const isConfigured = !!data?.id;
+  const hasMainRecord = Boolean(data?.id);
+  const hasNextGenRecord = Boolean(nextGenData?.id);
+  const displayData = hasMainRecord ? data : (hasNextGenRecord ? nextGenData : null);
+  const isConfigured = Boolean(displayData?.id);
   const selectedSection = SECTION_LABELS.find((item) => item.key === sectionAction.key) || null;
 
   return (
@@ -82,12 +91,20 @@ export default function GrowthOfGolfList() {
             <h1 className="page-title">Growth of Golf</h1>
             <p className="page-subtitle">Manage the standalone Indian Golf History / Growth of Golf page setup</p>
           </div>
-          <button
-            className="action-button primary"
-            onClick={() => navigate("/admin/cms/growth-of-golf/addeditdata", { state: data || {} })}
-          >
-            <EditOutlined /> {isConfigured ? "Edit Page" : "Setup Page"}
-          </button>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button
+              className="action-button secondary"
+              onClick={() => navigate("/admin/cms/growth-of-golf/addeditdata", { state: hasMainRecord ? (hasNextGenRecord ? nextGenData : { tour_type: "F" }) : { tour_type: "M" } })}
+            >
+              <PlusOutlined /> {hasMainRecord ? (hasNextGenRecord ? "Edit NextGen Growth" : "Add NextGen Growth") : "Add Main Tour"}
+            </button>
+            <button
+              className="action-button primary"
+              onClick={() => navigate("/admin/cms/growth-of-golf/addeditdata", { state: hasMainRecord ? data : (hasNextGenRecord ? nextGenData : { tour_type: "M" }) })}
+            >
+              <EditOutlined /> {hasMainRecord ? "Edit Page" : (hasNextGenRecord ? "Edit NextGen Page" : "Setup Page")}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -230,7 +247,7 @@ export default function GrowthOfGolfList() {
                 className="action-button primary"
                 onClick={() =>
                   navigate("/admin/cms/growth-of-golf/addeditdata", {
-                    state: { ...(data || {}), openSectionKey: selectedSection.key },
+                    state: { ...(displayData || {}), openSectionKey: selectedSection.key },
                   })
                 }
               >

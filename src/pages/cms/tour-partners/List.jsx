@@ -47,35 +47,43 @@ export default function TourPartnersList() {
   const user = JSON.parse(sessionStorage.getItem("ADMIN-INFO"));
 
   const [data, setData] = useState(null);
+  const [nextGenData, setNextGenData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     document.title = "PGTI || Admin || Tour Partners CMS";
     const load = async () => {
       setIsLoading(true);
-      const res = await listTourPartners();
-      if (res?.status) {
-        setData(res.result || {});
+      const [mainRes, nextGenRes] = await Promise.all([
+        listTourPartners({ tour_type: "M" }),
+        listTourPartners({ tour_type: "F" }),
+      ]);
+      if (mainRes?.status) {
+        setData(mainRes.result || {});
       } else {
-        notification.error({ message: res?.message || "Failed to load Tour Partners data" });
+        notification.error({ message: mainRes?.message || "Failed to load Tour Partners data" });
       }
+      if (nextGenRes?.status) setNextGenData(nextGenRes.result || null);
       setIsLoading(false);
     };
     load();
   }, []);
 
   const canEdit = user?.admin_type === "Super Admin" || PERMISSION?.permissions?.tour_partners?.list === "Y";
+  const hasMainRecord = Boolean(data?.id);
+  const hasNextGenRecord = Boolean(nextGenData?.id);
+  const displayData = hasMainRecord ? data : (hasNextGenRecord ? nextGenData : null);
 
   const content =
-    data?.content && typeof data.content === "string"
+    displayData?.content && typeof displayData.content === "string"
       ? (() => {
           try {
-            return JSON.parse(data.content);
+            return JSON.parse(displayData.content);
           } catch {
             return {};
           }
         })()
-      : data?.content || {};
+      : displayData?.content || {};
 
   const tourPartnerCards = content?.tourPartnersSection?.partners || [];
   const pgtiPartnerCards = content?.pgtiPartnersSection?.partners || [];
@@ -92,21 +100,34 @@ export default function TourPartnersList() {
               Manage the updated Tour Partners page: hero and Tour/PGTI partner cards. The bottom logo strips are derived automatically from those rows.
             </p>
           </div>
-          <button
-            className="action-button primary"
-            disabled={isLoading}
-            onClick={() => navigate("/admin/cms/tour-partners/addeditdata", { state: data || {} })}
-          >
-            {data && data.id ? (
-              <>
-                <EditOutlined /> Edit Page
-              </>
-            ) : (
-              <>
-                <PlusOutlined /> Setup Page
-              </>
-            )}
-          </button>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button
+              className="action-button secondary"
+              disabled={isLoading}
+              onClick={() => navigate("/admin/cms/tour-partners/addeditdata", { state: hasMainRecord ? (hasNextGenRecord ? nextGenData : { tour_type: "F" }) : { tour_type: "M" } })}
+            >
+              <PlusOutlined /> {hasMainRecord ? (hasNextGenRecord ? "Edit NextGen Tour Partners" : "Add NextGen Tour Partners") : "Add Main Tour"}
+            </button>
+            <button
+              className="action-button primary"
+              disabled={isLoading}
+              onClick={() => navigate("/admin/cms/tour-partners/addeditdata", { state: hasMainRecord ? data : (hasNextGenRecord ? nextGenData : { tour_type: "M" }) })}
+            >
+              {hasMainRecord ? (
+                <>
+                  <EditOutlined /> Edit Page
+                </>
+              ) : hasNextGenRecord ? (
+                <>
+                  <EditOutlined /> Edit NextGen Page
+                </>
+              ) : (
+                <>
+                  <PlusOutlined /> Setup Page
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -117,13 +138,16 @@ export default function TourPartnersList() {
               <div className="loading-spinner"></div>
               <div className="loading-text">Loading page data...</div>
             </div>
-          ) : data && data.id ? (
+          ) : displayData && displayData.id ? (
             <>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                <span className={`status-badge ${data.status === "A" ? "active" : "inactive"}`}>
-                  {data.status === "A" ? "Active" : "Inactive"}
+                <span className={`status-badge ${displayData.status === "A" ? "active" : "inactive"}`}>
+                  {displayData.status === "A" ? "Active" : "Inactive"}
                 </span>
-                <span style={{ color: "#94a3b8", fontSize: 13 }}>Record ID: {data.id}</span>
+                <span style={{ color: "#94a3b8", fontSize: 13 }}>Record ID: {displayData.id}</span>
+                {nextGenData?.id && (
+                  <span style={{ color: "#94a3b8", fontSize: 13 }}>NextGen Record ID: {nextGenData.id}</span>
+                )}
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 12 }}>
@@ -232,7 +256,7 @@ export default function TourPartnersList() {
                 <button
                   className="action-button primary"
                   style={{ marginTop: 16 }}
-                  onClick={() => navigate("/admin/cms/tour-partners/addeditdata", { state: {} })}
+                  onClick={() => navigate("/admin/cms/tour-partners/addeditdata", { state: { tour_type: "M" } })}
                 >
                   <PlusOutlined /> Setup Page
                 </button>

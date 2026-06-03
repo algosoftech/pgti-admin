@@ -8,16 +8,18 @@ import {
 } from "@ant-design/icons";
 import { Link, useLocation } from "react-router-dom";
 import ImageUploadField from "components/ui/ImageUploadField";
+import CmsSetupTopActions from "components/cms/CmsSetupTopActions";
 import { addEditContactUs, listContactUs } from "services/contactUs.service";
 import { CharCounter, ImageHint } from "components/ui/FieldHint";
 import { LIMITS, IMAGE_SPECS } from "utils/fieldValidation";
+import { TOUR_TYPE_OPTIONS, shouldUseExistingTourTypeRecord } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const DEFAULT_TABS = [
-  { tab_name: "Admin Inquiries", email: "", phone: "", address: "" },
-  { tab_name: "Tour Entry Inquiries", email: "", phone: "", address: "" },
-  { tab_name: "Marketing Inquiries", email: "", phone: "", address: "" },
-  { tab_name: "Media Inquiries", email: "", phone: "", address: "" },
+  { tab_name: "Admin Inquiries", person_name: "", email: "", phone: "", address: "" },
+  { tab_name: "Tour Entry Inquiries", person_name: "", email: "", phone: "", address: "" },
+  { tab_name: "Marketing Inquiries", person_name: "", email: "", phone: "", address: "" },
+  { tab_name: "Media Inquiries", person_name: "", email: "", phone: "", address: "" },
 ];
 
 const parseContent = (raw) => {
@@ -25,7 +27,15 @@ const parseContent = (raw) => {
     const c = typeof raw === "string" ? JSON.parse(raw) : (raw || {});
     return {
       heroBanner: { bg_image: c.heroBanner?.bg_image || "", mobile_bg_image: c.heroBanner?.mobile_bg_image || "", title: c.heroBanner?.title || "CONTACT US" },
-      inquiryTabs: Array.isArray(c.inquiryTabs) && c.inquiryTabs.length ? c.inquiryTabs : DEFAULT_TABS,
+      inquiryTabs: Array.isArray(c.inquiryTabs) && c.inquiryTabs.length
+        ? c.inquiryTabs.map((tab = {}, index) => ({
+            tab_name: tab.tab_name || DEFAULT_TABS[index]?.tab_name || "",
+            person_name: tab.person_name || "",
+            email: tab.email || "",
+            phone: tab.phone || "",
+            address: tab.address || "",
+          }))
+        : DEFAULT_TABS,
       map_embed_url: c.map_embed_url || "",
     };
   } catch {
@@ -128,6 +138,8 @@ export default function ContactUsAddEditData() {
   const [id, setId] = useState(state?.id ?? state?.result?.id ?? "");
   const [status, setStatus] = useState(state?.status ?? "A");
   const [savedStatus, setSavedStatus] = useState(state?.status ?? "A");
+  const [tourType, setTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
+  const [savedTourType, setSavedTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
 
   const [heroBanner, setHeroBanner] = useState(initial.heroBanner);
   const [savedHeroBanner, setSavedHeroBanner] = useState(initial.heroBanner);
@@ -151,6 +163,8 @@ export default function ContactUsAddEditData() {
     if (record?.result?.id) setId(record.result.id);
     if (record?.status) { setStatus(record.status); setSavedStatus(record.status); }
     if (record?.result?.status) { setStatus(record.result.status); setSavedStatus(record.result.status); }
+    if (record?.tour_type) { setTourType(record.tour_type); setSavedTourType(record.tour_type); }
+    if (record?.result?.tour_type) { setTourType(record.result.tour_type); setSavedTourType(record.result.tour_type); }
   };
 
   useEffect(() => {
@@ -160,7 +174,7 @@ export default function ContactUsAddEditData() {
       if (state && Object.keys(state).length > 0 && state.id) hydrateForm(state);
       try {
         setIsFetching(true);
-        const res = await listContactUs();
+        const res = await listContactUs({ tour_type: tourType });
         if (active && res?.status && res?.result?.id) {
           hydrateForm(res.result);
           setOpenSections(buildSectionOpenState({ openKey: requestedOpenSectionKey }));
@@ -173,7 +187,7 @@ export default function ContactUsAddEditData() {
     load();
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requestedOpenSectionKey]);
+  }, [requestedOpenSectionKey, tourType]);
 
   const buildContent = () => ({
     heroBanner,
@@ -204,11 +218,29 @@ export default function ContactUsAddEditData() {
   };
 
   const cancelEditingSection = (sectionKey) => {
-    if (sectionKey === "general") setStatus(savedStatus);
+    if (sectionKey === "general") { setStatus(savedStatus); setTourType(savedTourType); }
     else if (sectionKey === "heroBanner") setHeroBanner(savedHeroBanner);
     else if (sectionKey === "inquiryTabs") setInquiryTabs(savedInquiryTabs);
     else if (sectionKey === "googleMaps") setMapEmbedUrl(savedMapEmbedUrl);
     setActiveEditSection((prev) => (prev === sectionKey ? "" : prev));
+  };
+
+  const copyFromMainTour = async () => {
+    try {
+      setIsFetching(true);
+      const res = await listContactUs({ tour_type: "M" });
+      if (!res?.status || !res?.result?.id) {
+        notification.warning({ message: "Main Tour data not found", description: "Please save the Main Tour Contact Us page first.", placement: "topRight", duration: 3 });
+        return;
+      }
+      hydrateForm(res.result);
+      setId("");
+      setTourType("F");
+      setSavedTourType("F");
+      notification.success({ message: "Copied from Main Tour", description: "Edit the copied NextGen draft and save to create a separate record.", placement: "topRight", duration: 3 });
+    } finally {
+      setIsFetching(false);
+    }
   };
 
   const saveSection = (sectionKey) => {
@@ -226,13 +258,15 @@ export default function ContactUsAddEditData() {
         try {
           setSavingSection(sectionKey);
           const res = await addEditContactUs({
-            ...(id && { editId: id }),
+            ...(shouldUseExistingTourTypeRecord(id, savedTourType, tourType) && { editId: id }),
             status,
+            tour_type: tourType,
             content: JSON.stringify(buildContent()),
           });
           if (res?.status === true) {
-            if (!id && res.result?.id) setId(res.result.id);
+            if (res.result?.id) setId(res.result.id);
             setSavedStatus(status);
+            setSavedTourType(tourType);
             setSavedHeroBanner({ ...heroBanner });
             setSavedInquiryTabs([...inquiryTabs]);
             setSavedMapEmbedUrl(mapEmbedUrl);
@@ -274,6 +308,14 @@ export default function ContactUsAddEditData() {
         </div>
       </div>
 
+      <CmsSetupTopActions
+        tourType={tourType}
+        onCopyFromMain={copyFromMainTour}
+        onSaveAll={() => saveSection(activeEditSection)}
+        saveAllDisabled={!activeEditSection}
+        isWorking={Boolean(isFetching || savingSection)}
+      />
+
       <div className="page-body">
         <div className="modern-form">
 
@@ -292,6 +334,19 @@ export default function ContactUsAddEditData() {
                     <option value="A">Active</option>
                     <option value="I">Inactive</option>
                   </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Tour Type</label>
+                  <select className="form-input" value={tourType} onChange={(e) => setTourType(e.target.value)}>
+                    {TOUR_TYPE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                  {tourType === "F" && (
+                    <button type="button" className="action-button secondary" onClick={copyFromMainTour} disabled={isFetching} style={{ marginTop: 12 }}>
+                      Copy from Main Tour
+                    </button>
+                  )}
                 </div>
               </fieldset>
             </SectionCard>
@@ -365,6 +420,12 @@ export default function ContactUsAddEditData() {
                       <div className="form-group">
                         <label className="form-label">Email Address</label>
                         <input type="email" className="form-input" value={inquiryTabs[activeTab].email} onChange={(e) => updateTab(activeTab, "email", e.target.value)} placeholder="e.g. admin@pgti.com" />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-12 mb-3">
+                      <div className="form-group">
+                        <label className="form-label">Person Name</label>
+                        <input className="form-input" value={inquiryTabs[activeTab].person_name || ""} onChange={(e) => updateTab(activeTab, "person_name", e.target.value)} placeholder="Full Name" />
                       </div>
                     </div>
                     <div className="col-md-4 col-12 mb-3">

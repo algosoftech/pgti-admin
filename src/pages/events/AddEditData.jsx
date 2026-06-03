@@ -18,6 +18,7 @@ import { CharCounter, FieldHint, ImageHint } from "components/ui/FieldHint";
 import { addEditEvent } from "services/events.service";
 import { list as fetchArticles } from "services/articles.service";
 import { IMAGE_SPECS, LIMITS, validateLength } from "utils/fieldValidation";
+import { TOUR_TYPE_OPTIONS } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const { Option } = Select;
@@ -123,6 +124,13 @@ const EventAddEditPage = () => {
     }));
   };
 
+  const handleTvTimingChange = (value) => {
+    setAddEditData((prev) => ({
+      ...prev,
+      tv_timing_detail: value,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -223,6 +231,8 @@ const EventAddEditPage = () => {
         ...(formData.get("capacity") ? { capacity: parseInt(formData.get("capacity"), 10) } : {}),
         pro_am_details: ADDEDITDATA?.pro_am_details?.trim() || "",
         practice_round_details: ADDEDITDATA?.practice_round_details?.trim() || "",
+        tv_timing_detail: ADDEDITDATA?.tv_timing_detail || "",
+        tour_type: ADDEDITDATA?.tour_type || "M",
       };
 
       const response = await addEditEvent(payload);
@@ -416,6 +426,31 @@ const EventAddEditPage = () => {
 
                   <div className="col-md-6 col-12 mb-3">
                     <div className="form-group">
+                      <label htmlFor="tour_type" className="form-label">
+                        Tour Type
+                      </label>
+                      <Select
+                        name="tour_type"
+                        id="tour_type"
+                        placeholder="Select tour type"
+                        className="form-select"
+                        value={ADDEDITDATA?.tour_type || "M"}
+                        onChange={(value) => setAddEditData((prev) => ({ ...prev, tour_type: value }))}
+                        style={{ width: "100%" }}
+                        size="large"
+                      >
+                        {TOUR_TYPE_OPTIONS.map((option) => (
+                          <Option key={option.value} value={option.value}>
+                            {option.label}
+                          </Option>
+                        ))}
+                      </Select>
+                      <FieldHint text="Controls whether this tournament appears under PGTI Main Tour or PGTI NextGen." />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
                       <label htmlFor="capacity" className="form-label">
                         Capacity
                       </label>
@@ -465,6 +500,37 @@ const EventAddEditPage = () => {
                         value={ADDEDITDATA?.practice_round_details || ""}
                         onChange={handleChange}
                       />
+                    </div>
+                  </div>
+
+                  <div className="col-md-12 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="tv_timing_detail" className="form-label">
+                        TV Timings Detail
+                      </label>
+                      <ReactQuill
+                        theme="snow"
+                        value={ADDEDITDATA?.tv_timing_detail || ""}
+                        onChange={handleTvTimingChange}
+                        placeholder="Add tournament-specific TV timings content..."
+                        style={{
+                          backgroundColor: "white",
+                          borderRadius: "8px",
+                          marginBottom: "8px",
+                        }}
+                        modules={{
+                          toolbar: [
+                            [{ header: [1, 2, 3, false] }],
+                            ["bold", "italic", "underline", "strike"],
+                            [{ list: "ordered" }, { list: "bullet" }],
+                            [{ color: [] }, { background: [] }],
+                            [{ align: [] }],
+                            ["link"],
+                            ["clean"],
+                          ],
+                        }}
+                      />
+                      <FieldHint text="Optional. If added here, this content will be returned inside tournament detail TV Timings for this specific tournament." />
                     </div>
                   </div>
 

@@ -13,6 +13,7 @@ import LoadingEffect from "components/ui/Loading/LoadingEffect";
 import ImageUploadField from "components/ui/ImageUploadField";
 import { CharCounter, FieldHint, ImageHint } from "components/ui/FieldHint";
 import { addEditGallery } from "services/gallery.service";
+import { TOUR_TYPE_OPTIONS } from "utils/tourType";
 import { list as listEvents } from "services/events.service";
 import { IMAGE_SPECS, LIMITS, validateLength } from "utils/fieldValidation";
 import "styles/admin-pages.css";
@@ -47,6 +48,7 @@ const buildInitialState = (state = {}) => ({
   gallery_month: state?.gallery_month || undefined,
   sort_order: state?.sort_order || 0,
   status: state?.status || "A",
+  tour_type: state?.tour_type || "M",
 });
 
 export default function GalleryAddEditData() {
@@ -66,7 +68,7 @@ export default function GalleryAddEditData() {
   useEffect(() => {
     const loadEvents = async () => {
       setLoadingEvents(true);
-      const res = await listEvents({ skip: 0, limit: 1000, condition: { status: "A" } });
+      const res = await listEvents({ skip: 0, limit: 1000, condition: { status: "A", tour_type: formData.tour_type || "M" } });
       if (res?.status) {
         setEvents(res.result || []);
       } else {
@@ -82,7 +84,7 @@ export default function GalleryAddEditData() {
     };
 
     loadEvents();
-  }, []);
+  }, [formData.tour_type]);
 
   const eventOptions = useMemo(
     () =>
@@ -162,6 +164,7 @@ export default function GalleryAddEditData() {
         gallery_month: Number(formData.gallery_month),
         sort_order: Number(formData.sort_order || 0),
         status: formData.status || "A",
+        tour_type: formData.tour_type || "M",
       });
 
       if (res?.status) {
@@ -324,6 +327,23 @@ export default function GalleryAddEditData() {
                       onChange={handleChange}
                       placeholder="0"
                     />
+                  </div>
+
+                  <div className="col-md-3 col-12 mb-3">
+                    <label className="form-label">Tour Type</label>
+                    <Select
+                      value={formData.tour_type}
+                      onChange={(value) => setFormData((prev) => ({ ...prev, tour_type: value, event_id: undefined }))}
+                      className="form-select"
+                      style={{ width: "100%" }}
+                      size="large"
+                    >
+                      {TOUR_TYPE_OPTIONS.map((item) => (
+                        <Option key={item.value} value={item.value}>
+                          {item.label}
+                        </Option>
+                      ))}
+                    </Select>
                   </div>
 
                   <div className="col-md-3 col-12 mb-3">

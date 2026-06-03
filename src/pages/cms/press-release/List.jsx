@@ -25,6 +25,7 @@ import ListingBannerPreviewModal from "components/cms/ListingBannerPreviewModal"
 import EnhancedTable from "components/table/EnhancedTable/EnhancedTable";
 import { usePermissions } from "contexts/PermissionContext";
 import { changePressReleaseStatus, deletePressRelease, getPressReleaseListingBanner, listPressRelease } from "services/pressRelease.service";
+import { getTourTypeLabel } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const monthLabel = (value) =>
@@ -84,7 +85,8 @@ export default function PressReleaseList() {
       condition: {
         ...(serverColumnFilters.title ? { title: serverColumnFilters.title } : {}),
         ...(serverColumnFilters.event_title ? { event_title: serverColumnFilters.event_title } : {}),
-        ...(activeTab !== "all" ? { status: activeTab } : {}),
+        ...(activeTab === "A" || activeTab === "I" ? { status: activeTab } : {}),
+        ...(activeTab === "F" ? { tour_type: "F" } : {}),
       },
     });
 
@@ -97,17 +99,20 @@ export default function PressReleaseList() {
     setIsLoading(false);
   }, [activeTab, currentPage, limit, serverColumnFilters.event_title, serverColumnFilters.title]);
 
-  const handleEdit = (item = {}) => navigate("/admin/cms/press-release/addeditdata", { state: item });
+  const handleEdit = (item = {}) => {
+    const state = item?.id ? item : { tour_type: activeTab === "F" ? "F" : "M" };
+    navigate("/admin/cms/press-release/addeditdata", { state });
+  };
 
   const loadListingBanner = useCallback(async () => {
-    const response = await getPressReleaseListingBanner();
+    const response = await getPressReleaseListingBanner(activeTab === "F" ? "F" : "M");
     if (response?.status) {
       setListingBanner(response.result || null);
     }
-  }, []);
+  }, [activeTab]);
 
   const openListingBannerEditor = () => {
-    navigate("/admin/cms/press-release/listing-banner", { state: listingBanner || {} });
+    navigate("/admin/cms/press-release/listing-banner", { state: listingBanner || { tour_type: activeTab === "F" ? "F" : "M" } });
   };
 
   const handleListingBannerClick = () => {
@@ -256,6 +261,20 @@ export default function PressReleaseList() {
         enableHiding: true,
       },
       {
+        accessorKey: "tour_type_label",
+        header: "Tour Type",
+        cell: ({ row }) => (
+          <span style={{ fontSize: 12, background: "#eff6ff", color: "#1d4ed8", padding: "4px 10px", borderRadius: 999 }}>
+            {row.original?.tour_type_label || getTourTypeLabel(row.original?.tour_type)}
+          </span>
+        ),
+        size: 140,
+        enableSorting: false,
+        enableGlobalFilter: false,
+        enableColumnFilter: false,
+        enableHiding: true,
+      },
+      {
         accessorKey: "event_title",
         header: "Linked Tournament",
         cell: ({ getValue }) => (
@@ -352,6 +371,9 @@ export default function PressReleaseList() {
             </button>
             <button className={`tab-item ${activeTab === "I" ? "active" : ""}`} onClick={() => handleTabChange("I")}>
               Inactive
+            </button>
+            <button className={`tab-item ${activeTab === "F" ? "active" : ""}`} onClick={() => handleTabChange("F")}>
+              NextGen
             </button>
           </div>
           <div className="tabs-actions">

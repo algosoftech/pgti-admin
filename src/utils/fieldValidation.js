@@ -53,6 +53,11 @@ export const FILE_SPECS = {
     maxMB: 25,
     note: "Upload the latest handbook PDF for the logged-in player dashboard handbook tab.",
   },
+  career_earning_pdf: {
+    accepted: ".pdf",
+    maxMB: 25,
+    note: "Upload the latest PGTI Career Earning PDF for the front stats page career earning tab.",
+  },
   ace_import_web: {
     accepted: ".web",
     maxMB: 20,

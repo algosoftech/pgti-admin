@@ -20,8 +20,10 @@ import "react-quill/dist/quill.snow.css";
 
 import { addEditAboutUs, listAboutUs } from 'services/aboutUs.service';
 import ImageUploadField from 'components/ui/ImageUploadField';
+import CmsSetupTopActions from 'components/cms/CmsSetupTopActions';
 import { CharCounter, ImageHint } from 'components/ui/FieldHint';
 import { LIMITS, IMAGE_SPECS, stripHtml } from 'utils/fieldValidation';
+import { TOUR_TYPE_OPTIONS, shouldUseExistingTourTypeRecord } from 'utils/tourType';
 import "styles/admin-pages.css";
 
 const emptyHeroBanner = () => ({ bg_image: "", mobile_bg_image: "", title: "", subtitle: "" });
@@ -299,6 +301,8 @@ export default function AboutUsAddEditData() {
   const [id, setId] = useState(state?.id ?? state?.result?.id ?? "");
   const [status, setStatus] = useState(state?.status ?? "A");
   const [savedStatus, setSavedStatus] = useState(state?.status ?? "A");
+  const [tourType, setTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
+  const [savedTourType, setSavedTourType] = useState(state?.tour_type ?? state?.result?.tour_type ?? "M");
   const [activeEditSection, setActiveEditSection] = useState(() => normalizeOpenSectionKey(requestedOpenSectionKey));
   const [savingSection, setSavingSection] = useState("");
   const [openSections, setOpenSections] = useState(() =>
@@ -351,6 +355,10 @@ export default function AboutUsAddEditData() {
     if (record?.result?.status) setStatus(record.result.status);
     if (record?.status) setSavedStatus(record.status);
     if (record?.result?.status) setSavedStatus(record.result.status);
+    if (record?.tour_type) setTourType(record.tour_type);
+    if (record?.result?.tour_type) setTourType(record.result.tour_type);
+    if (record?.tour_type) setSavedTourType(record.tour_type);
+    if (record?.result?.tour_type) setSavedTourType(record.result.tour_type);
   };
 
   useEffect(() => {
@@ -363,7 +371,8 @@ export default function AboutUsAddEditData() {
 
       try {
         setIsFetching(true);
-        const res = await listAboutUs({ id: state?.id || state?.result?.id, limit: 1 });
+        const lookupId = state?.id || state?.result?.id;
+        const res = await listAboutUs(lookupId ? { id: lookupId, limit: 1 } : { tour_type: tourType, limit: 1 });
         if (active && res?.status && res?.result && hasSavedAboutContent(res.result)) {
           hydrateForm(res.result);
           setOpenSections(buildSectionOpenState({ openKey: requestedOpenSectionKey }));
@@ -455,9 +464,38 @@ export default function AboutUsAddEditData() {
     }, 120);
   };
 
+  const copyFromMainTour = async () => {
+    try {
+      setIsFetching(true);
+      const res = await listAboutUs({ tour_type: "M", limit: 1 });
+      if (!res?.status || !res?.result?.id) {
+        notification.warning({
+          message: "Main Tour data not found",
+          description: "Please save the Main Tour About Us page first, then copy it into NextGen.",
+          placement: "topRight",
+          duration: 3,
+        });
+        return;
+      }
+      hydrateForm(res.result);
+      setId("");
+      setTourType("F");
+      setSavedTourType("F");
+      notification.success({
+        message: "Copied from Main Tour",
+        description: "Main Tour About Us content is copied into this NextGen draft. Edit what you need and save to create a separate NextGen record.",
+        placement: "topRight",
+        duration: 3,
+      });
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
   const cancelEditingSection = (sectionKey) => {
     if (sectionKey === "general") {
       setStatus(savedStatus);
+      setTourType(savedTourType);
     } else if (sectionKey === "heroBanner") {
       setHeroBanner(savedHeroBanner);
     } else if (sectionKey === "about") {
@@ -491,13 +529,15 @@ export default function AboutUsAddEditData() {
           setSavingSection(sectionKey);
           const content = buildContent();
           const res = await addEditAboutUs({
-            ...(id && { editId: id }),
+            ...(shouldUseExistingTourTypeRecord(id, savedTourType, tourType) && { editId: id }),
             status,
+            tour_type: tourType,
             content: JSON.stringify(content),
           });
           if (res?.status === true) {
-            if (!id && res.result?.id) setId(res.result.id);
+            if (res.result?.id) setId(res.result.id);
             setSavedStatus(status);
+            setSavedTourType(tourType);
             setSavedHeroBanner(heroBanner);
             setSavedAbout(about);
             setSavedKeyMilestones(keyMilestones);
@@ -577,6 +617,14 @@ export default function AboutUsAddEditData() {
         </div>
       </div>
 
+      <CmsSetupTopActions
+        tourType={tourType}
+        onCopyFromMain={copyFromMainTour}
+        onSaveAll={() => saveSection(activeEditSection)}
+        saveAllDisabled={!activeEditSection}
+        isWorking={Boolean(isFetching || savingSection)}
+      />
+
       <div className="page-body">
       <div className="modern-form">
         <input type="hidden" name="editId" value={id} />
@@ -602,6 +650,27 @@ export default function AboutUsAddEditData() {
                     <option value="I">Inactive</option>
                   </select>
                 </div>
+                <div className="form-group" style={{ marginTop: 16 }}>
+                  <label className="form-label">Tour Type</label>
+                  <select className="form-input" value={tourType} onChange={(e) => setTourType(e.target.value)}>
+                    {TOUR_TYPE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {tourType === "F" && (
+                  <button
+                    type="button"
+                    className="action-button secondary"
+                    onClick={copyFromMainTour}
+                    disabled={isFetching}
+                    style={{ marginTop: 12 }}
+                  >
+                    Copy from Main Tour
+                  </button>
+                )}
             </fieldset>
           </SectionCard>
         </div>
