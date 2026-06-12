@@ -57,6 +57,10 @@ const MODULE_META = {
     label: "Contact Us",
     description: "Manage contact page copy and public contact section setup.",
   },
+  push_notifications: {
+    label: "Push Notifications",
+    description: "Send custom push notifications, manage presets, and resend campaigns.",
+  },
   disclaimer: {
     label: "Disclaimer",
     description: "Maintain disclaimer page content.",

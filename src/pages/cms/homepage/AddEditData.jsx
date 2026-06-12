@@ -462,6 +462,7 @@ const DEFAULT = {
   },
   featuredMatch: {
     enabled: true,
+    is_live_telecast: false,
     title: "72 The League",
     subtitle: "UP Prometheans v Rajasthan Regals - The League Final",
     link_url: "",
@@ -1442,6 +1443,11 @@ export default function HomepageSettingsAddEdit() {
               checked={form.featuredMatch.enabled}
               onChange={(value) => setSectionField("featuredMatch", "enabled", value)}
               label="Show featured match bar below the hero"
+            />
+            <Toggle
+              checked={Boolean(form.featuredMatch.is_live_telecast)}
+              onChange={(value) => setSectionField("featuredMatch", "is_live_telecast", value)}
+              label="This featured match is a live telecast"
             />
             <div className="row">
               <div className="col-md-6 col-12 mb-3">

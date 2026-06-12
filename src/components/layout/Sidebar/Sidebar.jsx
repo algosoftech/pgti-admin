@@ -28,9 +28,11 @@ import {
   faBookOpen,
   faXmark,
   faArrowsRotate,
+  faBell,
 } from "@fortawesome/free-solid-svg-icons";
 import { PermissionContext, usePermissions } from "contexts/PermissionContext";
 import { listArticlePages } from "services/articlePages.service";
+import { listOtherArticlePages } from "services/otherArticlePages.service";
 import "./Sidebar.css";
 
 const { Panel } = Collapse;
@@ -73,6 +75,7 @@ const Sidebar = ({ children }) => {
   const [permissionData, setPermissionData] = useState({});
   const [openPanel, setOpenPanel] = useState(null);
   const [articlePages, setArticlePages] = useState([]);
+  const [otherArticlePages, setOtherArticlePages] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const searchRef = useRef(null);
 
@@ -140,6 +143,7 @@ const Sidebar = ({ children }) => {
     isSuperAdmin || permissionData?.[moduleName]?.[action] === "Y";
   const canAccessImports = hasAccess("imports") || hasAccess("events");
   const canAccessLiveSync = isSuperAdmin || hasAccess("live_sync") || hasAccess("events") || hasAccess("users");
+  const canAccessPushNotifications = isSuperAdmin || hasAccess("push_notifications");
   const canAccessArticlePages = hasAccess("articles");
 
   useEffect(() => {
@@ -205,10 +209,12 @@ const Sidebar = ({ children }) => {
   useEffect(() => {
     const loadArticlePages = async () => {
       if (!canAccessArticlePages || !isOpen) return;
-      const result = await listArticlePages({ skip: 0, limit: 100, summary_only: true });
-      if (result?.status) {
-        setArticlePages(result.result || []);
-      }
+      const [articleResult, otherArticleResult] = await Promise.all([
+        listArticlePages({ skip: 0, limit: 100, summary_only: true }),
+        listOtherArticlePages({ skip: 0, limit: 100, summary_only: true }),
+      ]);
+      if (articleResult?.status) setArticlePages(articleResult.result || []);
+      if (otherArticleResult?.status) setOtherArticlePages(otherArticleResult.result || []);
     };
 
     loadArticlePages();
@@ -240,6 +246,7 @@ const Sidebar = ({ children }) => {
     { check: hasAccess("press_release"), to: "/admin/cms/press-release/list", icon: faNewspaper, name: "Press Release" },
     { check: hasAccess("tv_timings"), to: "/admin/cms/tv-timings/list", icon: faVideo, name: "TV Timings" },
     { check: hasAccess("golf_facts"), to: "/admin/cms/golf-facts/list", icon: faFlag, name: "Golf Facts" },
+    { check: hasAccess("golf_courses"), to: "/admin/cms/golf-courses/list", icon: faFlag, name: "Golf Course Info" },
     { check: hasAccess("highlight_videos"), to: "/admin/cms/highlight-videos/list", icon: faVideo, name: "Highlights & Videos" },
     { check: hasAccess("indian_golf"), to: "/admin/cms/indian-golf/list", icon: faFlag, name: "Indian Golf" },
     { check: hasAccess("growth_of_golf"), to: "/admin/cms/growth-of-golf/list", icon: faFlag, name: "Growth of Golf" },
@@ -290,25 +297,42 @@ const Sidebar = ({ children }) => {
 
   const bookingItems = bookingGroups.flatMap((group) => group.items);
 
-  const articlePageItems = canAccessArticlePages
+  const articlePageGroups = canAccessArticlePages
     ? [
         {
-          to: "/admin/cms/article-pages/list",
-          icon: faBookOpen,
-          name: "All Article Pages",
+          title: "All Article Pages",
+          items: [
+            {
+              to: "/admin/cms/article-pages/list",
+              icon: faBookOpen,
+              name: "All Article Pages",
+            },
+            ...articlePages.map((articlePage) => ({
+              to: `/admin/cms/article-pages/list?editId=${articlePage.id}`,
+              icon: faFileLines,
+              name: articlePage.title,
+            })),
+          ],
         },
         {
-          to: "/admin/cms/other-article-pages/list",
-          icon: faFileLines,
-          name: "Other Article Pages",
+          title: "Other Article Pages",
+          items: [
+            {
+              to: "/admin/cms/other-article-pages/list",
+              icon: faFileLines,
+              name: "Other Article Pages",
+            },
+            ...otherArticlePages.map((articlePage) => ({
+              to: `/admin/cms/other-article-pages/addeditdata?id=${articlePage.id}`,
+              icon: faFileLines,
+              name: articlePage.link_name || articlePage.title,
+            })),
+          ],
         },
-        ...articlePages.map((articlePage) => ({
-          to: `/admin/cms/article-pages/list?editId=${articlePage.id}`,
-          icon: faFileLines,
-          name: articlePage.title,
-        })),
-      ]
+      ].filter((group) => group.items.length)
     : [];
+
+  const articlePageItems = articlePageGroups.flatMap((group) => group.items);
 
   const collapseItems = [
     accountItems.length
@@ -364,6 +388,7 @@ const Sidebar = ({ children }) => {
           header: "Articles",
           icon: faFileLines,
           items: articlePageItems,
+          groups: articlePageGroups,
         }
       : null,
     hasAccess("email_templates")
@@ -441,6 +466,15 @@ const Sidebar = ({ children }) => {
       });
     }
 
+    if (canAccessPushNotifications) {
+      results.push({
+        to: "/admin/push-notifications/list",
+        name: "Push Notifications",
+        icon: faBell,
+        section: null,
+      });
+    }
+
     collapseItems.forEach((section) => {
       section.items.forEach((item) => {
         results.push({
@@ -462,7 +496,7 @@ const Sidebar = ({ children }) => {
     }
 
     return results.filter((r) => r.name.toLowerCase().includes(q));
-  }, [searchQuery, collapseItems, canAccessImports, canAccessLiveSync]);
+  }, [searchQuery, collapseItems, canAccessImports, canAccessLiveSync, canAccessPushNotifications]);
 
   return (
     <>
@@ -622,7 +656,7 @@ const Sidebar = ({ children }) => {
                     )
                   }
                 >
-                  {section.key === "booking" && section.groups?.length ? (
+                  {(section.key === "booking" || section.key === "article-pages") && section.groups?.length ? (
                     section.groups.map((group) => (
                       <div key={group.title} style={{ marginBottom: 10 }}>
                         <div
@@ -664,6 +698,16 @@ const Sidebar = ({ children }) => {
                 </Panel>
               </Collapse>
             ))}
+
+            {canAccessPushNotifications && (
+              <SidebarItem
+                to="/admin/push-notifications/list"
+                icon={<FontAwesomeIcon icon={faBell} />}
+                name="Push Notifications"
+                isOpen={isOpen}
+                className="sidebar_top_tab"
+              />
+            )}
 
             {canAccessImports && (
               <SidebarItem

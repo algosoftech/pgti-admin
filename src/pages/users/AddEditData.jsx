@@ -25,6 +25,7 @@ const HOME_CLUBS = [
 ];
 
 const DEFAULT_COUNTRY_CODE = "+91";
+const PASSWORD_RULE_TEXT = "Password must be 8-72 characters and include uppercase, lowercase, number, and special character.";
 
 const normalizeDialCode = (value = "") => String(value).replace(/\s+/g, "").trim();
 
@@ -66,6 +67,17 @@ const resolveNationalityMeta = (nationality = "") => {
 const resolveFlagUrl = (nationality = "") => {
   const meta = resolveNationalityMeta(nationality);
   return meta?.code ? `https://flagcdn.com/w80/${meta.code.toLowerCase()}.png` : "";
+};
+
+const validateStrongPassword = (value = "") => {
+  const password = String(value || "").trim();
+  if (!password) return "";
+  if (password.length < 8 || password.length > 72) return PASSWORD_RULE_TEXT;
+  if (/\s/.test(password)) return "Password cannot contain spaces.";
+  if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+    return PASSWORD_RULE_TEXT;
+  }
+  return "";
 };
 
 const buildInitialPlayerState = (player = {}) => ({
@@ -168,6 +180,10 @@ export default function AddEditUsers() {
     if (!ADDEDITDATA.mobile?.trim()) return notify("error", "Mobile number is required.");
     if (!isEdit && !ADDEDITDATA.email?.trim()) return notify("error", "Email is required for new players.");
     if (!isEdit && !ADDEDITDATA.password?.trim()) return notify("error", "Password is required for new players.");
+    if (ADDEDITDATA.password?.trim()) {
+      const passwordError = validateStrongPassword(ADDEDITDATA.password);
+      if (passwordError) return notify("error", passwordError);
+    }
 
     try {
       setIsLoading(true);
@@ -202,7 +218,7 @@ export default function AddEditUsers() {
         about_info: ADDEDITDATA.about_info?.trim() || "",
         status: ADDEDITDATA.status || "A",
         is_alumni: Boolean(ADDEDITDATA.is_alumni),
-        ...(!isEdit && ADDEDITDATA.password && { password: ADDEDITDATA.password }),
+        ...(ADDEDITDATA.password?.trim() ? { password: ADDEDITDATA.password.trim() } : {}),
       };
 
       const res = await addEditUsers(param);
@@ -372,7 +388,7 @@ export default function AddEditUsers() {
                   <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>
                     {isEdit
                       ? "Leave this blank if you do not want to change the password."
-                      : "Player can change this after first login."}
+                      : "Player can change this after first login."} {PASSWORD_RULE_TEXT}
                   </div>
                 </div>
               </div>

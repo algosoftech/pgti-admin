@@ -15,6 +15,7 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   faArrowsRotate,
+  faBell,
   faBookOpen,
   faCalendar,
   faChartSimple,
@@ -77,6 +78,7 @@ const MODULE_GROUPS = [
       { key: "about_us", label: "About Us", icon: faCircleInfo, perms: ["list", "add_edit"] },
       { key: "anti_doping", label: "Anti-Doping", icon: faShieldHalved, perms: ["list", "add_edit"] },
       { key: "contact_us", label: "Contact Us", icon: faPhone, perms: ["list", "add_edit"] },
+      { key: "push_notifications", label: "Push Notifications", icon: faBell, perms: ["list", "add_edit", "change_status"] },
       { key: "disclaimer", label: "Disclaimer", icon: faCircleExclamation, perms: ["list", "add_edit"] },
       { key: "events", label: "Events / Tournaments", icon: faCalendar, perms: ["list", "add_edit", "change_status", "delete"] },
       { key: "faqs", label: "FAQs", icon: faQuestionCircle, perms: ["list", "add_edit", "change_status", "delete"] },
@@ -85,6 +87,7 @@ const MODULE_GROUPS = [
       { key: "press_release", label: "Press Release", icon: faNewspaper, perms: ["list", "add_edit", "change_status", "delete"] },
       { key: "tv_timings", label: "TV Timings", icon: faVideo, perms: ["list", "add_edit", "change_status", "delete"] },
       { key: "golf_facts", label: "Golf Facts", icon: faGolfBallTee, perms: ["list", "add_edit"] },
+      { key: "golf_courses", label: "Golf Course Info", icon: faGolfBallTee, perms: ["list", "add_edit", "change_status", "delete"] },
       { key: "highlight_videos", label: "Highlights & Videos", icon: faVideo, perms: ["list", "add_edit", "change_status", "delete"] },
       { key: "indian_golf", label: "Indian Golf", icon: faFlag, perms: ["list", "add_edit"] },
       { key: "growth_of_golf", label: "Growth of Golf", icon: faFlag, perms: ["list", "add_edit"] },
@@ -130,7 +133,7 @@ const MODULE_GROUPS = [
       children: [
         { key: "tee_time_booking", label: "Tee Time Booking", icon: faGolfBallTee, perms: ["list", "add_edit", "change_status", "export"] },
         { key: "qualifier_booking", label: "Qualifier Booking Settings", icon: faGolfBallTee, perms: ["list", "add_edit"] },
-        { key: "qualifier_booking_applications", label: "Qualifier Booking Applications", icon: faGolfBallTee, perms: ["list", "export"] },
+        { key: "qualifier_booking_applications", label: "Qualifier Booking Applications", icon: faGolfBallTee, perms: ["list", "add_edit", "export"] },
         { key: "physio_create_slots", label: "Physio Create Slots", icon: faGolfBallTee, perms: ["list", "add_edit", "change_status"] },
         { key: "physio_view_slots", label: "Physio View Slots", icon: faGolfBallTee, perms: ["list"] },
         { key: "physio_bookings", label: "Physio Bookings", icon: faGolfBallTee, perms: ["list"] },

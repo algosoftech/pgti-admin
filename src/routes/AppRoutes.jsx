@@ -61,6 +61,9 @@ import OtherArticlePagesAddEditData from "pages/cms/other-article-pages/AddEditD
 
 import GolfFactsList from "pages/cms/golf-facts/List";
 import GolfFactsAddEditData from "pages/cms/golf-facts/AddEditData";
+import GolfCoursesList from "pages/cms/golf-courses/List";
+import GolfCourseAddEditData from "pages/cms/golf-courses/AddEditData";
+import GolfCourseMedia from "pages/cms/golf-courses/Media";
 
 import TermsConditionsList from "pages/cms/terms-conditions/List";
 import TermsConditionsAddEditData from "pages/cms/terms-conditions/AddEditData";
@@ -105,6 +108,7 @@ import QualifierBookingApplications from "pages/qualifier-booking/Applications";
 import PhysioCreateSlots from "pages/physio-booking/CreateSlots";
 import PhysioViewSlots from "pages/physio-booking/ViewSlots";
 import PhysioBookings from "pages/physio-booking/Bookings";
+import PushNotificationsList from "pages/push-notifications/List";
 
 const AdminLayout = ({ children }) => (
   <AdminSidebar>{children}</AdminSidebar>
@@ -172,6 +176,7 @@ const AppRoutes = () => (
     <Route path="/admin/events/addeditdata" element={<AdminLayout><AddEditEvent /></AdminLayout>} />
     <Route path="/admin/events/ace-import" element={<AdminLayout><AceImport /></AdminLayout>} />
     <Route path="/admin/live-sync" element={<AdminLayout><LiveSyncMonitor /></AdminLayout>} />
+    <Route path="/admin/push-notifications/list" element={<AdminLayout><PushNotificationsList /></AdminLayout>} />
     <Route path="/admin/cms/events/list" element={<AdminLayout><EventList /></AdminLayout>} />
     <Route path="/admin/cms/events/addeditdata" element={<AdminLayout><AddEditEvent /></AdminLayout>} />
     <Route path="/admin/cms/events/listing-banner" element={<AdminLayout><EventsListingBanner /></AdminLayout>} />
@@ -203,6 +208,9 @@ const AppRoutes = () => (
     {/* Admin – CMS: Golf Facts */}
     <Route path="/admin/cms/golf-facts/list" element={<AdminLayout><GolfFactsList /></AdminLayout>} />
     <Route path="/admin/cms/golf-facts/addeditdata" element={<AdminLayout><GolfFactsAddEditData /></AdminLayout>} />
+    <Route path="/admin/cms/golf-courses/list" element={<AdminLayout><GolfCoursesList /></AdminLayout>} />
+    <Route path="/admin/cms/golf-courses/addeditdata" element={<AdminLayout><GolfCourseAddEditData /></AdminLayout>} />
+    <Route path="/admin/cms/golf-courses/media" element={<AdminLayout><GolfCourseMedia /></AdminLayout>} />
 
     {/* Admin – CMS: Terms & Conditions */}
     <Route path="/admin/cms/terms-conditions/list" element={<AdminLayout><TermsConditionsList /></AdminLayout>} />

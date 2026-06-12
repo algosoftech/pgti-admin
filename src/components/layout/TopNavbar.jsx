@@ -1,5 +1,5 @@
 import "components/layout/dashboard.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LogoutConformationPopup from 'components/layout/LogoutPopup';
 import PreferencesModal from 'components/layout/PreferencesModal';
@@ -12,8 +12,14 @@ import {
   faSignOutAlt,
   faChevronDown,
   faSun,
-  faMoon
+  faMoon,
+  faBell
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  getAdminPushUnreadCount,
+  listAdminUnreadPushNotifications,
+  markAdminPushNotificationsRead,
+} from "services/pushNotifications.service";
 
 const readAdminInfo = () => {
   try {
@@ -29,6 +35,13 @@ const Top_navbar = ({ title = "Dashboard" }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [notificationItems, setNotificationItems] = useState([]);
+  const [notificationLoading, setNotificationLoading] = useState(false);
+  const notificationRef = useRef(null);
+  const previousUnreadRef = useRef(0);
+  const hasLoadedUnreadRef = useRef(false);
 
   // useEffect(() => {
   //   const handleScroll = () => {
@@ -60,11 +73,112 @@ const Top_navbar = ({ title = "Dashboard" }) => {
     return () => window.removeEventListener("admin-profile-updated", syncAdminInfo);
   }, []);
 
+  const playNotificationSound = () => {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const audioContext = new AudioContext();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.18);
+      gain.gain.setValueAtTime(0.001, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.28);
+
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.3);
+      window.setTimeout(() => audioContext.close(), 450);
+    } catch {
+      // Browser autoplay policies can block sound until the admin interacts with the page.
+    }
+  };
+
+  const loadUnreadNotifications = async () => {
+    setNotificationLoading(true);
+    const response = await listAdminUnreadPushNotifications(10);
+    if (response?.status) {
+      setNotificationItems(response.result || []);
+    }
+    setNotificationLoading(false);
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    const loadUnreadCount = async () => {
+      const response = await getAdminPushUnreadCount();
+      if (mounted && response?.status) {
+        const nextCount = Number(response?.result?.count || 0);
+        if (hasLoadedUnreadRef.current && nextCount > previousUnreadRef.current) {
+          playNotificationSound();
+          if (isNotificationOpen) loadUnreadNotifications();
+        }
+        previousUnreadRef.current = nextCount;
+        hasLoadedUnreadRef.current = true;
+        setUnreadNotifications(nextCount);
+      }
+    };
+
+    loadUnreadCount();
+    const interval = window.setInterval(loadUnreadCount, 15000);
+    return () => {
+      mounted = false;
+      window.clearInterval(interval);
+    };
+  }, [isNotificationOpen]);
+
+  useEffect(() => {
+    const closeOnOutsideClick = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setIsNotificationOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, []);
+
   const togglePopUp = () => setPopUpOpen(!popUpOpen);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     // Add dark mode logic here
+  };
+
+  const formatNotificationTime = (value) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const openNotifications = async () => {
+    const nextOpen = !isNotificationOpen;
+    setIsNotificationOpen(nextOpen);
+    if (nextOpen) {
+      await loadUnreadNotifications();
+    }
+  };
+
+  const markAllNotificationsRead = async () => {
+    await markAdminPushNotificationsRead();
+    previousUnreadRef.current = 0;
+    setUnreadNotifications(0);
+    setNotificationItems([]);
+  };
+
+  const viewAllNotifications = () => {
+    setIsNotificationOpen(false);
+    navigate("/admin/push-notifications/list");
   };
 
   return (
@@ -105,6 +219,65 @@ const Top_navbar = ({ title = "Dashboard" }) => {
               >
                 <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
               </button> */}
+
+              <div className="notification-dropdown" ref={notificationRef}>
+                <button
+                  className="action-btn notification-btn"
+                  onClick={openNotifications}
+                  title="Notifications"
+                  type="button"
+                >
+                  <FontAwesomeIcon icon={faBell} />
+                  {unreadNotifications > 0 && (
+                    <span className="notification-badge">
+                      {unreadNotifications > 99 ? "99+" : unreadNotifications}
+                    </span>
+                  )}
+                </button>
+
+                <div className={`notification-menu ${isNotificationOpen ? "show" : ""}`}>
+                  <div className="notification-header">
+                    <div>
+                      <h3>Notifications</h3>
+                      <span className="notification-count">{unreadNotifications} unread</span>
+                    </div>
+                    <button
+                      className="notification-clear-btn"
+                      type="button"
+                      onClick={markAllNotificationsRead}
+                      disabled={!unreadNotifications}
+                    >
+                      Clear all
+                    </button>
+                  </div>
+
+                  <div className="notification-list">
+                    {notificationLoading ? (
+                      <div className="notification-empty">Loading notifications...</div>
+                    ) : notificationItems.length ? (
+                      notificationItems.map((item) => (
+                        <div className="notification-item unread" key={item.id}>
+                          <div className="notification-content">
+                            <p className="notification-message">{item.title}</p>
+                            {item.body && <p className="notification-body">{item.body}</p>}
+                            <span className="notification-time">
+                              {formatNotificationTime(item.created_at || item.sent_at)}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="notification-empty">No unread notifications.</div>
+                    )}
+                  </div>
+
+                  <div className="notification-footer">
+                    <button type="button" onClick={viewAllNotifications}>
+                      View all notifications
+                    </button>
+                  </div>
+                </div>
+              </div>
 
               <div className="user-dropdown">
                 <button 

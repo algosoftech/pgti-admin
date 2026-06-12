@@ -113,6 +113,28 @@ const EventAddEditPage = () => {
     }));
   };
 
+  const handleDateOnlyChange = (field) => (date) => {
+    setAddEditData((prev) => ({
+      ...prev,
+      [field]: date ? date.format("YYYY-MM-DD") : null,
+    }));
+    setError((prev) => ({
+      ...prev,
+      [field]: "",
+    }));
+  };
+
+  const setFieldValue = (field, value) => {
+    setAddEditData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+    setError((prev) => ({
+      ...prev,
+      [field]: "",
+    }));
+  };
+
   const handleTermsConditionChange = (value) => {
     setAddEditData((prev) => ({
       ...prev,
@@ -229,6 +251,28 @@ const EventAddEditPage = () => {
         event_start: ADDEDITDATA?.event_start,
         event_end: ADDEDITDATA?.event_end,
         ...(formData.get("capacity") ? { capacity: parseInt(formData.get("capacity"), 10) } : {}),
+        legacy_tour_id: ADDEDITDATA?.legacy_tour_id?.trim() || "",
+        legacy_tour_code: ADDEDITDATA?.legacy_tour_code?.trim() || "",
+        legacy_season_code: ADDEDITDATA?.legacy_season_code?.trim() || "",
+        legacy_tour_type: ADDEDITDATA?.legacy_tour_type || ADDEDITDATA?.tour_type || "M",
+        legacy_course_id: ADDEDITDATA?.legacy_course_id?.trim() || "",
+        legacy_course_name: ADDEDITDATA?.legacy_course_name?.trim() || "",
+        course_venue: ADDEDITDATA?.course_venue?.trim() || ADDEDITDATA?.location?.trim() || "",
+        season_year: ADDEDITDATA?.season_year?.toString().trim() || "",
+        tour_money: ADDEDITDATA?.tour_money?.trim() || "",
+        tour_format: ADDEDITDATA?.tour_format?.trim() || "",
+        pro_am_start_date: ADDEDITDATA?.pro_am_start_date || null,
+        pro_am_end_date: ADDEDITDATA?.pro_am_end_date || null,
+        practice_round_1_start_date: ADDEDITDATA?.practice_round_1_start_date || null,
+        practice_round_1_end_date: ADDEDITDATA?.practice_round_1_end_date || null,
+        practice_round_2_start_date: ADDEDITDATA?.practice_round_2_start_date || null,
+        practice_round_2_end_date: ADDEDITDATA?.practice_round_2_end_date || null,
+        tour_totprof: ADDEDITDATA?.tour_totprof?.trim() || "",
+        winner_name: ADDEDITDATA?.winner_name?.trim() || "",
+        tour_stat: ADDEDITDATA?.tour_stat?.trim() || "",
+        tour_livescore: ADDEDITDATA?.tour_livescore?.trim() || "",
+        proam_status: ADDEDITDATA?.proam_status?.trim() || "",
+        tour_date_status: ADDEDITDATA?.tour_date_status?.trim() || "",
         pro_am_details: ADDEDITDATA?.pro_am_details?.trim() || "",
         practice_round_details: ADDEDITDATA?.practice_round_details?.trim() || "",
         tv_timing_detail: ADDEDITDATA?.tv_timing_detail || "",
@@ -330,6 +374,97 @@ const EventAddEditPage = () => {
                     </div>
                   </div>
 
+                  <div className="col-12 mb-2">
+                    <h4 className="form-section-title" style={{ fontSize: "18px", marginTop: "8px" }}>
+                      Software / ACE Mapping
+                    </h4>
+                  </div>
+
+                  <div className="col-md-3 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="legacy_tour_id" className="form-label">
+                        Tour Id
+                      </label>
+                      <input
+                        type="text"
+                        name="legacy_tour_id"
+                        id="legacy_tour_id"
+                        placeholder="e.g. 800"
+                        className="form-input"
+                        value={ADDEDITDATA?.legacy_tour_id || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-3 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="legacy_tour_code" className="form-label">
+                        Tour Code (Software Code)
+                      </label>
+                      <input
+                        type="text"
+                        name="legacy_tour_code"
+                        id="legacy_tour_code"
+                        placeholder="e.g. 008v"
+                        className="form-input"
+                        value={ADDEDITDATA?.legacy_tour_code || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-3 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="season_year" className="form-label">
+                        Season
+                      </label>
+                      <input
+                        type="text"
+                        name="season_year"
+                        id="season_year"
+                        placeholder="e.g. 2026"
+                        className="form-input"
+                        value={ADDEDITDATA?.season_year || ADDEDITDATA?.season || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-3 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="tour_type" className="form-label">
+                        Tour Type
+                      </label>
+                      <Select
+                        name="tour_type"
+                        id="tour_type"
+                        placeholder="Select tour type"
+                        className="form-select"
+                        value={ADDEDITDATA?.tour_type || "M"}
+                        onChange={(value) => {
+                          setAddEditData((prev) => ({
+                            ...prev,
+                            tour_type: value,
+                            legacy_tour_type: value,
+                          }));
+                          setError((prev) => ({
+                            ...prev,
+                            tour_type: "",
+                          }));
+                        }}
+                        style={{ width: "100%" }}
+                        size="large"
+                      >
+                        {TOUR_TYPE_OPTIONS.map((option) => (
+                          <Option key={option.value} value={option.value}>
+                            {option.label}
+                          </Option>
+                        ))}
+                      </Select>
+                    </div>
+                  </div>
+
                   <div className="col-md-12 col-12 mb-3">
                     <div className="form-group">
                       <label htmlFor="title" className="form-label">
@@ -409,6 +544,215 @@ const EventAddEditPage = () => {
 
                   <div className="col-md-6 col-12 mb-3">
                     <div className="form-group">
+                      <label htmlFor="pro_am_start_date" className="form-label">
+                        Pro-Am Start Date
+                      </label>
+                      <DatePicker
+                        format="YYYY-MM-DD"
+                        placeholder="Select pro-am start date"
+                        value={ADDEDITDATA?.pro_am_start_date ? dayjs(ADDEDITDATA.pro_am_start_date) : null}
+                        onChange={handleDateOnlyChange("pro_am_start_date")}
+                        style={{ width: "100%" }}
+                        size="large"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="pro_am_end_date" className="form-label">
+                        Pro-Am End Date
+                      </label>
+                      <DatePicker
+                        format="YYYY-MM-DD"
+                        placeholder="Select pro-am end date"
+                        value={ADDEDITDATA?.pro_am_end_date ? dayjs(ADDEDITDATA.pro_am_end_date) : null}
+                        onChange={handleDateOnlyChange("pro_am_end_date")}
+                        style={{ width: "100%" }}
+                        size="large"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="practice_round_1_start_date" className="form-label">
+                        First Practice Round Start Date
+                      </label>
+                      <DatePicker
+                        format="YYYY-MM-DD"
+                        placeholder="Select first practice start date"
+                        value={ADDEDITDATA?.practice_round_1_start_date ? dayjs(ADDEDITDATA.practice_round_1_start_date) : null}
+                        onChange={handleDateOnlyChange("practice_round_1_start_date")}
+                        style={{ width: "100%" }}
+                        size="large"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="practice_round_1_end_date" className="form-label">
+                        First Practice Round End Date
+                      </label>
+                      <DatePicker
+                        format="YYYY-MM-DD"
+                        placeholder="Select first practice end date"
+                        value={ADDEDITDATA?.practice_round_1_end_date ? dayjs(ADDEDITDATA.practice_round_1_end_date) : null}
+                        onChange={handleDateOnlyChange("practice_round_1_end_date")}
+                        style={{ width: "100%" }}
+                        size="large"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="practice_round_2_start_date" className="form-label">
+                        Second Practice Round Start Date
+                      </label>
+                      <DatePicker
+                        format="YYYY-MM-DD"
+                        placeholder="Select second practice start date"
+                        value={ADDEDITDATA?.practice_round_2_start_date ? dayjs(ADDEDITDATA.practice_round_2_start_date) : null}
+                        onChange={handleDateOnlyChange("practice_round_2_start_date")}
+                        style={{ width: "100%" }}
+                        size="large"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="practice_round_2_end_date" className="form-label">
+                        Second Practice Round End Date
+                      </label>
+                      <DatePicker
+                        format="YYYY-MM-DD"
+                        placeholder="Select second practice end date"
+                        value={ADDEDITDATA?.practice_round_2_end_date ? dayjs(ADDEDITDATA.practice_round_2_end_date) : null}
+                        onChange={handleDateOnlyChange("practice_round_2_end_date")}
+                        style={{ width: "100%" }}
+                        size="large"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-12 mb-2">
+                    <h4 className="form-section-title" style={{ fontSize: "18px", marginTop: "8px" }}>
+                      Course, Money & Format
+                    </h4>
+                  </div>
+
+                  <div className="col-md-4 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="legacy_course_id" className="form-label">
+                        Golf Id
+                      </label>
+                      <input
+                        type="text"
+                        name="legacy_course_id"
+                        id="legacy_course_id"
+                        placeholder="Enter golf/course id"
+                        className="form-input"
+                        value={ADDEDITDATA?.legacy_course_id || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="legacy_course_name" className="form-label">
+                        Course Name
+                      </label>
+                      <input
+                        type="text"
+                        name="legacy_course_name"
+                        id="legacy_course_name"
+                        placeholder="e.g. BLW Golf Club"
+                        className="form-input"
+                        value={ADDEDITDATA?.legacy_course_name || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="course_venue" className="form-label">
+                        Course Venue
+                      </label>
+                      <input
+                        type="text"
+                        name="course_venue"
+                        id="course_venue"
+                        placeholder="e.g. Varanasi"
+                        className="form-input"
+                        value={ADDEDITDATA?.course_venue || ADDEDITDATA?.location || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="tour_money" className="form-label">
+                        Tour Money
+                      </label>
+                      <input
+                        type="text"
+                        name="tour_money"
+                        id="tour_money"
+                        placeholder="e.g. 25,00,000"
+                        className="form-input"
+                        value={ADDEDITDATA?.tour_money || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="tour_format" className="form-label">
+                        Tour Format
+                      </label>
+                      <Select
+                        id="tour_format"
+                        placeholder="Select format"
+                        className="form-select"
+                        value={ADDEDITDATA?.tour_format || undefined}
+                        onChange={(value) => setFieldValue("tour_format", value)}
+                        allowClear
+                        style={{ width: "100%" }}
+                        size="large"
+                      >
+                        <Option value="Stroke Play">Stroke Play</Option>
+                        <Option value="Match Play">Match Play</Option>
+                        <Option value="Stableford">Stableford</Option>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="tour_totprof" className="form-label">
+                        Tour Totprof
+                      </label>
+                      <input
+                        type="text"
+                        name="tour_totprof"
+                        id="tour_totprof"
+                        placeholder="Enter tour totprof"
+                        className="form-input"
+                        value={ADDEDITDATA?.tour_totprof || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
                       <label htmlFor="location" className="form-label">
                         Venue / Location
                       </label>
@@ -421,31 +765,6 @@ const EventAddEditPage = () => {
                         value={ADDEDITDATA?.location || ""}
                         onChange={handleChange}
                       />
-                    </div>
-                  </div>
-
-                  <div className="col-md-6 col-12 mb-3">
-                    <div className="form-group">
-                      <label htmlFor="tour_type" className="form-label">
-                        Tour Type
-                      </label>
-                      <Select
-                        name="tour_type"
-                        id="tour_type"
-                        placeholder="Select tour type"
-                        className="form-select"
-                        value={ADDEDITDATA?.tour_type || "M"}
-                        onChange={(value) => setAddEditData((prev) => ({ ...prev, tour_type: value }))}
-                        style={{ width: "100%" }}
-                        size="large"
-                      >
-                        {TOUR_TYPE_OPTIONS.map((option) => (
-                          <Option key={option.value} value={option.value}>
-                            {option.label}
-                          </Option>
-                        ))}
-                      </Select>
-                      <FieldHint text="Controls whether this tournament appears under PGTI Main Tour or PGTI NextGen." />
                     </div>
                   </div>
 
@@ -466,6 +785,97 @@ const EventAddEditPage = () => {
                       />
                       {error.capacity && <div className="form-error">{error.capacity}</div>}
                       <FieldHint text="Optional. Keep this only if your tournament workflow needs a participant cap." />
+                    </div>
+                  </div>
+
+                  <div className="col-12 mb-2">
+                    <h4 className="form-section-title" style={{ fontSize: "18px", marginTop: "8px" }}>
+                      Result & Status
+                    </h4>
+                  </div>
+
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="winner_name" className="form-label">
+                        Tour Winner
+                      </label>
+                      <input
+                        type="text"
+                        name="winner_name"
+                        id="winner_name"
+                        placeholder="e.g. New Event or winner name"
+                        className="form-input"
+                        value={ADDEDITDATA?.winner_name || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="tour_stat" className="form-label">
+                        Tour Stat
+                      </label>
+                      <input
+                        type="text"
+                        name="tour_stat"
+                        id="tour_stat"
+                        placeholder="e.g. Entry Closed"
+                        className="form-input"
+                        value={ADDEDITDATA?.tour_stat || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="tour_livescore" className="form-label">
+                        Tour Livescore
+                      </label>
+                      <input
+                        type="text"
+                        name="tour_livescore"
+                        id="tour_livescore"
+                        placeholder="Live score label / URL / code"
+                        className="form-input"
+                        value={ADDEDITDATA?.tour_livescore || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="proam_status" className="form-label">
+                        Pro-Am Status
+                      </label>
+                      <input
+                        type="text"
+                        name="proam_status"
+                        id="proam_status"
+                        placeholder="Enter pro-am status"
+                        className="form-input"
+                        value={ADDEDITDATA?.proam_status || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 col-12 mb-3">
+                    <div className="form-group">
+                      <label htmlFor="tour_date_status" className="form-label">
+                        Tour Date Status
+                      </label>
+                      <input
+                        type="text"
+                        name="tour_date_status"
+                        id="tour_date_status"
+                        placeholder="Enter tour date status"
+                        className="form-input"
+                        value={ADDEDITDATA?.tour_date_status || ""}
+                        onChange={handleChange}
+                      />
                     </div>
                   </div>
 

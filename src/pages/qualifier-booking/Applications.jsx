@@ -6,6 +6,7 @@ import {
   EyeOutlined,
   InfoCircleOutlined,
   ReloadOutlined,
+  CheckOutlined,
 } from "@ant-design/icons";
 import Top_navbar from "components/layout/TopNavbar";
 import EnhancedTable from "components/table/EnhancedTable/EnhancedTable";
@@ -14,6 +15,7 @@ import { usePermissions } from "contexts/PermissionContext";
 import {
   exportQualifierBookingApplications,
   listQualifierBookingApplications,
+  markQualifierPaymentReceived,
 } from "services/qualifierBooking.service";
 import "styles/admin-pages.css";
 
@@ -39,6 +41,10 @@ export default function QualifierBookingApplications() {
   const canExport =
     user?.admin_type === "Super Admin" ||
     permission?.export === "Y" ||
+    permission?.fullAccess === "Y";
+  const canApprove =
+    user?.admin_type === "Super Admin" ||
+    permission?.add_edit === "Y" ||
     permission?.fullAccess === "Y";
 
   const [rows, setRows] = useState([]);
@@ -94,6 +100,30 @@ export default function QualifierBookingApplications() {
       notify("Oops!", response?.message || "Failed to export qualifier booking applications.");
     }
     setIsExporting(false);
+  };
+
+  const handleMarkPaymentReceived = async (application) => {
+    const confirmed = window.confirm(
+      `Mark payment as received for ${application.player_name || "this player"}?`
+    );
+    if (!confirmed) return;
+
+    setIsLoading(true);
+    const response = await markQualifierPaymentReceived({
+      application_id: application.id,
+    });
+
+    if (response?.status) {
+      notify(
+        "Success",
+        response.result?.message || "Payment marked as received successfully.",
+        true
+      );
+      loadRows();
+    } else {
+      notify("Oops!", response?.message || "Failed to mark payment as received.");
+      setIsLoading(false);
+    }
   };
 
   const columns = useMemo(
@@ -180,14 +210,27 @@ export default function QualifierBookingApplications() {
         accessorKey: "payment_received",
         header: "Payment Received",
         cell: ({ row }) => (
-          <span className={`status-badge ${row.original.payment_received ? "active" : "inactive"}`}>
-            {row.original.payment_received ? "Yes" : "No"}
-          </span>
+          <div className="d-flex gap-2 flex-wrap align-items-center">
+            <span className={`status-badge ${row.original.payment_received ? "active" : "inactive"}`}>
+              {row.original.payment_received ? "Yes" : "No"}
+            </span>
+            {!row.original.payment_received && (
+              <button
+                className="action-button primary"
+                style={{ padding: "6px 12px", fontSize: 12 }}
+                onClick={() => handleMarkPaymentReceived(row.original)}
+                disabled={!canApprove}
+                title="Approve after checking the uploaded payment slip"
+              >
+                <CheckOutlined /> Mark Received
+              </button>
+            )}
+          </div>
         ),
-        size: 140,
+        size: 220,
       },
     ],
-    [skip]
+    [canApprove, skip]
   );
 
   return (

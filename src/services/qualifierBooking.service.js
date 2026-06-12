@@ -61,6 +61,20 @@ export const listQualifierBookingApplications = async (options = {}) => {
   }
 };
 
+export const markQualifierPaymentReceived = async (postData = {}) => {
+  try {
+    const res = await postRequest({
+      url: `${BASE}/admin/qualifier-booking/applications/mark-payment-received`,
+      postData,
+    });
+    const parsed = unwrap(res, "Failed to mark payment as received");
+    if (!parsed.status) return parsed;
+    return { status: true, result: parsed.result || null };
+  } catch (error) {
+    return { status: false, message: error.message || "Request failed" };
+  }
+};
+
 export const exportQualifierBookingApplications = async (postData = {}) => {
   try {
     const res = await postRequest({

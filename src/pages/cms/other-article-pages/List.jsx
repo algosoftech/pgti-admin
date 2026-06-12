@@ -191,7 +191,18 @@ export default function OtherArticlePagesList() {
       accessorKey: "excerpt",
       header: "Content Preview",
       cell: ({ getValue }) => (
-        <span style={{ color: "#64748b", fontSize: 13 }}>
+        <span
+          style={{
+            color: "#64748b",
+            fontSize: 13,
+            lineHeight: 1.45,
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textAlign: "left",
+          }}
+        >
           {getValue() || "-"}
         </span>
       ),
@@ -259,7 +270,7 @@ export default function OtherArticlePagesList() {
 
   return (
     <div>
-      <Top_navbar title="Other Article Pages" />
+      <Top_navbar title="Articles" />
       <div className="admin-page-container">
         <div className="page-header">
           <div className="d-flex justify-content-between align-items-center">
@@ -282,8 +293,8 @@ export default function OtherArticlePagesList() {
           </div>
         </div>
 
-        <div className="page-body">
-          <div className="content-card">
+        <div className="page-body" style={{ display: "flex", flexDirection: "column", minHeight: "calc(100vh - 168px)" }}>
+          <div className="content-card" style={{ flex: 1, minHeight: 0 }}>
             <div className="tabs-header">
               <div className="tabs-container">
                 <button className={`tab-item ${activeTab === "all" ? "active" : ""}`} onClick={() => handleTabChange("all")}>All</button>
@@ -292,7 +303,7 @@ export default function OtherArticlePagesList() {
                 <button className={`tab-item ${activeTab === "F" ? "active" : ""}`} onClick={() => handleTabChange("F")}>NextGen</button>
               </div>
             </div>
-            <div className="content-card-body">
+            <div className="content-card-body" style={{ display: "flex", flexDirection: "column", minHeight: 0 }}>
               <EnhancedTable
                 data={rows}
                 columns={columns}
@@ -313,6 +324,7 @@ export default function OtherArticlePagesList() {
                 permission={permission}
                 emptyStateMessage="No other article pages found"
                 activeTab={activeTab}
+                rowHeightEstimate={86}
                 exportFileName="other-article-pages"
               />
             </div>

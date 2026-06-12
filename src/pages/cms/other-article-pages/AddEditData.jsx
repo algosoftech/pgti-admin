@@ -59,6 +59,9 @@ export default function OtherArticlePagesAddEditData() {
     mobile_hero_image: state?.mobile_hero_image || "",
     hero_title: state?.hero_title || state?.link_name || "",
     hero_subtitle: state?.hero_subtitle || "",
+    title: state?.title || "",
+    sub_title: state?.sub_title || "",
+    heading: state?.heading || "",
     link_detail: state?.link_detail || "",
     meta_title: state?.meta_title || "",
     meta_description: state?.meta_description || "",
@@ -86,6 +89,9 @@ export default function OtherArticlePagesAddEditData() {
       mobile_hero_image: record.mobile_hero_image || "",
       hero_title: record.hero_title || record.link_name || "",
       hero_subtitle: record.hero_subtitle || "",
+      title: record.title || "",
+      sub_title: record.sub_title || "",
+      heading: record.heading || "",
       link_detail: record.link_detail || "",
       meta_title: record.meta_title || "",
       meta_description: record.meta_description || "",
@@ -135,6 +141,8 @@ export default function OtherArticlePagesAddEditData() {
     if (!form.hero_image) { notify("Hero banner image is required."); return false; }
     if (!form.hero_title?.trim()) { notify("Hero title is required."); return false; }
     if (!validateLength(form.hero_title, "Hero Title", LIMITS.title)) return false;
+    if (form.title?.trim() && !validateLength(form.title, "Title", LIMITS.title)) return false;
+    if (form.heading?.trim() && !validateLength(form.heading, "Heading", LIMITS.title)) return false;
     if (!form.link_detail?.trim() || !stripHtml(form.link_detail)) { notify("Link detail is required."); return false; }
     return true;
   };
@@ -168,7 +176,7 @@ export default function OtherArticlePagesAddEditData() {
 
   return (
     <div>
-      <Top_navbar title={id ? "Edit Other Article Page" : "Add Other Article Page"} />
+      <Top_navbar title="Articles" />
       <div className="admin-page-container">
         <div className="page-header">
           <div className="d-flex justify-content-between align-items-center">
@@ -268,7 +276,47 @@ export default function OtherArticlePagesAddEditData() {
           <div className="content-card" style={{ marginBottom: 24 }}>
             <div className="content-card-body">
               <div className="form-section">
-                <h3 className="form-section-title">2. Link Detail</h3>
+                <h3 className="form-section-title">2. Page Intro</h3>
+                <div className="row">
+                  <div className="col-md-6 col-12 mb-3">
+                    <label className="form-label">Title</label>
+                    <input
+                      className="form-input"
+                      value={form.title}
+                      onChange={(e) => handleChange("title", e.target.value)}
+                      placeholder="Total 92 wins by 26 Indian professionals"
+                    />
+                    <CharCounter value={form.title} min={0} max={LIMITS.title.max} />
+                  </div>
+                  <div className="col-md-6 col-12 mb-3">
+                    <label className="form-label">Heading</label>
+                    <input
+                      className="form-input"
+                      value={form.heading}
+                      onChange={(e) => handleChange("heading", e.target.value)}
+                      placeholder="Winning Players"
+                    />
+                    <CharCounter value={form.heading} min={0} max={LIMITS.title.max} />
+                  </div>
+                  <div className="col-12 mb-3">
+                    <label className="form-label">Sub Title</label>
+                    <textarea
+                      className="form-input"
+                      rows={3}
+                      value={form.sub_title}
+                      onChange={(e) => handleChange("sub_title", e.target.value)}
+                      placeholder="Optional short description below the title"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="content-card" style={{ marginBottom: 24 }}>
+            <div className="content-card-body">
+              <div className="form-section">
+                <h3 className="form-section-title">3. Link Detail</h3>
                 <div className="mb-3">
                   <label className="form-label required">Link Detail</label>
                   <ReactQuill
