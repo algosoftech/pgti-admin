@@ -58,6 +58,12 @@ const PERM_LABELS = {
 
 const MODULE_GROUPS = [
   {
+    key: "notifications_group",
+    title: "Notifications",
+    icon: faBell,
+    children: [{ key: "push_notifications", label: "Push Notifications", icon: faBell, perms: ["list", "add_edit", "change_status"] }],
+  },
+  {
     key: "imports_group",
     title: "Imports",
     icon: faFileLines,
@@ -78,7 +84,6 @@ const MODULE_GROUPS = [
       { key: "about_us", label: "About Us", icon: faCircleInfo, perms: ["list", "add_edit"] },
       { key: "anti_doping", label: "Anti-Doping", icon: faShieldHalved, perms: ["list", "add_edit"] },
       { key: "contact_us", label: "Contact Us", icon: faPhone, perms: ["list", "add_edit"] },
-      { key: "push_notifications", label: "Push Notifications", icon: faBell, perms: ["list", "add_edit", "change_status"] },
       { key: "disclaimer", label: "Disclaimer", icon: faCircleExclamation, perms: ["list", "add_edit"] },
       { key: "events", label: "Events / Tournaments", icon: faCalendar, perms: ["list", "add_edit", "change_status", "delete"] },
       { key: "faqs", label: "FAQs", icon: faQuestionCircle, perms: ["list", "add_edit", "change_status", "delete"] },

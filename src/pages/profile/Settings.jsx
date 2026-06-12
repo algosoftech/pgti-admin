@@ -85,9 +85,17 @@ const MODULE_META = {
     label: "Press Release",
     description: "Manage press release content and listing pages.",
   },
+  tv_timings: {
+    label: "TV Timings",
+    description: "Manage tournament TV timing content and visibility.",
+  },
   golf_facts: {
     label: "Golf Facts",
     description: "Update golf facts page sections and educational content.",
+  },
+  golf_courses: {
+    label: "Golf Course Info",
+    description: "Manage golf course descriptions, photos, videos, and course listing content.",
   },
   highlight_videos: {
     label: "Highlights & Videos",
@@ -96,6 +104,10 @@ const MODULE_META = {
   indian_golf: {
     label: "Indian Golf",
     description: "Maintain Indian Golf historical content and related sections.",
+  },
+  growth_of_golf: {
+    label: "Growth of Golf",
+    description: "Manage the Growth of Golf standalone CMS page and historical sections.",
   },
   news: {
     label: "News",
@@ -140,6 +152,38 @@ const MODULE_META = {
   tournament_results: {
     label: "Tournament Results",
     description: "Create and update tournament result entries used in player rankings and stats.",
+  },
+  tee_time_booking: {
+    label: "Tee Time Booking",
+    description: "Manage tournament tee-time booking windows and tee sheet rows.",
+  },
+  qualifier_booking: {
+    label: "Qualifier Booking Settings",
+    description: "Configure qualifier booking windows, fees, and availability.",
+  },
+  qualifier_booking_applications: {
+    label: "Qualifier Booking Applications",
+    description: "Review qualifier booking applications, payment slips, and payment status.",
+  },
+  physio_create_slots: {
+    label: "Physio Create Slots",
+    description: "Create and manage physio session slots for tournaments.",
+  },
+  physio_view_slots: {
+    label: "Physio View Slots",
+    description: "View physio session slots and booking occupancy.",
+  },
+  physio_bookings: {
+    label: "Physio Bookings",
+    description: "Review player physio bookings and cancellation status.",
+  },
+  stats_page_settings: {
+    label: "Stats Page Settings",
+    description: "Manage the front stats page hero, labels, and metric text.",
+  },
+  pgti_career_earning: {
+    label: "PGTI Career Earning",
+    description: "Upload and manage the PGTI Career Earning PDF shown on the stats page.",
   },
   live_sync: {
     label: "Live Sync Monitoring",
