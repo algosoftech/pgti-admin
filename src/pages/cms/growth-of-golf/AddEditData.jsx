@@ -436,6 +436,101 @@ export default function GrowthOfGolfAddEditData() {
     championsSection,
   });
 
+  const isBlank = (value) => String(value || "").trim() === "";
+
+  const showMissingField = (sectionKey, fieldLabel) => {
+    const sectionTitle = SECTION_META[sectionKey]?.title || "Growth of Golf";
+    notification.warning({
+      message: "Missing required field",
+      description: `${sectionTitle}: Please fill "${fieldLabel}".`,
+      placement: "topRight",
+      duration: 4,
+    });
+    setOpenSections((prev) => ({ ...prev, [sectionKey]: true }));
+  };
+
+  const validateSection = (sectionKey) => {
+    if (sectionKey === "general") {
+      if (isBlank(status)) {
+        showMissingField(sectionKey, "Status");
+        return false;
+      }
+      if (isBlank(tourType)) {
+        showMissingField(sectionKey, "Tour Type");
+        return false;
+      }
+      return true;
+    }
+
+    if (sectionKey === "heroBanner") {
+      if (isBlank(heroBanner.title)) {
+        showMissingField(sectionKey, "Page Title");
+        return false;
+      }
+      return true;
+    }
+
+    if (sectionKey === "formationSection") {
+      if (isBlank(formationSection.heading)) {
+        showMissingField(sectionKey, "Section Heading");
+        return false;
+      }
+      return true;
+    }
+
+    if (sectionKey === "founderClubsSection") {
+      if (isBlank(founderClubsSection.heading)) {
+        showMissingField(sectionKey, "Section Heading");
+        return false;
+      }
+      const missingClubIndex = founderClubsSection.items.findIndex((item) => isBlank(item.title));
+      if (missingClubIndex >= 0) {
+        showMissingField(
+          sectionKey,
+          `Club ${String(missingClubIndex + 1).padStart(2, "0")} Title`
+        );
+        return false;
+      }
+      return true;
+    }
+
+    if (sectionKey === "firstPresidentSection") {
+      if (isBlank(firstPresidentSection.name)) {
+        showMissingField(sectionKey, "Name");
+        return false;
+      }
+      return true;
+    }
+
+    if (sectionKey === "milestonesSection") {
+      if (isBlank(milestonesSection.heading)) {
+        showMissingField(sectionKey, "Section Heading");
+        return false;
+      }
+      const missingYearIndex = milestonesSection.items.findIndex((item) => isBlank(item.year));
+      if (missingYearIndex >= 0) {
+        showMissingField(sectionKey, `Milestone ${missingYearIndex + 1} Year`);
+        return false;
+      }
+      const missingTitleIndex = milestonesSection.items.findIndex((item) => isBlank(item.title));
+      if (missingTitleIndex >= 0) {
+        showMissingField(sectionKey, `Milestone ${missingTitleIndex + 1} Card Title`);
+        return false;
+      }
+      return true;
+    }
+
+    if (sectionKey === "championsSection") {
+      if (isBlank(championsSection.heading)) {
+        showMissingField(sectionKey, "Section Heading");
+        return false;
+      }
+      return true;
+    }
+
+    return true;
+  };
+
   const notifyReadOnly = (sectionTitle) =>
     notification.open({
       message: "Section is locked",
@@ -528,6 +623,8 @@ export default function GrowthOfGolfAddEditData() {
   };
 
   const saveSection = (sectionKey) => {
+    if (!validateSection(sectionKey)) return;
+
     Modal.confirm({
       title: "Save these changes?",
       icon: <ExclamationCircleOutlined style={{ color: "#1d4ed8" }} />,
@@ -563,10 +660,10 @@ export default function GrowthOfGolfAddEditData() {
               duration: 3,
             });
           }
-        } catch {
+        } catch (error) {
           notification.error({
             message: "Error",
-            description: "An unexpected error occurred.",
+            description: error?.message || "An unexpected error occurred.",
             placement: "topRight",
             duration: 3,
           });
@@ -665,12 +762,19 @@ export default function GrowthOfGolfAddEditData() {
         });
       } else {
         notification.error({
-          message: "Upload failed",
-          description: result?.message || "Could not upload the PDF attachment.",
+          message: "PDF upload failed",
+          description: result?.message || `Could not upload "${file.name}". Please try again.`,
           placement: "topRight",
           duration: 3,
         });
       }
+    } catch (error) {
+      notification.error({
+        message: "PDF upload failed",
+        description: error?.message || `Could not upload "${file.name}". Please try again.`,
+        placement: "topRight",
+        duration: 3,
+      });
     } finally {
       setIsUploadingPdfKey("");
     }

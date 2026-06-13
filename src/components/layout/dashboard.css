@@ -2292,3 +2292,1238 @@ body {
     font-size: 18px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   PGTI Command Center Dashboard
+   ═══════════════════════════════════════════════════════ */
+
+/* ── 1. Entry Animation ───────────────────────────────── */
+@keyframes pgtiEntry {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pgti-entry {
+  animation: pgtiEntry 0.55s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s) both;
+}
+
+/* ── 2. Animations ────────────────────────────────────── */
+
+/* Fairway ground sway — slow, organic, GPU-friendly */
+@keyframes pgtiGrass {
+  0%    { transform: rotate(-1.2deg) scaleX(1)     translateX(0);     }
+  28%   { transform: rotate(-0.9deg) scaleX(1.018) translateX(-0.6%); }
+  55%   { transform: rotate(-1.4deg) scaleX(1.012) translateX( 0.4%); }
+  78%   { transform: rotate(-1.0deg) scaleX(1.020) translateX(-0.3%); }
+  100%  { transform: rotate(-1.2deg) scaleX(1)     translateX(0);     }
+}
+
+@keyframes pgtiLiveDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+@keyframes pgtiStatReveal {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── 3. Container ─────────────────────────────────────── */
+.pgti-command-center {
+  --pgti-navy:  #102a43;
+  --pgti-blue:  #14517f;
+  --pgti-green: #2f8f65;
+  --pgti-ink:   #162434;
+  --pgti-muted: #64748b;
+  --pgti-border:#dce8f3;
+  padding: 28px 30px 40px;
+  background:
+    radial-gradient(ellipse at 6% 4%,  rgba(155, 209, 93, 0.14) 0%, transparent 28%),
+    radial-gradient(ellipse at 94% 2%,  rgba(20, 81, 127, 0.10) 0%, transparent 32%),
+    radial-gradient(ellipse at 50% 100%, rgba(47, 143, 101, 0.06) 0%, transparent 40%),
+    linear-gradient(175deg, #f4f9fe 0%, #f6fbf7 60%, #f8fafc 100%);
+}
+
+/* ── 4. Hero ──────────────────────────────────────────── */
+
+/* Torch / spotlight layer */
+.pgti-hero-torch {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  /* backgroundImage set dynamically via JS */
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+.pgti-dashboard-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 260px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  gap: 28px;
+  padding: 38px 44px 34px;
+  margin-bottom: 24px;
+  color: #fff;
+  border-radius: 26px;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow:
+    0 28px 64px rgba(10, 30, 55, 0.28),
+    0 1px 0 rgba(255,255,255,0.14) inset;
+  /* Rich multi-stop gradient: deep navy → royal blue → teal → course green */
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.016) 1px, transparent 1px),
+    linear-gradient(128deg,
+      #091d33 0%,
+      #0e2d56 18%,
+      #133b62 34%,
+      #145050 52%,
+      #175c3e 70%,
+      #1c6840 88%,
+      #1f6e3c 100%
+    );
+  background-size: 24px 24px, 100% 100%;
+}
+
+.pgti-dashboard-hero::before,
+.pgti-dashboard-hero::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Fairway ground plane — visible mowing stripes, gentle sway */
+.pgti-dashboard-hero::before {
+  inset: auto -8% -48% -8%;
+  height: 62%;
+  border-radius: 56% 44% 0 0;
+  /* 1-px stripes every 28 px simulate mown fairway */
+  background:
+    repeating-linear-gradient(90deg,
+      transparent              0px,
+      transparent              27px,
+      rgba(255,255,255,0.062)  27px,
+      rgba(255,255,255,0.062)  28px
+    ),
+    linear-gradient(108deg,
+      rgba(30,115,58,0.82)   0%,
+      rgba(50,145,72,0.88)   30%,
+      rgba(55,158,76,0.90)   55%,
+      rgba(42,138,64,0.85)   78%,
+      rgba(28,108,52,0.80)  100%
+    );
+  transform: rotate(-1.2deg);
+  animation: pgtiGrass 12s ease-in-out infinite;
+}
+
+/* Ambient light overlays */
+.pgti-dashboard-hero::after {
+  inset: 0;
+  background:
+    /* sun-glint top-right */
+    radial-gradient(ellipse at 86% 8%,  rgba(255,240,180,0.18), transparent 22%),
+    /* warm ground bounce bottom-left */
+    radial-gradient(ellipse at 12% 88%, rgba(80,200,120,0.10),  transparent 26%),
+    /* sky light from above */
+    radial-gradient(ellipse at 48% 0%,  rgba(120,190,255,0.10), transparent 38%);
+}
+
+.pgti-hero-copy,
+.pgti-hero-scoreboard {
+  position: relative;
+  z-index: 1;
+}
+
+.pgti-hero-copy {
+  align-self: center;
+  max-width: 680px;
+}
+
+
+.pgti-hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255,255,255,0.26);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.11);
+  color: #c8f0d8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+}
+
+.pgti-hero-copy h1 {
+  margin: 0;
+  font-size: clamp(28px, 3.5vw, 50px);
+  line-height: 1.0;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.pgti-hero-copy p {
+  margin: 14px 0 0;
+  color: rgba(255,255,255,0.78);
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 520px;
+}
+
+.pgti-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.pgti-primary-action,
+.pgti-ghost-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease;
+}
+
+.pgti-primary-action {
+  border: 0;
+  color: var(--pgti-navy);
+  background: linear-gradient(135deg, #ffffff 0%, #d8f5e4 100%);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.24), 0 1px 0 rgba(255,255,255,0.8) inset;
+}
+
+.pgti-ghost-action {
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.10);
+  backdrop-filter: blur(6px);
+}
+
+.pgti-primary-action:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(0,0,0,0.28);
+}
+
+.pgti-ghost-action:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.18);
+}
+
+/* ── 5. Scoreboard & hero subcomponents ──────────────── */
+
+
+/* ── 6. Scoreboard ────────────────────────────────────── */
+.pgti-hero-scoreboard {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 18px;
+  background: rgba(6, 22, 38, 0.32);
+  backdrop-filter: blur(14px);
+}
+
+.pgti-hero-scoreboard div {
+  padding: 13px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.2s;
+}
+
+.pgti-hero-scoreboard div:hover {
+  background: rgba(255,255,255,0.13);
+}
+
+.pgti-hero-scoreboard span,
+.pgti-hero-scoreboard strong {
+  display: block;
+}
+
+.pgti-hero-scoreboard span {
+  color: rgba(255,255,255,0.58);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pgti-hero-scoreboard strong {
+  margin-top: 6px;
+  font-size: 17px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.pgti-hero-scoreboard strong.is-good  { color: #a8f0c0; }
+.pgti-hero-scoreboard strong.is-muted { color: #c8d8e4; }
+
+/* ── 7. Stat Cards Grid ───────────────────────────────── */
+.pgti-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.pgti-stat-card {
+  --tone: var(--pgti-blue);
+  --tone-bg: rgba(20, 81, 127, 0.07);
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-height: 120px;
+  padding: 18px 16px 18px 18px;
+  text-align: left;
+  border: 1px solid #e4edf5;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(16,42,67,0.06);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.26s cubic-bezier(0.34,1.56,0.64,1),
+    box-shadow 0.26s ease,
+    border-color 0.22s ease;
+  animation: pgtiStatReveal 0.5s ease both;
+}
+
+/* Tone radial glow in top-right corner */
+.pgti-stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0; right: 0;
+  width: 100px; height: 100px;
+  background: radial-gradient(circle at 100% 0%, var(--tone-bg), transparent 68%);
+  pointer-events: none;
+}
+
+/* Bottom accent bar */
+.pgti-stat-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--tone), transparent 80%);
+  border-radius: 0 0 20px 20px;
+}
+
+.pgti-stat-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  border-color: var(--tone);
+  box-shadow: 0 18px 42px rgba(16,42,67,0.12), 0 0 0 1px var(--tone);
+}
+
+/* Staggered entry delays */
+.pgti-stat-card:nth-child(1) { animation-delay: 0.06s; }
+.pgti-stat-card:nth-child(2) { animation-delay: 0.10s; }
+.pgti-stat-card:nth-child(3) { animation-delay: 0.14s; }
+.pgti-stat-card:nth-child(4) { animation-delay: 0.18s; }
+.pgti-stat-card:nth-child(5) { animation-delay: 0.22s; }
+.pgti-stat-card:nth-child(6) { animation-delay: 0.26s; }
+.pgti-stat-card:nth-child(7) { animation-delay: 0.30s; }
+.pgti-stat-card:nth-child(8) { animation-delay: 0.34s; }
+
+/* Tone variants */
+.pgti-stat-card.navy   { --tone: #102a43; --tone-bg: rgba(16,42,67,0.07); }
+.pgti-stat-card.green  { --tone: #2f8f65; --tone-bg: rgba(47,143,101,0.08); }
+.pgti-stat-card.blue   { --tone: #2678c7; --tone-bg: rgba(38,120,199,0.07); }
+.pgti-stat-card.gold   { --tone: #c98a10; --tone-bg: rgba(230,160,26,0.08); }
+.pgti-stat-card.teal   { --tone: #0f8a8a; --tone-bg: rgba(15,138,138,0.07); }
+.pgti-stat-card.orange { --tone: #d4631a; --tone-bg: rgba(241,114,42,0.07); }
+.pgti-stat-card.purple { --tone: #6b50c8; --tone-bg: rgba(129,103,216,0.07); }
+.pgti-stat-card.red    { --tone: #c03030; --tone-bg: rgba(217,72,65,0.07); }
+
+/* Large watermark icon */
+.pgti-stat-bg-icon {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  font-size: 76px;
+  color: var(--tone);
+  opacity: 0.055;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pgti-stat-icon {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tone);
+  border-radius: 14px;
+  background: var(--tone-bg);
+  font-size: 18px;
+  border: 1px solid var(--tone-bg);
+}
+
+.pgti-stat-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.pgti-stat-body strong {
+  color: var(--pgti-ink);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.pgti-stat-body span {
+  margin-top: 7px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pgti-stat-body small {
+  margin-top: 3px;
+  color: var(--pgti-muted);
+  font-size: 11.5px;
+}
+
+.pgti-stat-arrow {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 3px;
+  color: var(--tone);
+  font-size: 12px;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.pgti-stat-card:hover .pgti-stat-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── 8. Bento Grid ────────────────────────────────────── */
+.pgti-bento {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr) minmax(0, 1.25fr);
+  gap: 18px;
+}
+
+/* Panel placements */
+.pgti-chart-panel        { grid-column: 1;      grid-row: 1; }
+.pgti-events-panel       { grid-column: 2;      grid-row: 1; }
+.pgti-booking-panel      { grid-column: 3;      grid-row: 1; }
+.pgti-actions-panel      { grid-column: 1;      grid-row: 2; }
+.pgti-results-panel      { grid-column: 2;      grid-row: 2; }
+.pgti-sync-panel         { grid-column: 3;      grid-row: 2; }
+.pgti-recent-panel       { grid-column: 1;      grid-row: 3; }
+.pgti-import-panel       { grid-column: 2;      grid-row: 3; }
+.pgti-notification-panel { grid-column: 3;      grid-row: 3; }
+.pgti-module-panel       { grid-column: 1 / -1; }
+.pgti-content-panel      { grid-column: 1 / -1; }
+
+/* ── 9. Panel Base ────────────────────────────────────── */
+.pgti-panel {
+  --panel-accent: var(--pgti-green);
+  position: relative;
+  border: 1px solid #e4edf5;
+  border-top: 3px solid var(--panel-accent);
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 4px 18px rgba(16,42,67,0.06);
+  padding: 22px;
+  overflow: hidden;
+  transition: box-shadow 0.22s ease;
+}
+
+.pgti-panel:hover {
+  box-shadow: 0 8px 28px rgba(16,42,67,0.10);
+}
+
+/* Panel accent overrides per type */
+.pgti-chart-panel        { --panel-accent: #2f8f65; }
+.pgti-events-panel       { --panel-accent: #2678c7; }
+.pgti-booking-panel      { --panel-accent: #0f8a8a; }
+.pgti-actions-panel      { --panel-accent: #102a43; }
+.pgti-results-panel      { --panel-accent: #c98a10; }
+.pgti-sync-panel         { --panel-accent: #6b50c8; }
+.pgti-recent-panel       { --panel-accent: #2f8f65; }
+.pgti-import-panel       { --panel-accent: #d4631a; }
+.pgti-notification-panel { --panel-accent: #2678c7; }
+.pgti-module-panel       { --panel-accent: #102a43; }
+.pgti-content-panel      { --panel-accent: #2f8f65; }
+
+.pgti-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.pgti-panel-head.compact {
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+}
+
+.pgti-panel-eyebrow {
+  display: block;
+  color: var(--panel-accent);
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.pgti-panel h2 {
+  margin: 0;
+  color: var(--pgti-ink);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+}
+
+.pgti-panel-head > button {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #dbe7ef;
+  border-radius: 999px;
+  background: #f6fbff;
+  color: var(--pgti-blue);
+  padding: 7px 13px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s;
+}
+
+.pgti-panel-head > button:hover {
+  background: #e8f3fb;
+  border-color: var(--pgti-blue);
+  transform: translateY(-1px);
+}
+
+/* ── 10. Booking Cards ────────────────────────────────── */
+.pgti-booking-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pgti-booking-card {
+  padding: 16px;
+  border-radius: 16px;
+  background: linear-gradient(140deg, #f4fcf7, #f9fefc);
+  border: 1px solid #d4ecdf;
+}
+
+.pgti-booking-card strong {
+  display: block;
+  color: var(--pgti-green);
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.pgti-booking-card span,
+.pgti-booking-card small { display: block; }
+
+.pgti-booking-card span {
+  color: var(--pgti-ink);
+  font-weight: 800;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.pgti-booking-card small {
+  color: var(--pgti-muted);
+  margin-top: 3px;
+  font-size: 11px;
+}
+
+/* ── 11. Event Rows ───────────────────────────────────── */
+.pgti-event-list,
+.pgti-sync-list,
+.pgti-import-list,
+.pgti-campaign-list,
+.pgti-player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.pgti-event-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e8eff6;
+  border-radius: 14px;
+  background: #fbfdff;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.pgti-event-row:hover {
+  transform: translateX(4px);
+  border-color: #b4d4e8;
+  background: #f4f9ff;
+}
+
+.pgti-event-date {
+  min-width: 80px;
+  padding: 8px;
+  color: var(--pgti-blue);
+  background: #ebf4ff;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.pgti-event-main strong,
+.pgti-event-main small { display: block; }
+
+.pgti-event-main strong {
+  color: var(--pgti-ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pgti-event-main small {
+  color: var(--pgti-muted);
+  margin-top: 2px;
+  font-size: 11.5px;
+}
+
+/* ── 12. Sync Cards ───────────────────────────────────── */
+.pgti-sync-card {
+  padding: 14px;
+  border-radius: 16px;
+  background: linear-gradient(140deg, #f8fafe, #ffffff);
+  border: 1px solid #e4edf5;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.pgti-sync-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pgti-sync-card-header strong,
+.pgti-sync-card-header small { display: block; }
+
+.pgti-sync-card-header strong {
+  color: var(--pgti-ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pgti-sync-card-header small {
+  color: var(--pgti-muted);
+  margin-top: 2px;
+  font-size: 11px;
+}
+
+.pgti-sync-card dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.pgti-sync-card dt {
+  color: var(--pgti-muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pgti-sync-card dd {
+  margin: 3px 0 0;
+  color: var(--pgti-ink);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+/* Live dot indicator */
+.pgti-live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2f8f65;
+  margin-right: 5px;
+  vertical-align: middle;
+  animation: pgtiLiveDot 1.8s ease-in-out infinite;
+}
+
+/* ── 13. Status Pills ─────────────────────────────────── */
+.pgti-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.pgti-status-pill.success { color: #15803d; background: #dcfce7; }
+.pgti-status-pill.warning { color: #92400e; background: #fef3c7; }
+.pgti-status-pill.muted   { color: #64748b; background: #eef2f7; }
+
+/* ── 14. Quick Actions Grid ───────────────────────────── */
+.pgti-action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pgti-action-grid button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 110px;
+  padding: 14px;
+  border: 1px solid #e4edf5;
+  border-radius: 16px;
+  background: #fafcff;
+  color: var(--pgti-ink);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 0.2s cubic-bezier(0.34,1.56,0.64,1),
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pgti-action-grid button:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: #a8c8d8;
+  background: #f2f9ff;
+  box-shadow: 0 10px 24px rgba(16,42,67,0.09);
+}
+
+.pgti-action-grid > button > span {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pgti-blue);
+  border-radius: 12px;
+  background: #e8f3fa;
+  margin-bottom: 10px;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.pgti-action-grid > button > strong,
+.pgti-action-grid > button > small { display: block; }
+
+.pgti-action-grid > button > strong {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--pgti-ink);
+}
+
+.pgti-action-grid > button > small {
+  color: var(--pgti-muted);
+  margin-top: 3px;
+  font-size: 11px;
+}
+
+/* ── 15. Player / Import / Campaign Rows ──────────────── */
+.pgti-player-row,
+.pgti-import-row,
+.pgti-campaign-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px;
+  border: 1px solid #e8eef5;
+  border-radius: 14px;
+  background: #fbfdff;
+  transition: background 0.18s, border-color 0.18s;
+}
+
+.pgti-player-row:hover,
+.pgti-import-row:hover,
+.pgti-campaign-row:hover {
+  background: #f4f8ff;
+  border-color: #c8dff0;
+}
+
+.pgti-player-row > span,
+.pgti-campaign-row > span {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pgti-navy), var(--pgti-blue));
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.pgti-import-row > svg {
+  width: 16px;
+  color: var(--pgti-green);
+  flex-shrink: 0;
+}
+
+.pgti-player-row > div,
+.pgti-import-row > div,
+.pgti-campaign-row > div { flex: 1; min-width: 0; }
+
+.pgti-player-row strong,
+.pgti-import-row strong,
+.pgti-campaign-row strong,
+.pgti-player-row small,
+.pgti-import-row small,
+.pgti-campaign-row small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pgti-player-row strong,
+.pgti-import-row strong,
+.pgti-campaign-row strong {
+  color: var(--pgti-ink);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.pgti-player-row small,
+.pgti-import-row small,
+.pgti-campaign-row small {
+  color: var(--pgti-muted);
+  margin-top: 2px;
+  font-size: 11.5px;
+}
+
+.pgti-player-row em,
+.pgti-campaign-row em {
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 4px 9px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pgti-player-row em.active   { color: #15803d; background: #dcfce7; }
+.pgti-player-row em.inactive { color: #b91c1c; background: #fee2e2; }
+.pgti-campaign-row em        { color: var(--pgti-blue); background: #e8f3fb; }
+
+/* ── 16. Module Grid ──────────────────────────────────── */
+.pgti-module-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pgti-module-grid button {
+  min-height: 80px;
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pgti-ink);
+  border: 1px solid #e4edf5;
+  border-radius: 16px;
+  background: #fafcff;
+  cursor: pointer;
+  transition:
+    transform 0.2s cubic-bezier(0.34,1.56,0.64,1),
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pgti-module-grid button:hover {
+  transform: translateY(-4px) scale(1.04);
+  border-color: #b0d0e8;
+  background: #f0f8ff;
+  box-shadow: 0 10px 22px rgba(16,42,67,0.08);
+  color: var(--pgti-blue);
+}
+
+.pgti-module-grid svg {
+  color: var(--pgti-green);
+  font-size: 17px;
+  transition: transform 0.2s;
+}
+
+.pgti-module-grid button:hover svg {
+  transform: scale(1.15);
+}
+
+/* ── 17. CMS Content Strip ────────────────────────────── */
+.pgti-content-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pgti-content-strip > div {
+  padding: 18px 16px;
+  border-radius: 16px;
+  border: 1px solid #e4edf5;
+  background: linear-gradient(140deg, #f8fcff, #ffffff);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.pgti-content-strip > div:hover {
+  transform: translateY(-3px);
+  border-color: #b0cce0;
+}
+
+.pgti-content-strip svg {
+  color: var(--pgti-blue);
+  font-size: 18px;
+}
+
+.pgti-content-strip strong,
+.pgti-content-strip span { display: block; }
+
+.pgti-content-strip strong {
+  margin-top: 10px;
+  color: var(--pgti-ink);
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.pgti-content-strip span {
+  color: var(--pgti-muted);
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+/* ── 18. Empty State ──────────────────────────────────── */
+.pgti-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  padding: 16px;
+  color: var(--pgti-muted);
+  border: 1.5px dashed #cfdce8;
+  border-radius: 14px;
+  background: #fafcff;
+  font-size: 13px;
+  text-align: center;
+}
+
+.pgti-empty-state.tall { min-height: 210px; }
+
+.pgti-chart-legend {
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+/* ── 19. Responsive ───────────────────────────────────── */
+
+/* Large desktop ≥ 1400px: 4 stat cols */
+@media (min-width: 1400px) {
+  .pgti-stat-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Medium desktop 1100–1400px */
+@media (max-width: 1400px) {
+  .pgti-stat-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .pgti-bento {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr);
+  }
+
+  /* Reflow 3-col panels to 2-col */
+  .pgti-chart-panel        { grid-column: 1; grid-row: 1; }
+  .pgti-events-panel       { grid-column: 2; grid-row: 1; }
+  .pgti-booking-panel      { grid-column: 1 / -1; grid-row: 2; }
+  .pgti-actions-panel      { grid-column: 1; grid-row: 3; }
+  .pgti-results-panel      { grid-column: 2; grid-row: 3; }
+  .pgti-sync-panel         { grid-column: 1 / -1; grid-row: 4; }
+  .pgti-recent-panel       { grid-column: 1; grid-row: 5; }
+  .pgti-import-panel       { grid-column: 2; grid-row: 5; }
+  .pgti-notification-panel { grid-column: 1 / -1; grid-row: 6; }
+  .pgti-module-panel       { grid-column: 1 / -1; }
+  .pgti-content-panel      { grid-column: 1 / -1; }
+
+  .pgti-booking-panel .pgti-booking-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .pgti-sync-panel .pgti-sync-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Tablet 768–1100px */
+@media (max-width: 1100px) {
+  .pgti-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pgti-module-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .pgti-content-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pgti-action-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pgti-dashboard-hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 28px 26px 24px;
+  }
+
+}
+
+/* Small tablet / large mobile 640–768px */
+@media (max-width: 768px) {
+  .pgti-command-center {
+    padding: 18px 16px 32px;
+  }
+
+  .pgti-dashboard-hero {
+    grid-template-columns: 1fr; /* single column on tablet — glance panel hidden */
+    min-height: auto;
+    padding: 30px 24px 26px;
+  }
+
+
+  .pgti-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .pgti-stat-card {
+    min-height: 100px;
+    padding: 14px;
+  }
+
+  .pgti-stat-body strong {
+    font-size: 24px;
+  }
+
+  .pgti-bento {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* All panels full width on mobile */
+  .pgti-chart-panel,
+  .pgti-events-panel,
+  .pgti-booking-panel,
+  .pgti-actions-panel,
+  .pgti-results-panel,
+  .pgti-sync-panel,
+  .pgti-recent-panel,
+  .pgti-import-panel,
+  .pgti-notification-panel,
+  .pgti-module-panel,
+  .pgti-content-panel {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  .pgti-action-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pgti-module-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .pgti-content-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pgti-hero-scoreboard { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .pgti-panel-head {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* Mobile ≤ 480px */
+@media (max-width: 480px) {
+  .pgti-stat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .pgti-stat-body strong { font-size: 22px; }
+  .pgti-stat-icon { width: 40px; height: 40px; font-size: 16px; }
+
+  .pgti-action-grid { grid-template-columns: 1fr 1fr; }
+  .pgti-module-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .pgti-content-strip { grid-template-columns: 1fr 1fr; }
+  .pgti-booking-grid { grid-template-columns: 1fr 1fr; }
+
+  .pgti-hero-scoreboard { grid-template-columns: 1fr; }
+
+  .pgti-dashboard-hero::before { display: none; }
+
+  .pgti-dashboard-hero {
+    grid-template-columns: 1fr;
+    padding: 22px 18px 18px;
+    border-radius: 20px;
+  }
+
+  .pgti-hero-copy h1 { font-size: 26px; }
+  .pgti-hero-copy p  { font-size: 13px; }
+}
+
+.pgti-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pgti-stat-card {
+  --tone: var(--pgti-blue);
+  position: relative;
+  display: flex;
+  gap: 14px;
+  min-height: 122px;
+  padding: 18px;
+  text-align: left;
+  border: 1px solid var(--pgti-border);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 14px 34px rgba(16, 42, 67, 0.08);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.pgti-stat-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 4px;
+  background: var(--tone);
+}
+
+.pgti-stat-card:hover {
+  transform: translateY(-4px);
+  border-color: #b9d6c3;
+  box-shadow: 0 22px 45px rgba(16, 42, 67, 0.13);
+}
+
+.pgti-stat-card.navy { --tone: #102a43; }
+.pgti-stat-card.green { --tone: #2f8f65; }
+.pgti-stat-card.blue { --tone: #2678c7; }
+.pgti-stat-card.gold { --tone: #e6a01a; }
+.pgti-stat-card.teal { --tone: #0f8a8a; }
+.pgti-stat-card.orange { --tone: #f1722a; }
+.pgti-stat-card.purple { --tone: #8167d8; }
+.pgti-stat-card.red { --tone: #d94841; }
+
+.pgti-stat-icon {
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 48px;
+  color: var(--tone);
+  border-radius: 16px;
+  background: #f1f7fb;
+  font-size: 19px;
+}
+
+.pgti-stat-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pgti-stat-body strong {
+  color: var(--pgti-ink);
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.pgti-stat-body span {
+  margin-top: 8px;
+  color: var(--pgti-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.pgti-stat-body small {
+  margin-top: 3px;
+  color: var(--pgti-muted);
+  font-size: 12px;
+}
+
+/* old duplicate panel styles removed — see ── 9. Panel Base above */
+
+/* ── all duplicate old styles removed above ── */
