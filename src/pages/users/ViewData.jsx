@@ -20,6 +20,15 @@ const resolveImg = (v) => {
   return `${IMAGE_BASE}/${v.replace(/^\//, '')}`;
 };
 
+const resolveMemberCode = (player = {}) =>
+  player.pgti_membership_id || player.legacy_member_code || player.mem_code || player.prize_member_code || "";
+
+const resolveImportedMemberCode = (player = {}) =>
+  player.legacy_member_code || player.mem_code || player.prize_member_code || "";
+
+const resolveMemberShortCode = (player = {}) =>
+  player.legacy_member_short_code || player.mem_scode || player.prize_member_short_code || "";
+
 const InfoRow = ({ icon, label, value }) => (
   <div style={{
     display: "flex", alignItems: "flex-start", gap: 12,
@@ -69,6 +78,17 @@ export default function ViewData() {
   const img = resolveImg(player.profile_image || player.image);
   const name = player.full_name || player.name || "Unknown Player";
   const initials = name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
+  const displayMemberCode = resolveMemberCode(player);
+  const importedMemberCode = resolveImportedMemberCode(player);
+  const importedShortCode = resolveMemberShortCode(player);
+  const hasImportedMemberData = Boolean(
+    importedMemberCode ||
+    importedShortCode ||
+    player.prize_member_code ||
+    player.prize_member_name ||
+    player.prize_pay ||
+    player.prize_net_pay
+  );
 
   useEffect(() => {
     document.title = `PGTI || Player — ${name}`;
@@ -132,9 +152,9 @@ export default function ViewData() {
 
               <div style={{ fontWeight: 700, fontSize: 18, color: "#1e3a5f", marginBottom: 4 }}>{name}</div>
 
-              {player.pgti_membership_id && (
+              {displayMemberCode && (
                 <div style={{ fontSize: 12, fontFamily: "monospace", color: "#0369a1", background: "#eff6ff", padding: "3px 12px", borderRadius: 20, border: "1px solid #bfdbfe", display: "inline-block", marginBottom: 12 }}>
-                  {player.pgti_membership_id}
+                  {displayMemberCode}
                 </div>
               )}
 
@@ -199,6 +219,8 @@ export default function ViewData() {
           {/* Professional */}
           <SectionCard title="Professional Details" icon={<TrophyOutlined />}>
             <InfoRow icon={<IdcardOutlined />}  label="PGTI Membership ID" value={player.pgti_membership_id} />
+            <InfoRow icon={<IdcardOutlined />}  label="Web Member Code" value={importedMemberCode} />
+            <InfoRow icon={<IdcardOutlined />}  label="Web Short Code" value={importedShortCode} />
             <InfoRow icon={<TrophyOutlined />}  label="Player Type"        value={player.player_type} />
             <InfoRow icon={<StarOutlined />}    label="Experience"         value={player.experience_years ? `${player.experience_years} years` : null} />
             <InfoRow icon={<TeamOutlined />}    label="Home Club"          value={player.home_club} />
@@ -207,6 +229,20 @@ export default function ViewData() {
             <InfoRow icon={<IdcardOutlined />}  label="Passport Number"    value={player.passport_no} />
             <InfoRow icon={<IdcardOutlined />}  label="Handicap Number"    value={player.handicap_no} />
           </SectionCard>
+
+          {hasImportedMemberData && (
+            <SectionCard title="Web Import / Legacy Details" icon={<IdcardOutlined />}>
+              <InfoRow icon={<IdcardOutlined />} label="Member Code" value={importedMemberCode} />
+              <InfoRow icon={<IdcardOutlined />} label="Member Short Code" value={importedShortCode} />
+              <InfoRow icon={<IdcardOutlined />} label="Prize Member Code" value={player.prize_member_code} />
+              <InfoRow icon={<IdcardOutlined />} label="Prize Short Code" value={player.prize_member_short_code} />
+              <InfoRow icon={<UserOutlined />} label="Prize Name" value={player.prize_member_name} />
+              <InfoRow icon={<TrophyOutlined />} label="Prize Rank" value={player.prize_tour_rank} />
+              <InfoRow icon={<TrophyOutlined />} label="Prize Pay" value={player.prize_pay} />
+              <InfoRow icon={<TrophyOutlined />} label="Net Pay" value={player.prize_net_pay} />
+              <InfoRow icon={<CalendarOutlined />} label="Last Prize Sync" value={player.prize_last_synced_at ? moment(player.prize_last_synced_at).format("DD MMM YYYY, hh:mm A") : null} />
+            </SectionCard>
+          )}
 
           <SectionCard title="Identity & Banking Details" icon={<IdcardOutlined />}>
             <InfoRow icon={<IdcardOutlined />} label="PAN Number" value={player.pan_no} />

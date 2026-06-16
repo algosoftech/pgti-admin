@@ -1,0 +1,618 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --pgti-navy: #123327;
+  --pgti-green: #226d39;
+  --pgti-green-dark: #144d2b;
+  --pgti-gold: #b99354;
+  --pgti-cream: #f8f5ed;
+  --pgti-muted: #70766e;
+}
+
+.pgti-golf-login-page {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(360px, 38%) minmax(540px, 62%);
+  align-items: center;
+  gap: clamp(24px, 4vw, 68px);
+  padding: clamp(28px, 5vw, 72px);
+  background:
+    radial-gradient(circle at 86% 9%, rgba(185, 147, 84, 0.14), transparent 22%),
+    radial-gradient(circle at 7% 88%, rgba(34, 109, 57, 0.1), transparent 28%),
+    linear-gradient(135deg, #fbfaf5 0%, #f7f3ea 48%, #f2eadc 100%);
+  font-family: "Manrope", sans-serif;
+  isolation: isolate;
+}
+
+.pgti-golf-login-page::before,
+.pgti-golf-login-page::after {
+  content: "";
+  position: absolute;
+  border: 1px solid rgba(34, 109, 57, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pgti-golf-login-page::before {
+  width: 340px;
+  height: 340px;
+  right: -120px;
+  top: -150px;
+  box-shadow: 0 0 0 42px rgba(34, 109, 57, 0.035), 0 0 0 88px rgba(34, 109, 57, 0.025);
+}
+
+.pgti-golf-login-page::after {
+  width: 280px;
+  height: 280px;
+  left: -120px;
+  bottom: -130px;
+  box-shadow: 0 0 0 42px rgba(185, 147, 84, 0.04), 0 0 0 82px rgba(34, 109, 57, 0.025);
+}
+
+.pgti-login-card-layer,
+.pgti-golf-stage {
+  position: relative;
+  z-index: 2;
+}
+
+.pgti-login-card-layer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pgti-login-card {
+  width: min(100%, 460px);
+  position: relative;
+  padding: 52px 42px 38px;
+  border-radius: 28px;
+  border: 1px solid rgba(34, 109, 57, 0.34);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.88)),
+    radial-gradient(circle at 50% 0%, rgba(136, 169, 91, 0.12), transparent 32%);
+  box-shadow:
+    0 30px 90px rgba(38, 44, 33, 0.14),
+    0 14px 34px rgba(17, 58, 44, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+}
+
+.pgti-login-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 36px auto;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--pgti-green), var(--pgti-gold), #ef7f32);
+}
+
+.pgti-lock-badge {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  width: 56px;
+  height: 56px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--pgti-green);
+  background: linear-gradient(180deg, #ffffff, #edf5e9);
+  border: 1px solid rgba(34, 109, 57, 0.28);
+  box-shadow: 0 14px 24px rgba(17, 58, 44, 0.12);
+}
+
+.pgti-lock-badge span {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  font-weight: 900;
+}
+
+.pgti-golf-login-page .login-header {
+  margin-bottom: 26px;
+}
+
+.pgti-golf-login-page .logo-section {
+  gap: 10px;
+}
+
+.pgti-golf-login-page .login-logo-img {
+  max-width: 170px;
+  filter: drop-shadow(0 12px 20px rgba(17, 58, 44, 0.12));
+}
+
+.pgti-golf-login-page .logo-subtitle {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--pgti-navy);
+  font-size: 13px;
+  letter-spacing: 8px;
+  font-weight: 800;
+}
+
+.pgti-golf-login-page .form-section {
+  padding: 0;
+  margin-bottom: 26px;
+  border: none;
+  background: transparent;
+}
+
+.pgti-golf-login-page .form-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #172722;
+  margin-bottom: 10px;
+}
+
+.pgti-golf-login-page .form-subtitle {
+  font-size: 14px;
+  color: var(--pgti-muted);
+}
+
+.pgti-golf-login-page .form-group {
+  margin-bottom: 18px;
+}
+
+.pgti-golf-login-page .form-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.pgti-golf-login-page .form-input {
+  min-height: 52px;
+  border-radius: 10px;
+  border: 1px solid rgba(34, 109, 57, 0.28);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  color: #1e2b25;
+  padding: 14px 46px 14px 18px;
+  font-size: 15px;
+}
+
+.pgti-golf-login-page .form-input:focus {
+  border-color: var(--pgti-green);
+  box-shadow: 0 0 0 4px rgba(34, 109, 57, 0.13);
+  transform: none;
+}
+
+.pgti-golf-login-page .password-toggle {
+  color: rgba(17, 58, 44, 0.72);
+}
+
+.pgti-form-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: -2px 0 22px;
+}
+
+.pgti-remember-me {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #4e5a52;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pgti-remember-me input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--pgti-green);
+}
+
+.pgti-golf-login-page .forgot-password {
+  color: var(--pgti-green);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pgti-golf-login-page .login-button {
+  min-height: 52px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1e5f36 0%, #0f4f2a 100%);
+  box-shadow: 0 16px 28px rgba(17, 58, 44, 0.23);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.pgti-golf-login-page .login-button:hover:not(:disabled) {
+  box-shadow: 0 20px 38px rgba(17, 58, 44, 0.28);
+  transform: translateY(-2px);
+}
+
+.pgti-quick-access {
+  margin-top: 34px;
+}
+
+.pgti-quick-access-title {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  color: #8b8f88;
+  text-transform: uppercase;
+  letter-spacing: 0.42em;
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+
+.pgti-quick-access-title span {
+  height: 1px;
+  background: rgba(17, 58, 44, 0.13);
+}
+
+.pgti-quick-access-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.pgti-quick-access-item {
+  min-height: 64px;
+  border: 1px solid rgba(17, 58, 44, 0.09);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.76);
+  color: var(--pgti-navy);
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  box-shadow: 0 12px 24px rgba(17, 58, 44, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pgti-quick-access-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 28px rgba(17, 58, 44, 0.12);
+}
+
+.pgti-quick-access-icon {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, var(--pgti-green), var(--pgti-green-dark));
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.pgti-quick-access-item small {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pgti-golf-stage {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.pgti-golf-aim-scene {
+  position: relative;
+  width: min(100%, 980px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 2vw, 24px);
+}
+
+.pgti-stage-orbit {
+  position: absolute;
+  border: 1px solid rgba(34, 109, 57, 0.09);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.pgti-stage-orbit-one {
+  width: 190px;
+  height: 190px;
+  right: 5%;
+  top: -3%;
+}
+
+.pgti-stage-orbit-two {
+  width: 110px;
+  height: 110px;
+  left: 5%;
+  bottom: 8%;
+}
+
+.pgti-green-wrapper {
+  position: relative;
+  width: min(100%, 940px);
+  aspect-ratio: 16 / 10;
+  filter: drop-shadow(0 34px 42px rgba(42, 42, 34, 0.2));
+  user-select: none;
+  touch-action: none;
+}
+
+.pgti-green-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+.pgti-trajectory-svg {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.pgti-trajectory-dot {
+  fill: rgba(255, 255, 255, 0.98);
+  filter: drop-shadow(0 3px 5px rgba(17, 58, 44, 0.25));
+}
+
+.pgti-hole-wrap {
+  position: absolute;
+  z-index: 8;
+  width: 76px;
+  height: 112px;
+  transform: translate(-50%, -82px);
+  pointer-events: none;
+}
+
+.pgti-hole {
+  position: absolute;
+  left: 50%;
+  bottom: 7px;
+  width: clamp(24px, 4.4vw, 42px);
+  height: clamp(10px, 1.9vw, 17px);
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 45%, #0b1711 0 58%, rgba(255,255,255,0.16) 60% 70%, transparent 73%);
+  box-shadow: 0 8px 12px rgba(18, 35, 23, 0.22);
+}
+
+.pgti-flag {
+  position: absolute;
+  left: 50%;
+  bottom: 15px;
+  width: 48px;
+  height: 92px;
+  transform: translateX(-2px);
+}
+
+.pgti-flag-pole {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  height: 86px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffffff, #d7d7d7);
+  box-shadow: 0 3px 8px rgba(17, 58, 44, 0.18);
+}
+
+.pgti-flag-cloth {
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  width: 44px;
+  height: 28px;
+  border-radius: 4px 10px 10px 4px;
+  background: linear-gradient(135deg, #ef3e2d, #c41c1f);
+  clip-path: polygon(0 0, 100% 20%, 78% 55%, 100% 92%, 0 76%);
+  animation: pgtiFlagFlutter 2.8s ease-in-out infinite;
+}
+
+.pgti-cup-ripple {
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 58px;
+  height: 32px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  opacity: 0;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+}
+
+.pgti-cup-ripple.is-active {
+  animation: pgtiCupRipple 900ms ease-out;
+}
+
+.pgti-power-meter {
+  position: absolute;
+  z-index: 9;
+  width: min(15vw, 124px);
+  height: 7px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+  box-shadow: 0 5px 12px rgba(17, 58, 44, 0.12);
+  pointer-events: none;
+}
+
+.pgti-power-meter span {
+  display: block;
+  width: calc(var(--power) * 100%);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f6d68a, #e96644);
+}
+
+.pgti-ball-shadow {
+  position: absolute;
+  z-index: 9;
+  width: 42px;
+  height: 13px;
+  margin: 16px 0 0 -9px;
+  border-radius: 50%;
+  background: rgba(21, 29, 20, 0.28);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.pgti-ball {
+  position: absolute;
+  z-index: 11;
+  left: 0;
+  top: 0;
+  width: clamp(38px, 5.2vw, 54px);
+  height: clamp(38px, 5.2vw, 54px);
+  margin: calc(clamp(38px, 5.2vw, 54px) / -2) 0 0 calc(clamp(38px, 5.2vw, 54px) / -2);
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  pointer-events: auto;
+  filter: drop-shadow(0 10px 16px rgba(30, 42, 30, 0.22));
+  will-change: transform;
+}
+
+.pgti-ball:active,
+.pgti-ball.is-aiming {
+  cursor: grabbing;
+}
+
+.pgti-ball-surface {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 25%, rgba(255, 255, 255, 0.98) 0 13%, transparent 14%),
+    radial-gradient(circle at 63% 68%, rgba(145, 150, 142, 0.16) 0 4%, transparent 4.5%),
+    radial-gradient(circle at 40% 55%, rgba(145, 150, 142, 0.14) 0 4%, transparent 4.5%),
+    radial-gradient(circle at 68% 38%, rgba(145, 150, 142, 0.13) 0 4%, transparent 4.5%),
+    linear-gradient(145deg, #ffffff, #e4e8df 78%);
+  box-shadow: inset -8px -10px 16px rgba(115, 124, 111, 0.18), inset 5px 5px 12px rgba(255,255,255,0.85);
+  transition: transform 0.18s ease;
+}
+
+.pgti-ball:hover .pgti-ball-surface,
+.pgti-ball.is-aiming .pgti-ball-surface {
+  transform: scale(1.05);
+}
+
+.pgti-ball.is-landed .pgti-ball-surface {
+  transform: scale(0.82);
+}
+
+.pgti-instruction-pill {
+  z-index: 12;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 9px 26px 9px 12px;
+  border-radius: 999px;
+  color: #314036;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 20px 34px rgba(40, 46, 34, 0.12);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pgti-aim-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--pgti-green);
+  border: 1px solid rgba(34, 109, 57, 0.2);
+  background: #f7fbf4;
+  font-size: 25px;
+  line-height: 1;
+}
+
+@keyframes pgtiFlagFlutter {
+  0%, 100% { transform: skewY(0deg) translateX(0); }
+  50% { transform: skewY(-5deg) translateX(2px); }
+}
+
+@keyframes pgtiCupRipple {
+  0% { opacity: 0.9; transform: translateX(-50%) scale(0.45); }
+  100% { opacity: 0; transform: translateX(-50%) scale(1.65); }
+}
+
+@media (max-width: 1180px) {
+  .pgti-golf-login-page {
+    grid-template-columns: minmax(330px, 42%) minmax(430px, 58%);
+    padding: 36px;
+  }
+
+  .pgti-login-card {
+    padding-inline: 32px;
+  }
+}
+
+@media (max-width: 920px) {
+  .pgti-golf-login-page {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    overflow: auto;
+  }
+
+  .pgti-login-card-layer {
+    order: 1;
+  }
+
+  .pgti-golf-stage {
+    order: 2;
+  }
+
+  .pgti-green-wrapper {
+    width: min(100%, 680px);
+  }
+}
+
+@media (max-width: 560px) {
+  .pgti-golf-login-page {
+    padding: 26px 16px;
+  }
+
+  .pgti-login-card {
+    padding: 48px 22px 28px;
+    border-radius: 24px;
+  }
+
+  .pgti-quick-access-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pgti-instruction-pill {
+    font-size: 12px;
+    padding-right: 16px;
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pgti-flag-cloth,
+  .pgti-ball,
+  .pgti-ball-surface,
+  .pgti-quick-access-item,
+  .pgti-golf-login-page .login-button {
+    animation: none !important;
+    transition: none !important;
+  }
+}

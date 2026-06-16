@@ -6,6 +6,8 @@ import { notification } from "antd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { faEyeSlash, faEye} from '@fortawesome/free-solid-svg-icons';
+import PgtiGolfLoginPage from "components/login/PgtiGolfLoginPage";
+import GolfLoginCard from "components/login/GolfLoginCard";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -126,6 +128,9 @@ const LoginPage = () => {
         };
         const result = await verifyLoginOtp(options);
         if (result.status === true) {
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("golf-login-success"));
+          }
           navigate("/admin/dashboard");
         } else {
           notification.open({
@@ -215,15 +220,13 @@ const LoginPage = () => {
     }
   };
   return (
-    <div className="login-container">
-      <div className="login-background">
-        <div className="login-content">
-          <div className="login-card">
+    <PgtiGolfLoginPage>
+      <GolfLoginCard>
             <div className="login-header">
               <div className="logo-section">
                 {!logoError ? (
                   <img
-                    src={`${process.env.PUBLIC_URL || ''}/images/pgti-logo.png`}
+                    src={`${process.env.PUBLIC_URL || ''}/pgti_dpworld_logo_new.png`}
                     alt="DP World PGTI - Professional Golf Tour of India"
                     className="login-logo-img"
                     onError={() => setLogoError(true)}
@@ -306,12 +309,18 @@ const LoginPage = () => {
                     )}
                   </div>
 
-                  <div className="">
+                  <div className="pgti-form-options">
+                    <label className="pgti-remember-me">
+                      <input
+                        type="checkbox"
+                        defaultChecked={Boolean(sessionStorage.getItem("LOGIN_EMAIL"))}
+                      />
+                      <span>Remember me</span>
+                    </label>
                     <Link to="/reset-password" className="forgot-password">
                       Forgot Password?
                     </Link>
                   </div>
-                  <br/>
 
                   {errors?.formError && (
                     <div className="error-alert">
@@ -406,10 +415,8 @@ const LoginPage = () => {
                 </>
               )}
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      </GolfLoginCard>
+    </PgtiGolfLoginPage>
   );
 };
 

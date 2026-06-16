@@ -53,6 +53,15 @@ const PLAYER_TYPE_STYLE = {
   Amateur:      { bg: "#f0fdf4", color: "#16a34a" },
 };
 
+const resolveMemberCode = (item = {}) =>
+  item.pgti_membership_id || item.legacy_member_code || item.mem_code || item.prize_member_code || "";
+
+const resolveImportedMemberCode = (item = {}) =>
+  item.legacy_member_code || item.mem_code || item.prize_member_code || "";
+
+const resolveMemberShortCode = (item = {}) =>
+  item.legacy_member_short_code || item.mem_scode || item.prize_member_short_code || "";
+
 const StatCard = ({ icon, label, value, color }) => (
   <div style={{
     flex: "1 1 160px", background: "white", borderRadius: 12,
@@ -93,7 +102,7 @@ export default function UsersList() {
   const [bannerPreviewOpen, setBannerPreviewOpen] = useState(false);
 
   const [serverColumnFilters, setServerColumnFilters] = useState({
-    full_name: "", email: "", mobile: "",
+    full_name: "", email: "", mobile: "", member_code: "",
   });
 
   const canEdit = user?.admin_type === "Super Admin" || PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y";
@@ -268,11 +277,36 @@ export default function UsersList() {
     },
     {
       accessorKey: "pgti_membership_id",
-      header: "PGTI ID",
-      cell: ({ getValue }) => getValue()
-        ? <span style={{ fontSize: 12, fontFamily: "monospace", background: "#eff6ff", color: "#1d4ed8", padding: "2px 8px", borderRadius: 6, border: "1px solid #bfdbfe" }}>{getValue()}</span>
-        : <span style={{ color: "#cbd5e1", fontSize: 12 }}>—</span>,
-      size: 130, enableSorting: true, enableColumnFilter: false,
+      header: "Member Codes",
+      cell: ({ row }) => {
+        const item = row.original || {};
+        const primaryCode = resolveMemberCode(item);
+        const importedCode = resolveImportedMemberCode(item);
+        const shortCode = resolveMemberShortCode(item);
+
+        if (!primaryCode && !shortCode) {
+          return <span style={{ color: "#cbd5e1", fontSize: 12 }}>--</span>;
+        }
+
+        return (
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {primaryCode && (
+              <span style={{ fontSize: 12, fontFamily: "monospace", background: "#eff6ff", color: "#1d4ed8", padding: "2px 8px", borderRadius: 6, border: "1px solid #bfdbfe", width: "fit-content" }}>
+                {primaryCode}
+              </span>
+            )}
+            {shortCode && (
+              <span style={{ fontSize: 11, color: "#64748b" }}>
+                Short: <span style={{ fontFamily: "monospace" }}>{shortCode}</span>
+              </span>
+            )}
+            {importedCode && importedCode !== item.pgti_membership_id && (
+              <span style={{ fontSize: 10, color: "#16a34a" }}>Web import</span>
+            )}
+          </div>
+        );
+      },
+      size: 170, enableSorting: true, enableColumnFilter: true,
     },
     {
       accessorKey: "player_type",
@@ -348,6 +382,7 @@ export default function UsersList() {
         ...(serverColumnFilters.full_name ? { full_name: serverColumnFilters.full_name } : {}),
         ...(serverColumnFilters.email     ? { email: serverColumnFilters.email }         : {}),
         ...(serverColumnFilters.mobile    ? { mobile: serverColumnFilters.mobile }       : {}),
+        ...(serverColumnFilters.member_code ? { member_code: serverColumnFilters.member_code } : {}),
         ...(showRequest                   ? { status: showRequest }                      : {}),
       },
       skip: SKIP || 0,

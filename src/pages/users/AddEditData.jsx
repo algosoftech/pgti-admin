@@ -80,6 +80,11 @@ const validateStrongPassword = (value = "") => {
   return "";
 };
 
+const displayOrEmpty = (value) => {
+  if (value === undefined || value === null || value === "") return "";
+  return String(value);
+};
+
 const buildInitialPlayerState = (player = {}) => ({
   ...{
     full_name: "",
@@ -93,6 +98,10 @@ const buildInitialPlayerState = (player = {}) => ({
     address: "",
     passport_no: "",
     pgti_membership_id: "",
+    legacy_member_code: "",
+    legacy_member_short_code: "",
+    mem_code: "",
+    mem_scode: "",
     player_type: "Amateur",
     experience_years: "",
     home_club: "",
@@ -108,6 +117,15 @@ const buildInitialPlayerState = (player = {}) => ({
     social_twitter: "",
     social_instagram: "",
     profile_image: "",
+    prize_member_code: "",
+    prize_member_short_code: "",
+    prize_member_name: "",
+    prize_tour_rank: "",
+    prize_total: "",
+    prize_par: "",
+    prize_pay: "",
+    prize_net_pay: "",
+    prize_last_synced_at: "",
     about_info: "",
     status: "A",
     is_alumni: false,
@@ -236,6 +254,16 @@ export default function AddEditUsers() {
   };
 
   const selectedFlagUrl = resolveFlagUrl(ADDEDITDATA.nationality);
+  const importedMemberCode = ADDEDITDATA.legacy_member_code || ADDEDITDATA.mem_code || "";
+  const importedShortCode = ADDEDITDATA.legacy_member_short_code || ADDEDITDATA.mem_scode || "";
+  const hasImportedMemberData = isEdit && Boolean(
+    importedMemberCode ||
+    importedShortCode ||
+    ADDEDITDATA.prize_member_code ||
+    ADDEDITDATA.prize_member_name ||
+    ADDEDITDATA.prize_pay ||
+    ADDEDITDATA.prize_net_pay
+  );
 
   return (
     <div className="admin-page-container">
@@ -448,6 +476,64 @@ export default function AddEditUsers() {
               </div>
             </div>
           </SectionCard>
+
+          {hasImportedMemberData && (
+            <SectionCard icon={<IdcardOutlined />} title="Web Import / Legacy Details">
+              <div className="row">
+                <div className="col-md-3 col-12 mb-3">
+                  <div className="form-group">
+                    <label className="form-label">Member Code</label>
+                    <input type="text" className="form-input" value={displayOrEmpty(importedMemberCode)} readOnly style={{ fontFamily: "monospace", background: "#f8fafc" }} />
+                  </div>
+                </div>
+                <div className="col-md-3 col-12 mb-3">
+                  <div className="form-group">
+                    <label className="form-label">Member Short Code</label>
+                    <input type="text" className="form-input" value={displayOrEmpty(importedShortCode)} readOnly style={{ fontFamily: "monospace", background: "#f8fafc" }} />
+                  </div>
+                </div>
+                <div className="col-md-3 col-12 mb-3">
+                  <div className="form-group">
+                    <label className="form-label">Prize Member Code</label>
+                    <input type="text" className="form-input" value={displayOrEmpty(ADDEDITDATA.prize_member_code)} readOnly style={{ fontFamily: "monospace", background: "#f8fafc" }} />
+                  </div>
+                </div>
+                <div className="col-md-3 col-12 mb-3">
+                  <div className="form-group">
+                    <label className="form-label">Prize Short Code</label>
+                    <input type="text" className="form-input" value={displayOrEmpty(ADDEDITDATA.prize_member_short_code)} readOnly style={{ fontFamily: "monospace", background: "#f8fafc" }} />
+                  </div>
+                </div>
+                <div className="col-md-3 col-12 mb-3">
+                  <div className="form-group">
+                    <label className="form-label">Prize Name</label>
+                    <input type="text" className="form-input" value={displayOrEmpty(ADDEDITDATA.prize_member_name)} readOnly style={{ background: "#f8fafc" }} />
+                  </div>
+                </div>
+                <div className="col-md-3 col-12 mb-3">
+                  <div className="form-group">
+                    <label className="form-label">Prize Rank</label>
+                    <input type="text" className="form-input" value={displayOrEmpty(ADDEDITDATA.prize_tour_rank)} readOnly style={{ background: "#f8fafc" }} />
+                  </div>
+                </div>
+                <div className="col-md-3 col-12 mb-3">
+                  <div className="form-group">
+                    <label className="form-label">Prize Pay</label>
+                    <input type="text" className="form-input" value={displayOrEmpty(ADDEDITDATA.prize_pay)} readOnly style={{ background: "#f8fafc" }} />
+                  </div>
+                </div>
+                <div className="col-md-3 col-12 mb-3">
+                  <div className="form-group">
+                    <label className="form-label">Net Pay</label>
+                    <input type="text" className="form-input" value={displayOrEmpty(ADDEDITDATA.prize_net_pay)} readOnly style={{ background: "#f8fafc" }} />
+                  </div>
+                </div>
+                <div className="col-12">
+                  <FieldHint text="These read-only values are synced from .web/live prize imports and are used to map tournament, score, and prize records back to this player." />
+                </div>
+              </div>
+            </SectionCard>
+          )}
 
           <SectionCard icon={<IdcardOutlined />} title="Identity & Banking Details">
             <div className="row">
