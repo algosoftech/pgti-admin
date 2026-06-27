@@ -3,9 +3,9 @@ import { extractApiError } from 'utils/apiError';
  * media.service.js — Single source of truth for all media uploads.
  *
  * All image fields across the project must call `uploadMedia(file, folder)`.
- * The backend uploads the file to Bunny CDN Storage and returns the public CDN URL.
+ * The backend stores the file on API/server storage and returns a public server URL.
  *
- * Folder convention (must match backend Bunny Storage path):
+ * Folder convention:
  *   banners           → homepage / CMS banners
  *   categories        → category thumbnail images
  *   sub-categories    → sub-category thumbnail images
@@ -25,10 +25,15 @@ const _u = process.env.REACT_APP_API_BASE_URL || '';
 const BASE = _u.endsWith('/') ? _u.slice(0, -1) : _u;
 const API_ORIGIN = BASE.replace(/\/v1\/?$/i, '');
 const IMAGE_BASE = (process.env.REACT_APP_IMAGE_BASE_URL || '').replace(/\/$/, '');
+// Bunny CDN is intentionally off for now. Set REACT_APP_USE_BUNNY_CDN=true
+// only if the backend is switched back to CDN delivery later.
+const USE_BUNNY_CDN = String(process.env.REACT_APP_USE_BUNNY_CDN || '').toLowerCase() === 'true';
 const CDN_BASE = (() => {
+  if (!USE_BUNNY_CDN) return '';
   const base = (process.env.REACT_APP_BUNNY_CDN_PULL_ZONE || '').replace(/\/$/, '');
   return base && !/^https?:\/\//i.test(base) ? `https://${base}` : base;
 })();
+const SERVER_MEDIA_BASE = API_ORIGIN || IMAGE_BASE;
 
 const isLocalBrowser = () =>
   typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname);
@@ -56,21 +61,39 @@ const localPreviewBaseForPath = (path = '') => {
   if (!isLocalBrowser()) return '';
   const normalized = String(path || '').replace(/^\/+/, '');
   if (!normalized) return '';
-  if (normalized.startsWith('userdata/')) return API_ORIGIN || IMAGE_BASE;
-  if (normalized.startsWith('cms/')) return API_ORIGIN || IMAGE_BASE;
-  return API_ORIGIN || IMAGE_BASE;
+  if (normalized.startsWith('userdata/')) return SERVER_MEDIA_BASE;
+  if (normalized.startsWith('cms/')) return SERVER_MEDIA_BASE;
+  return SERVER_MEDIA_BASE;
+};
+
+const shouldUseServerMediaUrl = (path = '') => {
+  const normalized = String(path || '').replace(/^\/+/, '');
+  return normalized.startsWith('userdata/') || normalized.startsWith('cms/');
 };
 
 const normalizeImageUrl = (url = '') => {
   if (!url) return '';
-  if (/^https?:\/\//i.test(url) || url.startsWith('//')) return url;
+  if (/^https?:\/\//i.test(url) || url.startsWith('//')) {
+    if (!USE_BUNNY_CDN && SERVER_MEDIA_BASE) {
+      const path = getPathFromValue(url);
+      if (shouldUseServerMediaUrl(path)) {
+        return `${SERVER_MEDIA_BASE}/${path}`;
+      }
+    }
+    return url;
+  }
   if (/^[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test(url)) return `https://${url}`;
 
   if (CDN_BASE) {
     return `${CDN_BASE}/${url.replace(/^\//, '')}`;
   }
 
-  return `${IMAGE_BASE}/${url.replace(/^\//, '')}`;
+  if (shouldUseServerMediaUrl(url) && SERVER_MEDIA_BASE) {
+    return `${SERVER_MEDIA_BASE}/${url.replace(/^\//, '')}`;
+  }
+
+  const fallbackBase = IMAGE_BASE || SERVER_MEDIA_BASE;
+  return fallbackBase ? `${fallbackBase}/${url.replace(/^\//, '')}` : url;
 };
 
 export const resolvePreviewMediaUrl = (value = '') => {
@@ -87,10 +110,10 @@ export const resolvePreviewMediaUrl = (value = '') => {
 };
 
 /**
- * Upload a single file to Bunny CDN via the backend proxy.
+ * Upload a single file to server storage via the backend proxy.
  *
  * @param {File}   file    - The file object (after crop/compression from ImageEditor).
- * @param {string} folder  - Destination folder on the CDN (see convention above).
+ * @param {string} folder  - Destination folder under server media storage.
  * @returns {{ status: boolean, url?: string, message?: string }}
  */
 export const uploadMedia = async (file, folder = 'common') => {
@@ -174,9 +197,9 @@ export const listMedia = async (options = {}) => {
 };
 
 /**
- * Delete a media file by its CDN URL.
+ * Delete a media file by its public URL.
  *
- * @param {string} url  - Full CDN URL of the file to delete.
+ * @param {string} url  - Full public URL of the file to delete.
  * @returns {{ status: boolean }}
  */
 export const deleteMedia = async (url) => {

@@ -30,6 +30,7 @@ const LoginPage = () => {
     new_password: false,
     confirm_password: false
   });
+  const [logoError, setLogoError] = useState(false);
 
   const togglePasswordVisibility = (field) => {
     setShowPassword((prev) => ({
@@ -229,13 +230,30 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
-      <div className="login-background">
-        <div className="login-content">
-          <div className="login-card">
+      <div className="login-background" aria-hidden="true">
+        <span className="login-bg-shape login-bg-shape-one" />
+        <span className="login-bg-shape login-bg-shape-two" />
+      </div>
+      <main className="login-content">
+          <section className="login-card" data-login-card="true">
             <div className="login-header">
               <div className="logo-section">
-                <div className="logo-icon">🌱</div>
-                <h1 className="logo-text">PGTI</h1>
+                {!logoError ? (
+                  <img
+                    src={`${process.env.PUBLIC_URL || ''}/pgti_dpworld_logo_new.png`}
+                    alt="DP World PGTI - Professional Golf Tour of India"
+                    className="login-logo-img"
+                    onError={() => setLogoError(true)}
+                  />
+                ) : (
+                  <div className="login-logo-fallback">
+                    <div className="login-logo-fallback-banner">DP WORLD</div>
+                    <div className="login-logo-fallback-pgti">
+                      <span className="pgti-p">P</span><span className="pgti-g">G</span><span className="pgti-t">T</span><span className="pgti-i">I</span>
+                    </div>
+                    <div className="login-logo-fallback-tagline">PROFESSIONAL GOLF TOUR OF INDIA</div>
+                  </div>
+                )}
                 <p className="logo-subtitle">Admin Portal</p>
               </div>
             </div>
@@ -427,9 +445,8 @@ const LoginPage = () => {
                 </>)}
 
             </div>
-          </div>
-        </div>
-      </div>
+          </section>
+        </main>
     </div>
   );
 }

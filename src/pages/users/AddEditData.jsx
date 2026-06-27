@@ -6,9 +6,11 @@ import {
   EyeInvisibleOutlined, EyeTwoTone,
 } from "@ant-design/icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import ImageUploadField from "components/ui/ImageUploadField";
 import LoadingEffect from "components/ui/Loading/LoadingEffect";
-import { addEditUsers } from "services/users.service";
+import { addEditUsers, getUserDetail } from "services/users.service";
 import { CharCounter, FieldHint, ImageHint } from "components/ui/FieldHint";
 import { LIMITS, IMAGE_SPECS } from "utils/fieldValidation";
 import { COUNTRY_DIAL_CODES } from "utils/countryDialCodes";
@@ -83,6 +85,13 @@ const validateStrongPassword = (value = "") => {
 const displayOrEmpty = (value) => {
   if (value === undefined || value === null || value === "") return "";
   return String(value);
+};
+
+const stripHtml = (value = "") => String(value || "").replace(/<[^>]*>/g, "");
+
+const normalizeEditorValue = (value = "") => {
+  const normalized = String(value || "").trim();
+  return normalized === "<p><br></p>" ? "" : normalized;
 };
 
 const buildInitialPlayerState = (player = {}) => ({
@@ -164,7 +173,24 @@ export default function AddEditUsers() {
   }, [isEdit]);
 
   useEffect(() => {
-    setAddEditData(buildInitialPlayerState(state));
+    let isMounted = true;
+
+    const loadPlayerDetail = async () => {
+      setAddEditData(buildInitialPlayerState(state));
+
+      if (!state?.id) return;
+
+      const res = await getUserDetail({ id: state.id });
+      if (isMounted && res.status && res.result) {
+        setAddEditData(buildInitialPlayerState({ ...state, ...res.result }));
+      }
+    };
+
+    loadPlayerDetail();
+
+    return () => {
+      isMounted = false;
+    };
   }, [state]);
 
   const handleChange = (e) => {
@@ -233,7 +259,7 @@ export default function AddEditUsers() {
         social_twitter: ADDEDITDATA.social_twitter?.trim() || "",
         social_instagram: ADDEDITDATA.social_instagram?.trim() || "",
         profile_image: ADDEDITDATA.profile_image || "",
-        about_info: ADDEDITDATA.about_info?.trim() || "",
+        about_info: normalizeEditorValue(ADDEDITDATA.about_info),
         status: ADDEDITDATA.status || "A",
         is_alumni: Boolean(ADDEDITDATA.is_alumni),
         ...(ADDEDITDATA.password?.trim() ? { password: ADDEDITDATA.password.trim() } : {}),
@@ -599,16 +625,31 @@ export default function AddEditUsers() {
               <div className="col-12 mb-3">
                 <div className="form-group">
                   <label className="form-label">Player Biography</label>
-                  <textarea
-                    name="about_info"
-                    className="form-input"
-                    rows={6}
-                    placeholder="Enter player career highlights, achievements, and biography…"
-                    value={ADDEDITDATA.about_info}
-                    onChange={handleChange}
+                  <ReactQuill
+                    theme="snow"
+                    value={ADDEDITDATA.about_info || ""}
+                    onChange={(value) => setAddEditData((prev) => ({ ...prev, about_info: value }))}
+                    placeholder="Enter player career highlights, achievements, and biography..."
+                    style={{
+                      backgroundColor: "white",
+                      borderRadius: "8px",
+                      marginBottom: "8px",
+                    }}
+                    modules={{
+                      toolbar: [
+                        [{ header: [1, 2, 3, false] }],
+                        ["bold", "italic", "underline", "strike"],
+                        [{ list: "ordered" }, { list: "bullet" }],
+                        [{ color: [] }, { background: [] }],
+                        [{ align: [] }],
+                        ["link"],
+                        ["clean"],
+                      ],
+                    }}
                   />
-                  <CharCounter value={ADDEDITDATA.about_info} min={LIMITS.about_info.min} max={LIMITS.about_info.max} />
-                  <FieldHint text="Displayed on the player's public profile. Describe career highlights, tournament wins, playing style, and personal background." />
+                  <input type="hidden" name="about_info" value={ADDEDITDATA.about_info || ""} />
+                  <CharCounter value={stripHtml(ADDEDITDATA.about_info)} min={LIMITS.about_info.min} max={LIMITS.about_info.max} />
+                  <FieldHint text="Displayed on the player's public profile. Rich formatting is supported for career highlights, tournament wins, playing style, and personal background." />
                 </div>
               </div>
             </div>

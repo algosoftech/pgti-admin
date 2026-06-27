@@ -6,8 +6,6 @@ import { notification } from "antd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { faEyeSlash, faEye} from '@fortawesome/free-solid-svg-icons';
-import PgtiGolfLoginPage from "components/login/PgtiGolfLoginPage";
-import GolfLoginCard from "components/login/GolfLoginCard";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -128,9 +126,6 @@ const LoginPage = () => {
         };
         const result = await verifyLoginOtp(options);
         if (result.status === true) {
-          if (typeof window !== "undefined") {
-            window.dispatchEvent(new CustomEvent("golf-login-success"));
-          }
           navigate("/admin/dashboard");
         } else {
           notification.open({
@@ -220,8 +215,14 @@ const LoginPage = () => {
     }
   };
   return (
-    <PgtiGolfLoginPage>
-      <GolfLoginCard>
+    <div className="login-container">
+      <div className="login-background" aria-hidden="true">
+        <span className="login-bg-shape login-bg-shape-one" />
+        <span className="login-bg-shape login-bg-shape-two" />
+      </div>
+
+      <main className="login-content">
+        <section className="login-card" data-login-card="true">
             <div className="login-header">
               <div className="logo-section">
                 {!logoError ? (
@@ -415,8 +416,9 @@ const LoginPage = () => {
                 </>
               )}
             </div>
-      </GolfLoginCard>
-    </PgtiGolfLoginPage>
+        </section>
+      </main>
+    </div>
   );
 };
 

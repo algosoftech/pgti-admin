@@ -37,6 +37,18 @@ export const addEditUsers = async (options = {}) => {
     }
 };
 
+export const getUserDetail = async (options = {}) => {
+    try {
+        const res = await postRequest({ url: `${BASE}/admin/users/detail`, postData: options });
+        if (res?.status === 200 && res?.data?.status) {
+            return { status: true, result: res?.data?.response?.result || null };
+        }
+        return { status: false, message: extractApiError(res, 'Failed to fetch player detail') };
+    } catch (error) {
+        return { status: false, message: error.message || 'Request failed' };
+    }
+};
+
 export const usersChangeStatus = async (options = {}) => {
     try {
         const { id, status } = options;

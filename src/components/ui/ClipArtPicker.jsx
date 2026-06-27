@@ -20,7 +20,9 @@ const resolveImageSrc = (value) => {
   if (/^https?:\/\//i.test(value) || value.startsWith("//") || value.startsWith("blob:")) return value;
   if (/^[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test(value)) return `https://${value}`;
 
-  const cdnBase = (process.env.REACT_APP_BUNNY_CDN_PULL_ZONE || "").replace(/\/$/, "");
+  // Server media is the default. Bunny preview fallback is opt-in only.
+  const useBunnyCdn = String(process.env.REACT_APP_USE_BUNNY_CDN || "").toLowerCase() === "true";
+  const cdnBase = useBunnyCdn ? (process.env.REACT_APP_BUNNY_CDN_PULL_ZONE || "").replace(/\/$/, "") : "";
   if (cdnBase && !value.startsWith("/")) {
     const base = /^https?:\/\//i.test(cdnBase) ? cdnBase : `https://${cdnBase}`;
     return `${base}/${value.replace(/^\//, "")}`;

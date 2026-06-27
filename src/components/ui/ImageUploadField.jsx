@@ -3,6 +3,7 @@ import { notification } from "antd";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
+  EditOutlined,
   FolderOpenOutlined,
   InfoCircleOutlined,
   LoadingOutlined,
@@ -42,6 +43,43 @@ const ImageUploadField = ({
   const [editorOpen, setEditorOpen] = useState(false);
   const [pendingFile, setPendingFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [loadingCurrentImage, setLoadingCurrentImage] = useState(false);
+
+  const createFileFromCurrentImage = async () => {
+    const imageUrl = resolvePreviewMediaUrl(value);
+    if (!imageUrl) throw new Error("Missing image URL");
+
+    const response = await fetch(imageUrl, { mode: "cors" });
+    if (!response.ok) throw new Error("Image not accessible");
+
+    const blob = await response.blob();
+    const contentType = blob.type || "image/jpeg";
+    const extension = contentType.includes("png")
+      ? "png"
+      : contentType.includes("webp")
+        ? "webp"
+        : "jpg";
+
+    return new File([blob], `current-image.${extension}`, { type: contentType });
+  };
+
+  const handleEditCurrentImage = async () => {
+    if (!value || loadingCurrentImage || uploading) return;
+
+    try {
+      setLoadingCurrentImage(true);
+      const file = await createFileFromCurrentImage();
+      setPendingFile(file);
+      setEditorOpen(true);
+    } catch {
+      notify(
+        "Edit unavailable",
+        "The existing image could not be loaded for editing. Please use Replace (Upload & Edit) to upload it again."
+      );
+    } finally {
+      setLoadingCurrentImage(false);
+    }
+  };
 
   const handleEditFlowSelect = (event) => {
     const file = event.target.files?.[0];
@@ -175,8 +213,17 @@ const ImageUploadField = ({
                 type="button"
                 className="action-button secondary"
                 style={{ background: "#fff", fontSize: 12, padding: "5px 10px" }}
+                onClick={handleEditCurrentImage}
+                disabled={uploading || loadingCurrentImage}
+              >
+                {loadingCurrentImage ? <><LoadingOutlined /> Loading...</> : <><EditOutlined /> Edit Current</>}
+              </button>
+              <button
+                type="button"
+                className="action-button secondary"
+                style={{ background: "#fff", fontSize: 12, padding: "5px 10px" }}
                 onClick={() => editInputRef.current?.click()}
-                disabled={uploading}
+                disabled={uploading || loadingCurrentImage}
               >
                 {uploading ? <><LoadingOutlined /> Uploading...</> : <><UploadOutlined /> Upload & Edit</>}
               </button>
@@ -185,7 +232,7 @@ const ImageUploadField = ({
                 className="action-button secondary"
                 style={{ background: "#fff", fontSize: 12, padding: "5px 10px" }}
                 onClick={() => directInputRef.current?.click()}
-                disabled={uploading}
+                disabled={uploading || loadingCurrentImage}
               >
                 <FolderOpenOutlined /> Quick Upload
               </button>
@@ -194,6 +241,7 @@ const ImageUploadField = ({
                 className="action-button danger"
                 style={{ fontSize: 12, padding: "5px 10px" }}
                 onClick={clear}
+                disabled={loadingCurrentImage || uploading}
               >
                 <CloseCircleOutlined /> Remove
               </button>
@@ -239,8 +287,17 @@ const ImageUploadField = ({
             type="button"
             className="action-button secondary"
             style={{ fontSize: 11, padding: "3px 10px" }}
+            onClick={handleEditCurrentImage}
+            disabled={uploading || loadingCurrentImage}
+          >
+            {loadingCurrentImage ? <><LoadingOutlined /> Loading...</> : <><EditOutlined /> Edit Current Image</>}
+          </button>
+          <button
+            type="button"
+            className="action-button secondary"
+            style={{ fontSize: 11, padding: "3px 10px" }}
             onClick={() => editInputRef.current?.click()}
-            disabled={uploading}
+            disabled={uploading || loadingCurrentImage}
           >
             <UploadOutlined /> Replace (Upload & Edit)
           </button>
@@ -249,14 +306,14 @@ const ImageUploadField = ({
             className="action-button secondary"
             style={{ fontSize: 11, padding: "3px 10px" }}
             onClick={() => directInputRef.current?.click()}
-            disabled={uploading}
+            disabled={uploading || loadingCurrentImage}
           >
             <FolderOpenOutlined /> Replace (Quick Upload)
           </button>
         </div>
       )}
 
-      <FieldHint text="Use Upload & Edit to crop, zoom, rotate, or apply a preset aspect ratio before saving. Use Quick Upload to pick one image from your PC and save it directly without opening the editor." />
+      <FieldHint text="Use Edit Current Image to adjust the uploaded image. Use Upload & Edit to crop, zoom, rotate, or apply a preset aspect ratio before saving a new image. Use Quick Upload to pick one image from your PC and save it directly without opening the editor." />
       {hint && !error && <div className="form-hint" style={{ marginTop: 6, fontSize: 12, color: "#64748b" }}>{hint}</div>}
       {error && <div className="form-error" style={{ marginTop: 6 }}>{error}</div>}
 
