@@ -292,31 +292,34 @@ export default function EnhancedTable({
         : typeof columnLike?.getSize === "function"
         ? columnLike.getSize()
         : 120;
+    const numericSize = Number(rawSize);
+    const size = Number.isFinite(numericSize) ? numericSize : 120;
 
-    if (columnId === "index") return Math.min(rawSize, 54);
-    return rawSize;
+    if (columnId === "select") return Math.max(size, 62);
+    if (columnId === "actions") return Math.max(size, 112);
+    if (columnId === "index") return Math.max(Math.min(size, 70), 64);
+    return Math.max(size, 96);
   }, []);
 
   const getColumnLayoutStyle = useCallback(
     (columnLike, fallbackSize) => {
       const width = resolveColumnSize(columnLike, fallbackSize);
-      const pinned = typeof columnLike?.getIsPinned === "function" ? columnLike.getIsPinned() : columnLike?.column?.getIsPinned?.();
-
-      if (pinned) {
-        return {
-          width: `${width}px`,
-          minWidth: `${width}px`,
-          maxWidth: `${width}px`,
-        };
-      }
-
+      // Virtualized rows render as flex rows, so each cell needs a fixed basis.
+      // Otherwise wide admin listings collapse and clip action/image columns.
       return {
-        flex: 1,
+        flex: `0 0 ${width}px`,
+        width: `${width}px`,
         minWidth: `${width}px`,
+        maxWidth: `${width}px`,
       };
     },
     [resolveColumnSize]
   );
+
+  const tableMinWidth = table
+    .getVisibleLeafColumns()
+    .reduce((total, column) => total + resolveColumnSize(column, column.getSize?.()), 0);
+  const tableWidth = `max(100%, ${Math.max(tableMinWidth, 720)}px)`;
 
   // Export to CSV function
   const handleExport = () => {
@@ -726,8 +729,8 @@ export default function EnhancedTable({
             <table
               className="modern-table"
               style={{
-                width: "100%",
-                minWidth: "100%",
+                width: tableWidth,
+                minWidth: tableWidth,
                 position: "relative",
                 borderCollapse: "separate",
                 borderSpacing: 0,
@@ -744,10 +747,11 @@ export default function EnhancedTable({
                 {table.getHeaderGroups().map((headerGroup) => (
                   <React.Fragment key={headerGroup.id}>
                     {/* Header Row */}
-                    <tr style={{ display: "flex", width: "100%" }}>
+                    <tr style={{ display: "flex", width: tableWidth, minWidth: tableWidth }}>
                       {headerGroup.headers.map((header) => (
                         <th
                           key={header.id}
+                          data-column-id={header.column.id}
                           draggable={
                             header.id !== "select" && header.id !== "actions"
                           }
@@ -788,6 +792,7 @@ export default function EnhancedTable({
                           }}
                         >
                           <div
+                            className="enhanced-table-header-content"
                             style={{
                               display: "flex",
                               alignItems: "center",
@@ -935,11 +940,12 @@ export default function EnhancedTable({
 
                     {/* Filter Row */}
                     {showColumnFilters && (
-                      <tr
+                          <tr
                         style={{
                           backgroundColor: "#f9fafb",
                           display: "flex",
-                          width: "100%",
+                          width: tableWidth,
+                          minWidth: tableWidth,
                         }}
                       >
                         {headerGroup.headers.map((header) => {
@@ -953,6 +959,7 @@ export default function EnhancedTable({
                           return (
                             <th
                               key={`${header.id}-filter`}
+                              data-column-id={header.column.id}
                               style={{
                                 ...getColumnLayoutStyle(header.column, header.getSize()),
                                 padding: "8px",
@@ -1069,9 +1076,10 @@ export default function EnhancedTable({
                 }}
               >
                 {data?.length === 0 ? (
-                  <tr style={{ display: "block", width: "100%" }}>
+                  <tr style={{ display: "block", width: tableWidth, minWidth: tableWidth }}>
                     <td
                       colSpan={table.getAllColumns().length}
+                      data-column-id="empty-state"
                       style={{
                         textAlign: "center",
                         padding: "60px 20px",
@@ -1159,13 +1167,15 @@ export default function EnhancedTable({
                         style={{
                           position: "absolute",
                           transform: `translateY(${virtualRow.start}px)`,
-                          width: "100%",
+                          width: tableWidth,
+                          minWidth: tableWidth,
                           display: "flex",
                         }}
                         >
                         {row.getVisibleCells().map((cell) => (
                           <td
                             key={cell.id}
+                            data-column-id={cell.column.id}
                             style={{
                               ...getColumnLayoutStyle(cell.column, cell.column.getSize()),
                               position: cell.column.getIsPinned()
@@ -1191,10 +1201,12 @@ export default function EnhancedTable({
                               borderTop: "1px solid #f1f5f9",
                             }}
                           >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
+                            <div className="enhanced-table-cell-content">
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </div>
                           </td>
                         ))}
                       </tr>

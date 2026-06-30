@@ -40,6 +40,7 @@ const emptyPartnerDetail = () => ({
   title: "",
   image: "",
   overlay_logo: "",
+  logo_2: "",
   descriptions: [""],
   link_url: "",
 });
@@ -64,10 +65,11 @@ const cleanPartnerDetails = (partners = []) =>
       title: (partner.title || partner.partner_name || "").trim(),
       image: (partner.image || "").trim(),
       overlay_logo: (partner.overlay_logo || "").trim(),
+      logo_2: (partner.logo_2 || "").trim(),
       descriptions: cleanParagraphs(partner.descriptions || []),
       link_url: (partner.link_url || "").trim(),
     }))
-    .filter((partner) => partner.title || partner.image || partner.overlay_logo || partner.descriptions.length || partner.link_url);
+    .filter((partner) => partner.title || partner.image || partner.overlay_logo || partner.logo_2 || partner.descriptions.length || partner.link_url);
 
 const SectionCard = ({ number, title, subtitle, children }) => (
   <div className="content-card" style={{ marginBottom: 24 }}>
@@ -198,6 +200,7 @@ export default function TourPartnersAddEditData() {
             title: slide.partner_name || slide.title || "",
             image: slide.image || "",
             overlay_logo: slide.overlay_logo || "",
+            logo_2: slide.logo_2 || "",
             descriptions: ensureArray(slide.descriptions, () => ""),
             link_url: slide.link_url || "",
           })) ||
@@ -246,6 +249,7 @@ export default function TourPartnersAddEditData() {
             title: slide.partner_name || slide.title || "",
             image: slide.image || "",
             overlay_logo: slide.overlay_logo || "",
+            logo_2: slide.logo_2 || "",
             descriptions: ensureArray(slide.descriptions, () => ""),
             link_url: slide.link_url || "",
           })) ||
@@ -452,6 +456,7 @@ export default function TourPartnersAddEditData() {
       partnerCarousel: cleanedTourPartners.map((partner) => ({
         image: partner.image,
         overlay_logo: partner.overlay_logo,
+        logo_2: partner.logo_2,
         partner_name: partner.title,
         descriptions: partner.descriptions,
         link_url: partner.link_url,
@@ -478,6 +483,7 @@ export default function TourPartnersAddEditData() {
         (item.title || "").trim() ||
         (item.image || "").trim() ||
         (item.overlay_logo || "").trim() ||
+        (item.logo_2 || "").trim() ||
         cleanParagraphs(item.descriptions || []).length ||
         (item.link_url || "").trim();
 
@@ -518,6 +524,7 @@ export default function TourPartnersAddEditData() {
             title: slide.partner_name || slide.title || "",
             image: slide.image || "",
             overlay_logo: slide.overlay_logo || "",
+            logo_2: slide.logo_2 || "",
             descriptions: ensureArray(slide.descriptions, () => ""),
             link_url: slide.link_url || "",
           })) ||
@@ -718,6 +725,10 @@ export default function TourPartnersAddEditData() {
                     <ImageUploadField label="Overlay Logo" value={partner.overlay_logo} onChange={(url) => updateTourPartner(index, "overlay_logo", url)} folder="tour-partners" previewH={100} spec={logoSpec} />
                     <ImageHint recommended={logoSpec.recommended} maxSize={`${logoSpec.maxMB}MB`} note="Shown as the white/coloured label overlay on top of the partner image." />
                   </div>
+                  <div className="col-md-6 col-12 mb-3">
+                    <ImageUploadField label="Logo 2" value={partner.logo_2} onChange={(url) => updateTourPartner(index, "logo_2", url)} folder="tour-partners" previewH={100} spec={logoSpec} />
+                    <ImageHint recommended={logoSpec.recommended} maxSize={`${logoSpec.maxMB}MB`} note="Optional second logo with the same recommendations as the overlay logo." />
+                  </div>
                 </div>
 
                 <div className="form-group">
@@ -796,6 +807,10 @@ export default function TourPartnersAddEditData() {
                   <div className="col-md-6 col-12 mb-3">
                     <ImageUploadField label="Overlay Logo" value={partner.overlay_logo} onChange={(url) => updatePgtiPartner(index, "overlay_logo", url)} folder="tour-partners" previewH={100} spec={logoSpec} />
                     <ImageHint recommended={logoSpec.recommended} maxSize={`${logoSpec.maxMB}MB`} note="Shown as the logo overlay on top of the partner image." />
+                  </div>
+                  <div className="col-md-6 col-12 mb-3">
+                    <ImageUploadField label="Logo 2" value={partner.logo_2} onChange={(url) => updatePgtiPartner(index, "logo_2", url)} folder="tour-partners" previewH={100} spec={logoSpec} />
+                    <ImageHint recommended={logoSpec.recommended} maxSize={`${logoSpec.maxMB}MB`} note="Optional second logo with the same recommendations as the overlay logo." />
                   </div>
                 </div>
 

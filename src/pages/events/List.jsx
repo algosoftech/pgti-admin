@@ -48,6 +48,24 @@ const stateBadgeStyle = {
   Upcoming: { background: "#eff6ff", color: "#2563eb" },
 };
 
+const EventImageCell = ({ src, alt }) => {
+  const [hasError, setHasError] = useState(false);
+
+  if (!src || hasError) {
+    return <span className="enhanced-table-image-empty">No image</span>;
+  }
+
+  return (
+    <img
+      className="enhanced-table-thumbnail"
+      src={src}
+      alt={alt || "Tournament"}
+      loading="lazy"
+      onError={() => setHasError(true)}
+    />
+  );
+};
+
 export default function EventList() {
   const navigate = useNavigate();
   const targetRef = useRef(null);
@@ -233,12 +251,7 @@ export default function EventList() {
       {
         accessorKey: "image",
         header: "Image",
-        cell: ({ getValue, row }) =>
-          getValue() ? (
-            <img src={getValue()} alt={row.original?.title} style={{ width: 72, height: 56, objectFit: "cover", borderRadius: 8 }} />
-          ) : (
-            <span className="text-muted">No image</span>
-          ),
+        cell: ({ getValue, row }) => <EventImageCell src={getValue()} alt={row.original?.title} />,
         size: 110,
         enableSorting: false,
         enableGlobalFilter: false,

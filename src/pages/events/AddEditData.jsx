@@ -22,6 +22,7 @@ import { TOUR_TYPE_OPTIONS } from "utils/tourType";
 import "styles/admin-pages.css";
 
 const { Option } = Select;
+const TOUR_FORMAT_OPTIONS = ["None", "Stroke Play", "Match Play", "Stableford"];
 
 const EventAddEditPage = () => {
   const navigate = useNavigate();
@@ -260,7 +261,7 @@ const EventAddEditPage = () => {
         course_venue: ADDEDITDATA?.course_venue?.trim() || ADDEDITDATA?.location?.trim() || "",
         season_year: ADDEDITDATA?.season_year?.toString().trim() || "",
         tour_money: ADDEDITDATA?.tour_money?.trim() || "",
-        tour_format: ADDEDITDATA?.tour_format?.trim() || "",
+        tour_format: ADDEDITDATA?.tour_format?.trim() || "None",
         pro_am_start_date: ADDEDITDATA?.pro_am_start_date || null,
         pro_am_end_date: ADDEDITDATA?.pro_am_end_date || null,
         practice_round_1_start_date: ADDEDITDATA?.practice_round_1_start_date || null,
@@ -721,15 +722,16 @@ const EventAddEditPage = () => {
                         id="tour_format"
                         placeholder="Select format"
                         className="form-select"
-                        value={ADDEDITDATA?.tour_format || undefined}
-                        onChange={(value) => setFieldValue("tour_format", value)}
-                        allowClear
+                        value={ADDEDITDATA?.tour_format || "None"}
+                        onChange={(value) => setFieldValue("tour_format", value || "None")}
                         style={{ width: "100%" }}
                         size="large"
                       >
-                        <Option value="Stroke Play">Stroke Play</Option>
-                        <Option value="Match Play">Match Play</Option>
-                        <Option value="Stableford">Stableford</Option>
+                        {TOUR_FORMAT_OPTIONS.map((format) => (
+                          <Option key={format} value={format}>
+                            {format}
+                          </Option>
+                        ))}
                       </Select>
                     </div>
                   </div>
