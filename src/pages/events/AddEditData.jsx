@@ -154,6 +154,15 @@ const EventAddEditPage = () => {
     }));
   };
 
+  const currentYear = new Date().getFullYear(); // Will be 2026
+const yearOptions = Array.from(
+  { length: currentYear - 2006 + 1 }, 
+  (_, index) => {
+    const year = String(2006 + index);
+    return { value: year, label: year };
+  }
+).reverse(); // .reverse() ensures the most recent year (2026) is at the top of the list
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -415,22 +424,34 @@ const EventAddEditPage = () => {
                     </div>
                   </div>
 
+                 
+
                   <div className="col-md-3 col-12 mb-3">
-                    <div className="form-group">
-                      <label htmlFor="season_year" className="form-label">
-                        Season
-                      </label>
-                      <input
-                        type="text"
-                        name="season_year"
-                        id="season_year"
-                        placeholder="e.g. 2026"
-                        className="form-input"
-                        value={ADDEDITDATA?.season_year || ADDEDITDATA?.season || ""}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
+  <div className="form-group">
+    <label htmlFor="season_year" className="form-label">
+      Season
+    </label>
+    <Select
+      id="season_year"
+      placeholder="Select Season"
+      size="large"
+      showSearch
+      style={{ width: "100%" }}
+      optionFilterProp="label"
+      options={yearOptions}
+      value={ADDEDITDATA?.season_year || ADDEDITDATA?.season || ""}
+      onChange={(value) => {
+        // Simulates the original event structural payload for your handleChange function
+        handleChange({
+          target: {
+            name: "season_year",
+            value: value,
+          },
+        });
+      }}
+    />
+  </div>
+</div>
 
                   <div className="col-md-3 col-12 mb-3">
                     <div className="form-group">

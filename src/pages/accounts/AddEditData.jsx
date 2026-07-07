@@ -790,7 +790,7 @@ export default function AddEditSubAdmin() {
         </div>
       </div>
 
-      <div className="page-body" style={{ position: "relative", paddingRight: 190 }}>
+      <div className="page-body" style={{ position: "relative"}}>
         <form onSubmit={handleSubmit} className="modern-form">
           <div className="content-card" style={{ marginBottom: 20 }}>
             <div className="content-card-body">
@@ -1006,7 +1006,7 @@ export default function AddEditSubAdmin() {
           </div>
         </form>
 
-        <SectionJump groups={filteredGroups} onJump={jumpToSection} />
+        {/* <SectionJump groups={filteredGroups} onJump={jumpToSection} /> */}
       </div>
 
       <LoadingEffect isLoading={isLoading} text="Saving administrator..." />

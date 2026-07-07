@@ -89,6 +89,8 @@ export default function EventList() {
   const canStatus = user?.admin_type === "Super Admin" || PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y";
   const canDelete = user?.admin_type === "Super Admin" || PERMISSION?.delete === "Y" || PERMISSION?.fullAccess === "Y";
 
+  const IMAGE_BASE_URL = "https://algodev.in:3301/";
+
   const toast = (message, description, success = false) =>
     notification.open({
       message,
@@ -248,16 +250,36 @@ export default function EventList() {
         enableGlobalFilter: false,
         enableHiding: true,
       },
-      {
-        accessorKey: "image",
-        header: "Image",
-        cell: ({ getValue, row }) => <EventImageCell src={getValue()} alt={row.original?.title} />,
-        size: 110,
-        enableSorting: false,
-        enableGlobalFilter: false,
-        enableHiding: true,
-        enableColumnFilter: false,
-      },
+     {
+  accessorKey: "image",
+  header: "Image",
+  cell: ({ getValue, row }) => {
+    const image = getValue();
+
+    return image ? (
+      <img
+        src={`${IMAGE_BASE_URL}${image}`}
+        alt={row.original?.title}
+        style={{
+          width: 72,
+          height: 56,
+          objectFit: "cover",
+          borderRadius: 8,
+        }}
+        onError={(e) => {
+          console.log("Failed to load:", e.target.src);
+        }}
+      />
+    ) : (
+      <span className="text-muted">No image</span>
+    );
+  },
+  size: 110,
+  enableSorting: false,
+  enableGlobalFilter: false,
+  enableHiding: true,
+  enableColumnFilter: false,
+},
       {
         accessorKey: "title",
         header: "Tournament",
