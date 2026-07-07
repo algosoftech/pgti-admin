@@ -80,10 +80,13 @@
 }
 
 .content-card-body {
-  padding: 26px 38px 34px;
+  padding: 17px 17px 17px !important;
   background: white;
   flex: 1;
   min-height: 0;
+}
+.ant-modal-footer button{
+  margin:0px 6px !important;
 }
 
 /* Tabs */
@@ -1780,7 +1783,9 @@
 .modern-table th > div {
   width: 100%;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: ellipsis;  
+    text-align: left;
+
 }
 
 .modern-table thead tr,

@@ -129,6 +129,13 @@ export default function EnhancedTable({
     e.preventDefault();
   };
 
+  // Always clear the drag highlight when a drag ends, even if it was
+  // released outside a valid drop target (otherwise the header stays
+  // stuck with the highlighted/faded hover effect).
+  const handleDragEnd = () => {
+    setDraggedColumn(null);
+  };
+
   const handleDrop = (targetColumnId) => {
     if (!draggedColumn || draggedColumn === targetColumnId) {
       setDraggedColumn(null);
@@ -758,6 +765,7 @@ export default function EnhancedTable({
                           onDragStart={() => handleDragStart(header.id)}
                           onDragOver={handleDragOver}
                           onDrop={() => handleDrop(header.id)}
+                          onDragEnd={handleDragEnd}
                           style={{
                               ...getColumnLayoutStyle(header.column, header.getSize()),
                             position: header.column.getIsPinned()
@@ -1161,6 +1169,7 @@ export default function EnhancedTable({
                     return (
                       <tr
                         key={row.id}
+                        data-index={virtualRow.index}
                         ref={(node) => {
                           if (node) rowVirtualizer.measureElement(node);
                         }}
