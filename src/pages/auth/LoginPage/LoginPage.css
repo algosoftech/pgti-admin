@@ -231,7 +231,7 @@ body {
 
 .form-input {
   width: 100%;
-  min-height: 52px;
+  /* min-height: 52px; */
   padding: 14px 17px;
   border: 1.5px solid rgba(16, 47, 85, 0.14);
   border-radius: 15px;

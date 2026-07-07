@@ -410,7 +410,7 @@ const yearOptions = Array.from(
                   <div className="col-md-3 col-12 mb-3">
                     <div className="form-group">
                       <label htmlFor="legacy_tour_code" className="form-label">
-                        Tour Code (Software Code)
+                        Tour/Software Code
                       </label>
                       <input
                         type="text"
