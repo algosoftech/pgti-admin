@@ -277,7 +277,7 @@ export default function GalleryAddEditData() {
                         </Option>
                       ))}
                     </Select>
-                    <FieldHint text="These options come from the Events / Tournaments admin module." />
+                    <FieldHint text="These options come from the Tour / Tournaments admin module." />
                   </div>
 
                   <div className="col-md-3 col-12 mb-3">

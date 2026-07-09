@@ -435,7 +435,7 @@ export default function GalleryList() {
           <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8, color: "#64748b", fontSize: 13 }}>
             <FontAwesomeIcon icon={faImages} />
             <span>
-              These gallery cards power the front Events / Tournaments Photo Gallery page and its event filters.
+              These gallery cards power the front Tour / Tournaments Photo Gallery page and its event filters.
             </span>
           </div>
         </div>

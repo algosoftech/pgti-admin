@@ -255,10 +255,13 @@ export default function EventList() {
   header: "Image",
   cell: ({ getValue, row }) => {
     const image = getValue();
-
+// Fix: Check if it's already a full URL
+    const imgSrc = image && image.startsWith("http") 
+      ? image 
+      : `${IMAGE_BASE_URL}${image}`;
     return image ? (
       <img
-        src={`${IMAGE_BASE_URL}${image}`}
+        src={imgSrc}
         alt={row.original?.title}
         style={{
           width: 72,
@@ -313,15 +316,36 @@ export default function EventList() {
         enableColumnFilter: true,
         enableHiding: true,
       },
-      {
+    {
         accessorKey: "event_start",
         header: "Schedule",
         cell: ({ row }) => {
           const item = row.original;
+
+          // Tracking the updated 6-hour rollback
+          if (item.event_start || item.event_end) {
+        
+            
+            // Subtracting a clean 6 hours total to fix the remaining 30-minute gap
+            const subtractedStart = item.event_start ? moment.utc(item.event_start).subtract(6, 'hours') : null;
+            const subtractedEnd = item.event_end ? moment.utc(item.event_end).subtract(6, 'hours') : null;
+            
+
+          }
+
           return (
             <div style={{ fontSize: 12, color: "#475569", lineHeight: 1.6 }}>
-              <div>{item.event_start ? moment(item.event_start).format("DD MMM YYYY") : "N/A"}</div>
-              <div>{item.event_end ? `to ${moment(item.event_end).format("DD MMM YYYY")}` : "N/A"}</div>
+              {/* Subtracting 6 hours shifts the clock cleanly back to 23:59:59 of the previous day */}
+              <div>
+                {item.event_start 
+                  ? moment.utc(item.event_start).subtract(6, 'hours').format("DD MMM YYYY") 
+                  : "N/A"}
+              </div>
+              <div>
+                {item.event_end 
+                  ? `to ${moment.utc(item.event_end).subtract(6, 'hours').format("DD MMM YYYY")}` 
+                  : "N/A"}
+              </div>
             </div>
           );
         },

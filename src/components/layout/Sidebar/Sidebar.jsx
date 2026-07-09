@@ -239,7 +239,7 @@ const Sidebar = ({ children }) => {
     { check: hasAccess("anti_doping"), to: "/admin/cms/anti-doping/list", icon: faShieldHalved, name: "Anti-Doping" },
     { check: hasAccess("contact_us"), to: "/admin/cms/contact-us/list", icon: faPhone, name: "Contact Us" },
     { check: hasAccess("disclaimer"), to: "/admin/cms/disclaimer/list", icon: faCircleInfo, name: "Disclaimer" },
-    { check: hasAccess("events"), to: "/admin/cms/events/list", icon: faTrophy, name: "Events / Tournaments" },
+    { check: hasAccess("events"), to: "/admin/cms/events/list", icon: faTrophy, name: "Tour / Tournaments" },
     { check: hasAccess("faqs"), to: "/admin/cms/faqs/list", icon: faCircleQuestion, name: "FAQs" },
     { check: hasAccess("footer"), to: "/admin/cms/footer/list", icon: faFileLines, name: "Footer" },
     { check: hasAccess("gallery"), to: "/admin/cms/gallery/list", icon: faImages, name: "Gallery" },

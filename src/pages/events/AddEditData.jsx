@@ -89,30 +89,61 @@ const EventAddEditPage = () => {
       article_id: "",
     }));
   };
+const handleStartDateChange = (date) => {
+  // Appends start of day time to make it a valid timestamp string
+  const formattedDate = date ? `${date.format("YYYY-MM-DD")} 00:00:00` : null;
+  
+  setAddEditData((prev) => ({
+    ...prev,
+    event_start: formattedDate,
+  }));
+  setError((prev) => ({
+    ...prev,
+    event_start: "",
+  }));
+};
 
-  const handleStartDateChange = (date) => {
-    const formattedDate = date ? date.format("YYYY-MM-DD HH:mm:ss") : null;
-    setAddEditData((prev) => ({
-      ...prev,
-      event_start: formattedDate,
-    }));
-    setError((prev) => ({
-      ...prev,
-      event_start: "",
-    }));
-  };
+const handleEndDateChange = (date) => {
+  // Appends end of day time to make it a valid timestamp string
+  const formattedDate = date ? `${date.format("YYYY-MM-DD")} 23:59:59` : null;
+  
+  setAddEditData((prev) => ({
+    ...prev,
+    event_end: formattedDate,
+  }));
+  setError((prev) => ({
+    ...prev,
+    event_end: "",
+  }));
+};
 
-  const handleEndDateChange = (date) => {
-    const formattedDate = date ? date.format("YYYY-MM-DD HH:mm:ss") : null;
-    setAddEditData((prev) => ({
-      ...prev,
-      event_end: formattedDate,
-    }));
-    setError((prev) => ({
-      ...prev,
-      event_end: "",
-    }));
-  };
+
+
+  // const handleStartDateChange = (date) => {
+  //   //const formattedDate = date ? date.format("YYYY-MM-DD HH:mm:ss") : null;
+  //   const formattedDate = date ? `${date.format("YYYY-MM-DD")} 00:00:00` : null;
+  //   setAddEditData((prev) => ({
+  //     ...prev,
+  //     event_start: formattedDate,
+  //   }));
+  //   setError((prev) => ({
+  //     ...prev,
+  //     event_start: "",
+  //   }));
+  // };
+
+  // const handleEndDateChange = (date) => {
+  //   //const formattedDate = date ? date.format("YYYY-MM-DD HH:mm:ss") : null;
+  //   const formattedDate = date ? `${date.format("YYYY-MM-DD")} 23:59:50` : null;
+  //   setAddEditData((prev) => ({
+  //     ...prev,
+  //     event_end: formattedDate,
+  //   }));
+  //   setError((prev) => ({
+  //     ...prev,
+  //     event_end: "",
+  //   }));
+  // };
 
   const handleDateOnlyChange = (field) => (date) => {
     setAddEditData((prev) => ({
@@ -338,7 +369,7 @@ const yearOptions = Array.from(
           <Link to="/admin/cms/events/list">
             <button className="action-button secondary">
               <ArrowLeftOutlined />
-              Back to Events / Tournaments
+              Back to Tour / Tournaments
             </button>
           </Link>
         </div>
@@ -522,7 +553,7 @@ const yearOptions = Array.from(
                     />
                   </div>
 
-                  <div className="col-md-6 col-12 mb-3">
+                  {/* <div className="col-md-6 col-12 mb-3">
                     <div className="form-group">
                       <label htmlFor="event_start" className="form-label required">
                         Event Start Date & Time
@@ -562,7 +593,45 @@ const yearOptions = Array.from(
                       />
                       {error.event_end && <div className="form-error">{error.event_end}</div>}
                     </div>
-                  </div>
+                  </div> */}
+
+                 
+  {/* Event Start Date */}
+  <div className="col-md-6 col-12 mb-3">
+    <div className="form-group">
+      <label htmlFor="event_start" className="form-label required">
+        Event Start Date
+      </label>
+      <DatePicker
+        format="YYYY-MM-DD"
+        placeholder="Select start date"
+        value={ADDEDITDATA?.event_start ? dayjs(ADDEDITDATA.event_start) : null}
+        onChange={handleStartDateChange}
+        style={{ width: "100%" }}
+        size="large"
+      />
+      {error.event_start && <div className="form-error">{error.event_start}</div>}
+    </div>
+  </div>
+
+  {/* Event End Date */}
+  <div className="col-md-6 col-12 mb-3">
+    <div className="form-group">
+      <label htmlFor="event_end" className="form-label required">
+        Event End Date
+      </label>
+      <DatePicker
+        format="YYYY-MM-DD"
+        placeholder="Select end date"
+        value={ADDEDITDATA?.event_end ? dayjs(ADDEDITDATA.event_end) : null}
+        onChange={handleEndDateChange}
+        style={{ width: "100%" }}
+        size="large"
+      />
+      {error.event_end && <div className="form-error">{error.event_end}</div>}
+    </div>
+  </div>
+
 
                   <div className="col-md-6 col-12 mb-3">
                     <div className="form-group">

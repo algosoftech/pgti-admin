@@ -85,7 +85,7 @@ const MODULE_GROUPS = [
       { key: "anti_doping", label: "Anti-Doping", icon: faShieldHalved, perms: ["list", "add_edit"] },
       { key: "contact_us", label: "Contact Us", icon: faPhone, perms: ["list", "add_edit"] },
       { key: "disclaimer", label: "Disclaimer", icon: faCircleExclamation, perms: ["list", "add_edit"] },
-      { key: "events", label: "Events / Tournaments", icon: faCalendar, perms: ["list", "add_edit", "change_status", "delete"] },
+      { key: "events", label: "Tour / Tournaments", icon: faCalendar, perms: ["list", "add_edit", "change_status", "delete"] },
       { key: "faqs", label: "FAQs", icon: faQuestionCircle, perms: ["list", "add_edit", "change_status", "delete"] },
       { key: "footer", label: "Footer", icon: faRectangleList, perms: ["list", "add_edit"] },
       { key: "gallery", label: "Gallery", icon: faImages, perms: ["list", "add_edit", "change_status", "delete"] },
