@@ -6,17 +6,28 @@ import {
   getSessionTimeoutMs,
   PREFERENCES_CHANGED_EVENT,
 } from "utils/preferences";
+import {
+  ADMIN_AUTH_CLEAR_EVENT,
+  clearAdminAuthStorage,
+  clearAdminSessionStorage,
+  getAdminLastActivity,
+  getAdminStorageItem,
+  hydrateAdminSessionStorage,
+  markAdminActivity,
+} from "utils/adminAuthStorage";
 
 const AUTH_ROUTES = ["/login", "/reset-password"];
 
 const App = () => {
+  hydrateAdminSessionStorage();
+
   const location = useLocation();
   const navigate = useNavigate();
   const idleTimerRef = useRef(null);
 
   useEffect(() => {
     const path = location.pathname;
-    const token = sessionStorage.getItem("TOKEN");
+    const token = getAdminStorageItem("TOKEN");
 
     // Already on an auth page — no redirect needed
     if (AUTH_ROUTES.some((r) => path.startsWith(r))) return;
@@ -32,9 +43,28 @@ const App = () => {
   }, [location, navigate]);
 
   useEffect(() => {
+    const handleAuthStorageChange = (event) => {
+      if (event.key !== ADMIN_AUTH_CLEAR_EVENT) return;
+
+      clearAdminSessionStorage();
+
+      const isAuthRoute = AUTH_ROUTES.some((route) =>
+        window.location.pathname.startsWith(route)
+      );
+
+      if (!isAuthRoute) {
+        navigate("/login", { replace: true });
+      }
+    };
+
+    window.addEventListener("storage", handleAuthStorageChange);
+    return () => window.removeEventListener("storage", handleAuthStorageChange);
+  }, [navigate]);
+
+  useEffect(() => {
     const path = location.pathname;
     const isAuthRoute = AUTH_ROUTES.some((route) => path.startsWith(route));
-    const token = sessionStorage.getItem("TOKEN");
+    const token = getAdminStorageItem("TOKEN");
 
     if (isAuthRoute || !token) {
       if (idleTimerRef.current) {
@@ -45,11 +75,21 @@ const App = () => {
     }
 
     const logoutForInactivity = () => {
-      sessionStorage.clear();
-      navigate("/login", { replace: true });
+      const inactiveMs = Date.now() - getAdminLastActivity();
+      const timeoutMs = getSessionTimeoutMs();
+
+      if (inactiveMs >= timeoutMs) {
+        clearAdminAuthStorage();
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = setTimeout(logoutForInactivity, Math.max(1000, timeoutMs - inactiveMs));
     };
 
     const resetIdleTimer = () => {
+      markAdminActivity();
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       idleTimerRef.current = setTimeout(logoutForInactivity, getSessionTimeoutMs());
     };

@@ -1,6 +1,7 @@
 import { getRequest, postRequest } from 'services/api'; 
 import { API_ADMIN_URL } from 'config/constants';
 import { notification, Upload } from "antd";
+import { getAdminStorageItem } from "./adminAuthStorage";
 export const getData = async (options) =>{
     try {
         const res = await postRequest(options);
@@ -181,11 +182,11 @@ export const getPage = (totalCount = 0, limit = 10) => {
 
 export const authPermission = (permission, path) => {
     try {
-      const userData = JSON.parse(sessionStorage.getItem('ADMIN-INFO'));
+      const userData = JSON.parse(getAdminStorageItem('ADMIN-INFO'));
       if (userData.admin_type === "Super Admin") {
         return true;
       } else {
-        const permissionModel = JSON.parse(sessionStorage.getItem('SIDE-MENU'));
+        const permissionModel = JSON.parse(getAdminStorageItem('SIDE-MENU'));
         const foundModule = permissionModel.find((module) => {
           const checkModel = path.includes(`${module.moduleName}`);
           if (checkModel) {

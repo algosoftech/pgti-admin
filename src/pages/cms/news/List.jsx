@@ -13,6 +13,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Top_navbar from "components/layout/TopNavbar";
 import EnhancedTable from "components/table/EnhancedTable/EnhancedTable";
+import ListSortFilter from "components/common/ListSortFilter";
 import { useNavigate } from "react-router-dom";
 import {
   InfoCircleOutlined,
@@ -59,6 +60,7 @@ export default function NewsList() {
   const [activeTab, setActiveTab] = useState("all");
   const [listingBanner, setListingBanner] = useState(null);
   const [bannerPreviewOpen, setBannerPreviewOpen] = useState(false);
+  const [sortState, setSortState] = useState({ sort_by: "", order: "asc" });
   const canEdit = user?.admin_type === "Super Admin" || PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y";
   const canStatus = user?.admin_type === "Super Admin" || PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y";
   const canDelete = user?.admin_type === "Super Admin" || PERMISSION?.delete === "Y" || PERMISSION?.fullAccess === "Y";
@@ -72,6 +74,11 @@ export default function NewsList() {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     dispatch(setShowRequest(tab === "A" || tab === "I" ? tab : ""));
+  };
+
+  const handleSortChange = (next) => {
+    setSortState(next);
+    dispatch(setCurrentPage(1));
   };
 
   const handleEdit = (item = {}) => {
@@ -270,6 +277,7 @@ export default function NewsList() {
         ...(showRequest ? { status: showRequest } : null),
         ...(activeTab === "F" ? { tour_type: "F" } : null),
       },
+      ...(sortState.sort_by ? { sort_by: sortState.sort_by, order: sortState.order } : null),
       skip: SKIP || 0,
       limit: LIMIT || 10,
     };
@@ -351,7 +359,7 @@ export default function NewsList() {
     window.scrollTo({ top: 0, behavior: "smooth" });
     document.title = "PGTI || Admin || News List";
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, showRequest, LIMIT, activeTab]);
+  }, [currentPage, showRequest, LIMIT, activeTab, sortState.sort_by, sortState.order]);
 
   return (
     <div className="admin-page-container" ref={targetRef}>
@@ -384,6 +392,19 @@ export default function NewsList() {
         </div>
 
         <div className="content-card-body">
+          <ListSortFilter
+            value={sortState}
+            onChange={handleSortChange}
+            options={[
+              { value: "title", label: "Title" },
+              { value: "location", label: "Location" },
+              { value: "news_date", label: "News Date" },
+              { value: "season", label: "Season" },
+              { value: "news_month", label: "Month" },
+              { value: "sort_order", label: "Sort Order" },
+              { value: "created_at", label: "Created Date" },
+            ]}
+          />
           <EnhancedTable
             data={ALLLISTDATA}
             columns={columns}

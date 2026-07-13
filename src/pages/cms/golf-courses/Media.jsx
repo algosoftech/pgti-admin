@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import LoadingEffect from "components/ui/Loading/LoadingEffect";
 import ImageUploadField from "components/ui/ImageUploadField";
 import { FieldHint, ImageHint } from "components/ui/FieldHint";
+import ListSortFilter from "components/common/ListSortFilter";
 import {
   addEditGolfCourseMedia,
   changeGolfCourseMediaStatus,
@@ -53,6 +54,7 @@ export default function GolfCourseMedia() {
   const [isLoading, setIsLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState(blankForm);
+  const [sortState, setSortState] = useState({ sort_by: "", order: "asc" });
 
   const toast = (message, description, success = false) =>
     notification.open({
@@ -71,6 +73,7 @@ export default function GolfCourseMedia() {
       limit,
       course_id: course.id,
       media_type: mediaType,
+      ...(sortState.sort_by ? { sort_by: sortState.sort_by, order: sortState.order } : {}),
     });
     if (res?.status) {
       setRows(res.result || []);
@@ -79,7 +82,7 @@ export default function GolfCourseMedia() {
       toast("Oops!", res?.message || "Failed to load media.");
     }
     setIsLoading(false);
-  }, [course?.id, limit, mediaType, page]);
+  }, [course?.id, limit, mediaType, page, sortState.order, sortState.sort_by]);
 
   useEffect(() => {
     if (!course?.id) {
@@ -179,6 +182,11 @@ export default function GolfCourseMedia() {
 
   const totalPages = Math.max(1, Math.ceil((count || 0) / limit));
 
+  const handleSortChange = (next) => {
+    setSortState(next);
+    setPage(1);
+  };
+
   return (
     <div className="admin-page-container">
       <div className="page-header">
@@ -203,6 +211,16 @@ export default function GolfCourseMedia() {
       <div className="page-body">
         <div className="content-card">
           <div className="content-card-body">
+            <ListSortFilter
+              value={sortState}
+              onChange={handleSortChange}
+              options={[
+                { value: "title", label: "Title" },
+                { value: "sort_order", label: "Sort Order" },
+                { value: "created_at", label: "Created Date" },
+                { value: "updated_at", label: "Updated Date" },
+              ]}
+            />
             <div className="table-responsive">
               <table className="table modern-table">
                 <thead>

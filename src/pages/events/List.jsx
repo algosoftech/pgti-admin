@@ -368,9 +368,25 @@ export default function EventList() {
         enableHiding: true,
       },
       {
+        accessorKey: "course_name_display",
+        header: "Course",
+        cell: ({ row }) => (
+          <span
+            title={row.original?.course_name_display || row.original?.legacy_course_name || ""}
+            style={{ fontSize: 12, background: "#f8fafc", color: "#334155", padding: "3px 8px", borderRadius: 6 }}
+          >
+            {row.original?.course_name_display || row.original?.legacy_course_name || "N/A"}
+          </span>
+        ),
+        size: 220,
+        enableSorting: true,
+        enableColumnFilter: false,
+        enableHiding: true,
+      },
+      {
         accessorKey: "season",
         header: "Season",
-        cell: ({ getValue }) => getValue() || "N/A",
+        cell: ({ row }) => row.original?.season_display || row.original?.season_year || row.original?.season || "N/A",
         size: 100,
         enableSorting: true,
         enableColumnFilter: false,

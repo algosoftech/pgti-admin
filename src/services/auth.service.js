@@ -1,6 +1,7 @@
 import { extractApiError } from 'utils/apiError';
 import { postRequest, getRequest } from 'services/api';
 import { encryptData } from 'utils/encryption';
+import { clearAdminAuthStorage, markAdminActivity, setAdminStorageItem } from 'utils/adminAuthStorage';
 
 const _u = process.env.REACT_APP_API_BASE_URL || '';
 const BASE = _u.endsWith('/') ? _u.slice(0, -1) : _u;
@@ -30,13 +31,14 @@ export const verifyLoginOtp = async (options) => {
         const res = await postRequest({ url: `${BASE}/admin/auth/verify-otp`, postData: options });
         if (res?.status === 200 && res?.data?.status) {
             const result = res.data.response.result;
-            sessionStorage.setItem('TOKEN', result.token);
-            sessionStorage.setItem('ADMIN-INFO', JSON.stringify(result));
+            setAdminStorageItem('TOKEN', result.token);
+            setAdminStorageItem('ADMIN-INFO', JSON.stringify(result));
+            markAdminActivity();
 
             const permissions = res.data.response?.permissions || res.data.response?.permission;
             if (permissions) {
                 const encodedData = await encryptData(JSON.stringify(permissions));
-                sessionStorage.setItem('ADMIN-PERMISSION', JSON.stringify(encodedData));
+                setAdminStorageItem('ADMIN-PERMISSION', JSON.stringify(encodedData));
             }
             return { status: true, message: `Welcome Back! ${result.name}` };
         }
@@ -52,7 +54,7 @@ export const logout = async () => {
     } catch (_) {
         // ignore
     } finally {
-        sessionStorage.clear();
+        clearAdminAuthStorage();
     }
     return { status: true, message: "Success" };
 };

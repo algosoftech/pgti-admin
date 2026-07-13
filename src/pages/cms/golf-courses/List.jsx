@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 
 import TopNavbar from "components/layout/TopNavbar";
 import EnhancedTable from "components/table/EnhancedTable/EnhancedTable";
+import ListSortFilter from "components/common/ListSortFilter";
 import { usePermissions } from "contexts/PermissionContext";
 import {
   changeGolfCourseStatus,
@@ -47,6 +48,7 @@ export default function GolfCoursesList() {
     name: "",
     detail_preview: "",
   });
+  const [sortState, setSortState] = useState({ sort_by: "", order: "asc" });
 
   const canEdit = isSuperAdmin || permission?.add_edit === "Y" || permission?.fullAccess === "Y";
   const canStatus = isSuperAdmin || permission?.change_status === "Y" || permission?.fullAccess === "Y";
@@ -73,6 +75,7 @@ export default function GolfCoursesList() {
           ...(activeTab === "A" || activeTab === "I" ? { status: activeTab } : {}),
           ...(activeTab === "F" ? { tour_type: "F" } : {}),
         },
+        ...(sortState.sort_by ? { sort_by: sortState.sort_by, order: sortState.order } : {}),
       });
 
       if (response?.status) {
@@ -83,7 +86,7 @@ export default function GolfCoursesList() {
       }
       setIsLoading(false);
     },
-    [activeTab, currentPage, limit, serverColumnFilters.detail_preview, serverColumnFilters.name]
+    [activeTab, currentPage, limit, serverColumnFilters.detail_preview, serverColumnFilters.name, sortState.order, sortState.sort_by]
   );
 
   useEffect(() => {
@@ -100,6 +103,11 @@ export default function GolfCoursesList() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (next) => {
+    setSortState(next);
     setCurrentPage(1);
   };
 
@@ -341,6 +349,16 @@ export default function GolfCoursesList() {
         </div>
 
         <div className="content-card-body">
+          <ListSortFilter
+            value={sortState}
+            onChange={handleSortChange}
+            options={[
+              { value: "name", label: "Golf Course" },
+              { value: "sort_order", label: "Sort Order" },
+              { value: "created_at", label: "Created Date" },
+              { value: "updated_at", label: "Updated Date" },
+            ]}
+          />
           <EnhancedTable
             data={rows}
             columns={columns}

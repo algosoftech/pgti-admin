@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { list, usersChangeStatus, deletePlayer } from 'services/users.service';
+import { list, usersChangeStatus, usersChangeRestriction, deletePlayer } from 'services/users.service';
 import { getPage } from 'utils/common';
 
 export const fetchUsersList = createAsyncThunk(
@@ -11,7 +11,7 @@ export const fetchUsersList = createAsyncThunk(
         return {
           data: listData?.result || [],
           count: listData?.count || 0,
-          stats: listData?.stats || { total: listData?.count || 0, active: 0, inactive: 0, alumni: 0 },
+          stats: listData?.stats || { total: listData?.count || 0, active: 0, inactive: 0, restricted: 0, alumni: 0 },
           totalPages: getPage(listData?.count || 1, options?.limit || 10),
         };
       }
@@ -31,6 +31,21 @@ export const changeUserStatus = createAsyncThunk(
         return { id: payload.id, status: payload.status };
       }
       return rejectWithValue(res?.message || 'Failed to change status');
+    } catch (error) {
+      return rejectWithValue(error.message || 'Operation failed');
+    }
+  }
+);
+
+export const changeUserRestriction = createAsyncThunk(
+  'users/changeUserRestriction',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const res = await usersChangeRestriction({ id: payload.id, is_restricted: payload.is_restricted });
+      if (res.status === true) {
+        return { id: payload.id, is_restricted: payload.is_restricted };
+      }
+      return rejectWithValue(res?.message || 'Failed to update restriction');
     } catch (error) {
       return rejectWithValue(error.message || 'Operation failed');
     }
@@ -61,7 +76,7 @@ const initialState = {
   limit: 10,
   skip: 0,
   count: 0,
-  stats: { total: 0, active: 0, inactive: 0, alumni: 0 },
+  stats: { total: 0, active: 0, inactive: 0, restricted: 0, alumni: 0 },
   filter: { from: '', to: '', filter_by: '', search: '' },
   showRequest: '',
 };
@@ -123,6 +138,15 @@ const usersSlice = createSlice({
         if (idx !== -1) state.listData[idx].status = action.payload.status;
       })
       .addCase(changeUserStatus.rejected, (state, action) => {
+        state.error = action.payload;
+      });
+
+    builder
+      .addCase(changeUserRestriction.fulfilled, (state, action) => {
+        const idx = state.listData.findIndex((u) => u.id === action.payload.id);
+        if (idx !== -1) state.listData[idx].is_restricted = action.payload.is_restricted;
+      })
+      .addCase(changeUserRestriction.rejected, (state, action) => {
         state.error = action.payload;
       });
 

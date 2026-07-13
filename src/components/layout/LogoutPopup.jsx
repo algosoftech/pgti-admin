@@ -4,6 +4,7 @@ import Dialog from "@mui/material/Dialog";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightFromBracket, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { logout } from 'services/auth.service';
+import { clearAdminAuthStorage } from "utils/adminAuthStorage";
 
 const LogoutConformationPopup = ({ popUpOpen, togglePopUp }) => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const LogoutConformationPopup = ({ popUpOpen, togglePopUp }) => {
     if (res.status === true) {
       navigate('/');
     } else {
-      sessionStorage.clear();
+      clearAdminAuthStorage();
       navigate('/');
     }
   };

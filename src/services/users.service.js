@@ -62,6 +62,19 @@ export const usersChangeStatus = async (options = {}) => {
     }
 };
 
+export const usersChangeRestriction = async (options = {}) => {
+    try {
+        const { id, is_restricted } = options;
+        const res = await postRequest({ url: `${BASE}/admin/users/restriction`, postData: { id, is_restricted } });
+        if (res?.status === 200 && res?.data?.status) {
+            return { status: true, result: res?.data?.response?.result };
+        }
+        return { status: false, message: extractApiError(res, 'Failed to update restriction') };
+    } catch (error) {
+        return { status: false, message: error.message || 'Request failed' };
+    }
+};
+
 export const deletePlayer = async (options = {}) => {
     try {
         const res = await postRequest({ url: `${BASE}/admin/users/delete`, postData: options });

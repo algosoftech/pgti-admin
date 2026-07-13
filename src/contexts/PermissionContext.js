@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { decryptData } from 'utils/encryption';
+import { getAdminStorageItem } from "utils/adminAuthStorage";
 
 // Context
 const PermissionContext = createContext(undefined);
@@ -7,7 +8,7 @@ export { PermissionContext };
 
 const getStoredAdminInfo = () => {
     try {
-        const userRaw = sessionStorage.getItem("ADMIN-INFO");
+        const userRaw = getAdminStorageItem("ADMIN-INFO");
         return userRaw ? JSON.parse(userRaw) : null;
     } catch {
         return null;
@@ -22,8 +23,8 @@ export const PermissionProvider = ({ children }) => {
 
     const fetchPermissions = async () => {
         try {
-            const userRaw = sessionStorage.getItem("ADMIN-INFO");
-            const encryptedRaw = sessionStorage.getItem("ADMIN-PERMISSION");
+            const userRaw = getAdminStorageItem("ADMIN-INFO");
+            const encryptedRaw = getAdminStorageItem("ADMIN-PERMISSION");
 
             const user = userRaw ? JSON.parse(userRaw) : null;
             const encrypted = encryptedRaw ? JSON.parse(encryptedRaw) : null;

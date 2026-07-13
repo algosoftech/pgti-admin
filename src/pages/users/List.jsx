@@ -3,7 +3,7 @@ import { Dropdown, notification, Modal } from "antd";
 import {
   faEdit, faEye, faThumbsUp, faThumbsDown,
   faPlus, faRefresh, faTrash, faEllipsis, faKey,
-  faUsers, faUserCheck, faUserXmark, faUserGraduate,
+  faUsers, faUserCheck, faUserXmark, faUserGraduate, faBan,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Top_navbar from "components/layout/TopNavbar";
@@ -19,7 +19,7 @@ import "styles/admin-pages.css";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import ListingBannerPreviewModal from "components/cms/ListingBannerPreviewModal";
 import {
-  fetchUsersList, changeUserStatus, deletePlayerAction,
+  fetchUsersList, changeUserStatus, changeUserRestriction, deletePlayerAction,
   setCurrentPage, setLimit, setShowRequest,
 } from "store/slices/users.slice";
 import { getPlayersListingBanner, resetPlayerPassword } from "services/users.service";
@@ -160,6 +160,41 @@ export default function UsersList() {
     }
   };
 
+  const handleChangeRestriction = (item) => {
+    const nextRestricted = !item?.is_restricted;
+    Modal.confirm({
+      title: nextRestricted ? "Restrict this player?" : "Remove player restriction?",
+      icon: <ExclamationCircleOutlined />,
+      content: nextRestricted
+        ? `Player: ${item?.full_name || item?.name || "Unknown"} will not be able to login or access player portal functionality.`
+        : `Player: ${item?.full_name || item?.name || "Unknown"} will be allowed to login again if the account is active.`,
+      okText: nextRestricted ? "Yes, Restrict" : "Yes, Remove Restriction",
+      okType: nextRestricted ? "danger" : "primary",
+      cancelText: "Cancel",
+      onOk: async () => {
+        try {
+          await dispatch(changeUserRestriction({ id: item.id, is_restricted: nextRestricted })).unwrap();
+          notification.open({
+            message: "Success",
+            description: nextRestricted ? "Player restricted successfully." : "Player restriction removed successfully.",
+            placement: "topRight",
+            icon: <CheckCircleOutlined style={{ color: "green" }} />,
+            duration: 2,
+          });
+          getList();
+        } catch (err) {
+          notification.open({
+            message: "Oops!",
+            description: err || "Failed to update restriction.",
+            placement: "topRight",
+            icon: <InfoCircleOutlined style={{ color: "red" }} />,
+            duration: 2,
+          });
+        }
+      },
+    });
+  };
+
   const handleDelete = (item) => {
     Modal.confirm({
       title: "Delete this player account?",
@@ -221,6 +256,15 @@ export default function UsersList() {
             <FontAwesomeIcon icon={faThumbsUp} /><span>Activate</span>
           </button>
         )
+      )}
+      {canStatus && (
+        <button
+          className={`action-dropdown-item ${item?.is_restricted ? "" : "danger"}`}
+          onClick={() => handleChangeRestriction(item)}
+        >
+          <FontAwesomeIcon icon={item?.is_restricted ? faThumbsUp : faBan} />
+          <span>{item?.is_restricted ? "Remove Restriction" : "Restrict Player"}</span>
+        </button>
       )}
       {canDelete && (
         <button className="action-dropdown-item danger" onClick={() => handleDelete(item)}>
@@ -334,6 +378,16 @@ export default function UsersList() {
       cell: ({ row }) => {
         const s = row.original.status;
         const map = { A: ["active", "Active"], I: ["inactive", "Inactive"] };
+        if (row.original.is_restricted) {
+          return (
+            <span
+              className="status-badge"
+              style={{ background: "#fff1f2", color: "#be123c", borderColor: "#fecdd3" }}
+            >
+              Restricted
+            </span>
+          );
+        }
         if (row.original.is_alumni) {
           return (
             <span
@@ -476,6 +530,7 @@ export default function UsersList() {
         <StatCard icon={faUsers}        label="Total Players"    value={stats?.total ?? count} color="#1d4ed8" />
         <StatCard icon={faUserCheck}    label="Active Players"   value={stats?.active ?? 0}    color="#16a34a" />
         <StatCard icon={faUserXmark}    label="Inactive Players" value={stats?.inactive ?? 0}  color="#dc2626" />
+        <StatCard icon={faBan}          label="Restricted Players" value={stats?.restricted ?? 0} color="#be123c" />
         <StatCard icon={faUserGraduate} label="Alumni Players"   value={stats?.alumni ?? 0}    color="#7c3aed" />
       </div>
 
@@ -486,6 +541,7 @@ export default function UsersList() {
               { key: "all", label: "All Players" },
               { key: "A",   label: "Active" },
               { key: "I",   label: "Inactive" },
+              { key: "restricted", label: "Restricted Players" },
               { key: "alumni", label: "Alumni" },
             ].map(t => (
               <button key={t.key} className={`tab-item ${activeTab === t.key ? "active" : ""}`} onClick={() => handleTabChange(t.key)}>

@@ -1,11 +1,11 @@
 import axios from "axios";
 import { decryptData } from 'utils/encryption';
+import { clearAdminAuthStorage, getAdminStorageItem } from 'utils/adminAuthStorage';
 
 const REACT_APP_API_KEY = process.env.REACT_APP_API_KEY;
 
 const redirectToAdminLogin = () => {
-    sessionStorage.removeItem('TOKEN');
-    sessionStorage.removeItem('ADMIN-INFO');
+    clearAdminAuthStorage();
     if (typeof window !== 'undefined' && window.location.pathname !== '/admin/login') {
         window.location.replace('/admin/login');
     }
@@ -40,7 +40,7 @@ const maybeDecrypt = async (res) => {
 export const getRequest = async (options) => {
     try {
         const { url } = options;
-        const token = sessionStorage.getItem('TOKEN');
+        const token = getAdminStorageItem('TOKEN');
         const headers = { Authorization: `Bearer ${token}` };
         const response = await axios.get(url, { headers });
         if (response?.status !== 200) return false;
@@ -62,7 +62,7 @@ export const getRequest = async (options) => {
 export const postRequest = async (options, cancelToken = {}) => {
     try {
         const { url, postData = {} } = options;
-        const token = sessionStorage.getItem('TOKEN');
+        const token = getAdminStorageItem('TOKEN');
         const headers = { Authorization: `Bearer ${token}` };
         const config = { headers };
         if (cancelToken?.token) config.cancelToken = cancelToken.token;

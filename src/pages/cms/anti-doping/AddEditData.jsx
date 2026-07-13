@@ -403,6 +403,12 @@ export default function AntiDopingAddEditData() {
       ),
     }));
 
+  const updateTabName = (tabIdx, value) =>
+    setMembersSection((f) => ({
+      ...f,
+      tabs: f.tabs.map((tab, ti) => (ti === tabIdx ? { ...tab, tab_name: value } : tab)),
+    }));
+
   const addMember = (tabIdx) =>
     setMembersSection((f) => ({
       ...f,
@@ -632,6 +638,19 @@ export default function AntiDopingAddEditData() {
                       </span>
                     </button>
                   ))}
+                </div>
+
+                <div className="form-group" style={{ maxWidth: 420, marginBottom: 18 }}>
+                  <label className="form-label required">Active Tab Label</label>
+                  <input
+                    className="form-input"
+                    value={membersSection.tabs[activeTab]?.tab_name || ""}
+                    onChange={(e) => updateTabName(activeTab, e.target.value)}
+                    placeholder="e.g. Committees, Team, Hearing Panel"
+                  />
+                  <small style={{ color: "#64748b", display: "block", marginTop: 6 }}>
+                    The frontend response also exposes this tab as a matching key, for example Team becomes team[].
+                  </small>
                 </div>
 
                 {/* Members for active tab */}

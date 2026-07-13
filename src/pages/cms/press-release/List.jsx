@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import Top_navbar from "components/layout/TopNavbar";
 import ListingBannerPreviewModal from "components/cms/ListingBannerPreviewModal";
 import EnhancedTable from "components/table/EnhancedTable/EnhancedTable";
+import ListSortFilter from "components/common/ListSortFilter";
 import { usePermissions } from "contexts/PermissionContext";
 import { changePressReleaseStatus, deletePressRelease, getPressReleaseListingBanner, listPressRelease } from "services/pressRelease.service";
 import { getTourTypeLabel } from "utils/tourType";
@@ -61,6 +62,7 @@ export default function PressReleaseList() {
     title: "",
     event_title: "",
   });
+  const [sortState, setSortState] = useState({ sort_by: "", order: "asc" });
   const [listingBanner, setListingBanner] = useState(null);
   const [bannerPreviewOpen, setBannerPreviewOpen] = useState(false);
 
@@ -88,6 +90,7 @@ export default function PressReleaseList() {
         ...(activeTab === "A" || activeTab === "I" ? { status: activeTab } : {}),
         ...(activeTab === "F" ? { tour_type: "F" } : {}),
       },
+      ...(sortState.sort_by ? { sort_by: sortState.sort_by, order: sortState.order } : {}),
     });
 
     if (response?.status) {
@@ -97,7 +100,7 @@ export default function PressReleaseList() {
       toast("Oops!", response?.message || "Failed to load press release items.");
     }
     setIsLoading(false);
-  }, [activeTab, currentPage, limit, serverColumnFilters.event_title, serverColumnFilters.title]);
+  }, [activeTab, currentPage, limit, serverColumnFilters.event_title, serverColumnFilters.title, sortState.order, sortState.sort_by]);
 
   const handleEdit = (item = {}) => {
     const state = item?.id ? item : { tour_type: activeTab === "F" ? "F" : "M" };
@@ -171,6 +174,11 @@ export default function PressReleaseList() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (next) => {
+    setSortState(next);
     setCurrentPage(1);
   };
 
@@ -395,6 +403,18 @@ export default function PressReleaseList() {
         </div>
 
         <div className="content-card-body">
+          <ListSortFilter
+            value={sortState}
+            onChange={handleSortChange}
+            options={[
+              { value: "title", label: "Title" },
+              { value: "event_title", label: "Tournament" },
+              { value: "season", label: "Season" },
+              { value: "press_release_month", label: "Month" },
+              { value: "sort_order", label: "Sort Order" },
+              { value: "created_at", label: "Created Date" },
+            ]}
+          />
           <EnhancedTable
             data={rows}
             columns={columns}

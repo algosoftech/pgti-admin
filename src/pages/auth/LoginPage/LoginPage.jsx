@@ -6,6 +6,7 @@ import { notification } from "antd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { faEyeSlash, faEye} from '@fortawesome/free-solid-svg-icons';
+import { getAdminStorageItem } from "utils/adminAuthStorage";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -13,8 +14,8 @@ const LoginPage = () => {
     email: useRef(null),
     password: useRef(null),
   };
-  const ADMINDATA = JSON.parse(sessionStorage.getItem("ADMIN-INFO"));
-  const TOKEN = sessionStorage.getItem("TOKEN");
+  const ADMINDATA = JSON.parse(getAdminStorageItem("ADMIN-INFO") || "null");
+  const TOKEN = getAdminStorageItem("TOKEN");
   const [formData, setFormData] = useState({
     email: sessionStorage.getItem("LOGIN_EMAIL")
       ? atob(sessionStorage.getItem("LOGIN_EMAIL"))

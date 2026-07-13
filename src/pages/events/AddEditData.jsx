@@ -23,6 +23,16 @@ import "styles/admin-pages.css";
 
 const { Option } = Select;
 const TOUR_FORMAT_OPTIONS = ["None", "Stroke Play", "Match Play", "Stableford"];
+const isFourDigitYear = (value) => /^\d{4}$/.test(String(value || "").trim());
+
+const getDisplaySeasonYear = (record = {}) => {
+  const seasonYear = record?.season_year?.toString().trim();
+  const season = record?.season?.toString().trim();
+  if (isFourDigitYear(seasonYear)) return seasonYear;
+  if (isFourDigitYear(season)) return season;
+  const sourceDate = record?.event_start || record?.event_date || record?.created_at;
+  return sourceDate && dayjs(sourceDate).isValid() ? String(dayjs(sourceDate).year()) : "";
+};
 
 const EventAddEditPage = () => {
   const navigate = useNavigate();
@@ -299,7 +309,7 @@ const yearOptions = Array.from(
         legacy_course_id: ADDEDITDATA?.legacy_course_id?.trim() || "",
         legacy_course_name: ADDEDITDATA?.legacy_course_name?.trim() || "",
         course_venue: ADDEDITDATA?.course_venue?.trim() || ADDEDITDATA?.location?.trim() || "",
-        season_year: ADDEDITDATA?.season_year?.toString().trim() || "",
+        season_year: getDisplaySeasonYear(ADDEDITDATA),
         tour_money: ADDEDITDATA?.tour_money?.trim() || "",
         tour_format: ADDEDITDATA?.tour_format?.trim() || "None",
         pro_am_start_date: ADDEDITDATA?.pro_am_start_date || null,
@@ -470,7 +480,7 @@ const yearOptions = Array.from(
       style={{ width: "100%" }}
       optionFilterProp="label"
       options={yearOptions}
-      value={ADDEDITDATA?.season_year || ADDEDITDATA?.season || ""}
+      value={getDisplaySeasonYear(ADDEDITDATA)}
       onChange={(value) => {
         // Simulates the original event structural payload for your handleChange function
         handleChange({
@@ -481,6 +491,9 @@ const yearOptions = Array.from(
         });
       }}
     />
+    {ADDEDITDATA?.legacy_season_code && ADDEDITDATA.legacy_season_code !== getDisplaySeasonYear(ADDEDITDATA) && (
+      <FieldHint text={`Legacy season code from old website: ${ADDEDITDATA.legacy_season_code}`} />
+    )}
   </div>
 </div>
 

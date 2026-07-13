@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import Top_navbar from "components/layout/TopNavbar";
 import ListingBannerPreviewModal from "components/cms/ListingBannerPreviewModal";
 import EnhancedTable from "components/table/EnhancedTable/EnhancedTable";
+import ListSortFilter from "components/common/ListSortFilter";
 import { usePermissions } from "contexts/PermissionContext";
 import { changeGalleryStatus, deleteGallery, getGalleryListingBanner, listGallery } from "services/gallery.service";
 import { getTourTypeLabel } from "utils/tourType";
@@ -61,6 +62,7 @@ export default function GalleryList() {
     title: "",
     event_title: "",
   });
+  const [sortState, setSortState] = useState({ sort_by: "", order: "asc" });
   const [listingBanner, setListingBanner] = useState(null);
   const [bannerPreviewOpen, setBannerPreviewOpen] = useState(false);
 
@@ -95,6 +97,7 @@ export default function GalleryList() {
         ...(activeTab === "A" || activeTab === "I" ? { status: activeTab } : {}),
         ...(activeTab === "F" ? { tour_type: "F" } : {}),
       },
+      ...(sortState.sort_by ? { sort_by: sortState.sort_by, order: sortState.order } : {}),
     });
 
     if (response?.status) {
@@ -171,6 +174,11 @@ export default function GalleryList() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (next) => {
+    setSortState(next);
     setCurrentPage(1);
   };
 
@@ -349,7 +357,7 @@ export default function GalleryList() {
     }, 350);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, limit, activeTab, serverColumnFilters.title, serverColumnFilters.event_title]);
+  }, [currentPage, limit, activeTab, serverColumnFilters.title, serverColumnFilters.event_title, sortState.sort_by, sortState.order]);
 
   useEffect(() => {
     loadListingBanner();
@@ -399,6 +407,18 @@ export default function GalleryList() {
         </div>
 
         <div className="content-card-body">
+          <ListSortFilter
+            value={sortState}
+            onChange={handleSortChange}
+            options={[
+              { value: "title", label: "Title" },
+              { value: "event_title", label: "Tournament" },
+              { value: "season", label: "Season" },
+              { value: "gallery_month", label: "Month" },
+              { value: "sort_order", label: "Sort Order" },
+              { value: "created_at", label: "Created Date" },
+            ]}
+          />
           <EnhancedTable
             data={rows}
             columns={columns}
