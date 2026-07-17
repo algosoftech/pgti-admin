@@ -14,7 +14,7 @@ export const LIMITS = {
   description:       { min: 100, max: 15000 },
   question:          { min: 10,  max: 200 },
   answer:            { min: 20,  max: 1500 },
-  about_info:        { min: 50,  max: 2000 },
+  about_info:        { min: 50,  max: 15000 },
   notes:             { min: 0,   max: 500 },
   subject:           { min: 5,   max: 200 },
   tags:              { min: 0,   max: 200 },

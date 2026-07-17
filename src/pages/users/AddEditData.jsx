@@ -94,6 +94,24 @@ const normalizeEditorValue = (value = "") => {
   return normalized === "<p><br></p>" ? "" : normalized;
 };
 
+const resolveAboutInfo = (player = {}) => {
+  const directValue = normalizeEditorValue(player.about_info || player.bio || "");
+  if (directValue) return directValue;
+
+  if (!Array.isArray(player.career_highlights)) return "";
+
+  return player.career_highlights
+    .map((highlight) => {
+      if (typeof highlight === "string") return normalizeEditorValue(highlight);
+      return normalizeEditorValue(
+        highlight?.content || highlight?.description || highlight?.text || highlight?.title || ""
+      );
+    })
+    .filter(Boolean)
+    .map((highlight) => (/^<[^>]+>/.test(highlight) ? highlight : `<p>${highlight}</p>`))
+    .join("");
+};
+
 const buildInitialPlayerState = (player = {}) => ({
   ...{
     full_name: "",
@@ -144,6 +162,7 @@ const buildInitialPlayerState = (player = {}) => ({
   mobile_country_code: resolveCountryCode(player),
   nationality: player.nationality || "Indian",
   country: player.country || player.nationality || "Indian",
+  about_info: resolveAboutInfo(player),
   is_alumni: Boolean(player.is_alumni),
 });
 
