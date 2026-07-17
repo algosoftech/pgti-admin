@@ -46,6 +46,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { addeditdata, getPermission } from "services/accounts.service";
 import LoadingEffect from "components/ui/Loading/LoadingEffect";
 import "styles/admin-pages.css";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const PERM_LABELS = {
   list: { label: "View / List", desc: "Browse and search records" },
@@ -81,6 +82,7 @@ const MODULE_GROUPS = [
     icon: faBookOpen,
     children: [
       { key: "homepage_settings", label: "Homepage Settings", icon: faHouse, perms: ["list", "add_edit"] },
+      { key: "header_nav", label: "Header Navigation", icon: faBars, perms: ["list", "add_edit"] },
       { key: "about_us", label: "About Us", icon: faCircleInfo, perms: ["list", "add_edit"] },
       { key: "anti_doping", label: "Anti-Doping", icon: faShieldHalved, perms: ["list", "add_edit"] },
       { key: "contact_us", label: "Contact Us", icon: faPhone, perms: ["list", "add_edit"] },

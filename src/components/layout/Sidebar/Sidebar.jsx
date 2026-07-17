@@ -26,6 +26,7 @@ import {
   faUsers,
   faVideo,
   faBookOpen,
+  faBars,
   faXmark,
   faArrowsRotate,
   faBell,
@@ -235,6 +236,7 @@ const Sidebar = ({ children }) => {
 
   const cmsItems = [
     { check: hasAccess("homepage_settings") || hasAccess("FULL"), to: "/admin/cms/homepage/list", icon: faHouse, name: "Homepage Settings" },
+    { check: hasAccess("header_nav"), to: "/admin/cms/header-nav/list", icon: faBars, name: "Header Navigation" },
     { check: hasAccess("about_us"), to: "/admin/cms/about-us/list", icon: faBookOpen, name: "About Us" },
     { check: hasAccess("anti_doping"), to: "/admin/cms/anti-doping/list", icon: faShieldHalved, name: "Anti-Doping" },
     { check: hasAccess("contact_us"), to: "/admin/cms/contact-us/list", icon: faPhone, name: "Contact Us" },

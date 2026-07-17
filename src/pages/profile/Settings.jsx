@@ -45,6 +45,10 @@ const MODULE_META = {
     label: "Homepage Settings",
     description: "Update homepage sections, banners, rankings, and highlighted content.",
   },
+  header_nav: {
+    label: "Header Navigation",
+    description: "Configure the site title and header menu items for the public navigation.",
+  },
   about_us: {
     label: "About Us",
     description: "Edit About Us page sections, values, milestones, and vision content.",

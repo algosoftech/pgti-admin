@@ -85,6 +85,8 @@ import FooterCmsAddEditData from "pages/cms/footer/AddEditData";
 
 import HomepageSettingsList from "pages/cms/homepage/List";
 import HomepageSettingsAddEdit from "pages/cms/homepage/AddEditData";
+import HeaderNavList from "pages/cms/header-nav/List";
+import HeaderNavAddEditData from "pages/cms/header-nav/AddEditData";
 import GalleryList from "pages/cms/gallery/List";
 import GalleryAddEditData from "pages/cms/gallery/AddEditData";
 import GalleryListingBanner from "pages/cms/gallery/ListingBanner";
@@ -142,6 +144,8 @@ const AppRoutes = () => (
     {/* Admin – CMS: Homepage Settings */}
     <Route path="/admin/cms/homepage/list" element={<AdminLayout><HomepageSettingsList /></AdminLayout>} />
     <Route path="/admin/cms/homepage/addeditdata" element={<AdminLayout><HomepageSettingsAddEdit /></AdminLayout>} />
+    <Route path="/admin/cms/header-nav/list" element={<AdminLayout><HeaderNavList /></AdminLayout>} />
+    <Route path="/admin/cms/header-nav/addeditdata" element={<AdminLayout><HeaderNavAddEditData /></AdminLayout>} />
     <Route path="/admin/cms/gallery/list" element={<AdminLayout><GalleryList /></AdminLayout>} />
     <Route path="/admin/cms/gallery/addeditdata" element={<AdminLayout><GalleryAddEditData /></AdminLayout>} />
     <Route path="/admin/cms/gallery/listing-banner" element={<AdminLayout><GalleryListingBanner /></AdminLayout>} />
