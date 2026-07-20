@@ -10,7 +10,7 @@ import React from 'react';
 /* ── Character limits ────────────────────────────────────────────────────── */
 export const LIMITS = {
   title:             { min: 5,   max: 150 },
-  short_description: { min: 50,  max: 300 },
+  short_description: { min: 50,  max: 500 },
   description:       { min: 100, max: 15000 },
   question:          { min: 10,  max: 200 },
   answer:            { min: 20,  max: 1500 },
