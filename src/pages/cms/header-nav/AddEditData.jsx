@@ -33,7 +33,7 @@ const parseContent = (raw) => {
     return {
       menu_items: items.map((item, index) => ({
         id: item?.id ? Number(item.id) : null,
-        title: String(item?.title || "").trim(),
+        title: String(item?.title || ""),
         slug: String(item?.slug || "").trim(),
         parent_id: item?.parent_id !== undefined && item?.parent_id !== null && item?.parent_id !== ""
           ? Number(item.parent_id)
@@ -52,7 +52,7 @@ const parseContent = (raw) => {
 const normalizeMenuItems = (items) => {
   const mapped = items.map((item, index) => ({
     id: item.id ? Number(item.id) : null,
-    title: String(item.title || "").trim(),
+    title: String(item.title || ""),
     slug: String(item.slug || "").trim(),
     parent_id: item.parent_id === "" || item.parent_id === null || item.parent_id === undefined
       ? null
@@ -238,9 +238,9 @@ export default function HeaderNavAddEditData() {
       return;
     }
 
-    const invalidItem = menuItems.find((item) => !item.title.trim() || !item.slug.trim());
+    const invalidItem = menuItems.find((item) => !item.title);
     if (invalidItem) {
-      notification.error({ message: "Each menu item requires a title and slug." });
+      notification.error({ message: "Each menu item requires a title." });
       return;
     }
 
@@ -271,10 +271,50 @@ export default function HeaderNavAddEditData() {
       setIsLoading(false);
     }
   };
+const handleCopyToNextGen = async () => {
+  try {
+    setIsFetching(true);
+    // Fetch the navigation data belonging to the Main Tour ('M')
+    const res = await listHeaderNav({ tour_type: "M" });
+    if (res?.status) {
+      const mainRecord = res.result || {};
+      const mainItems = parseContent(mainRecord.content || mainRecord).menu_items || [];
+      
+      if (mainItems.length === 0) {
+        notification.warning({ message: "No menu items found in Main Tour to copy." });
+        setIsFetching(false);
+        return;
+      }
 
+      // Deep copy the main tour items while generating fresh IDs to avoid frontend React conflicts
+      const idMapping = {};
+      
+      // Step 1: Pre-generate new IDs for all copied items
+      mainItems.forEach(item => {
+        idMapping[item.id] = Date.now() + Math.floor(Math.random() * 10000) + Math.random();
+      });
+
+      const duplicatedItems = mainItems.map(item => ({
+        ...item,
+        id: idMapping[item.id],
+        // Re-map the parent_id relation using the newly assigned parent ID mapping
+        parent_id: item.parent_id ? idMapping[item.parent_id] : null,
+      }));
+
+      setMenuItems(duplicatedItems);
+      notification.success({ message: "Successfully cloned navigation items from Main Tour!" });
+    } else {
+      notification.error({ message: "Failed to fetch Main Tour data for cloning." });
+    }
+  } catch (error) {
+    notification.error({ message: "An error occurred while copying Main Tour data." });
+  } finally {
+    setIsFetching(false);
+  }
+};
   return (
     <div className="admin-page-container">
-      <div className="page-header">
+      {/* <div className="page-header">
         <div className="d-flex justify-content-between align-items-center">
           <div>
             <h1 className="page-title">{id ? "Edit Header Navigation" : "Setup Header Navigation"}</h1>
@@ -286,8 +326,32 @@ export default function HeaderNavAddEditData() {
             </button>
           </Link>
         </div>
-      </div>
-
+      </div> */}
+<div className="page-header">
+  <div className="d-flex justify-content-between align-items-center">
+    <div>
+      <h1 className="page-title">{id ? "Edit Header Navigation" : "Setup Header Navigation"}</h1>
+      <p className="page-subtitle">Configure header menu items shown in the public header.</p>
+    </div>
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+  {(tourType === "F" || state?.tour_type === "F" || state?.result?.tour_type === "F") && (
+  <button 
+    type="button" 
+    className="action-button secondary" 
+   
+    onClick={handleCopyToNextGen}
+  >
+    Copy from Main Tour
+  </button>
+)}
+      <Link to="/admin/cms/header-nav/list">
+        <button className="action-button secondary" type="button">
+          <ArrowLeftOutlined /> Back to Header Navigation
+        </button>
+      </Link>
+    </div>
+  </div>
+</div>
       {isFetching ? (
         <div className="content-card">
           <div className="content-card-body text-center" style={{ padding: 40, color: "#64748b" }}>
@@ -409,7 +473,7 @@ export default function HeaderNavAddEditData() {
                             onChange={(e) => handleItemChange(item.id, "slug", e.target.value)} 
                             placeholder="URL Path (e.g. /tours)" 
                             style={{ flex: 1, fontSize: 13, padding: "6px 10px", margin: 0 }} 
-                            required
+                           
                           />
 
                           {/* Inline Parent Indicator or "+ Sub-item" trigger */}
