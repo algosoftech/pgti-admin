@@ -470,9 +470,15 @@ const handleCopyToNextGen = async () => {
                           <input 
                             className="form-input" 
                             value={item.slug} 
-                            onChange={(e) => handleItemChange(item.id, "slug", e.target.value)} 
-                            placeholder="URL Path (e.g. /tours)" 
-                            style={{ flex: 1, fontSize: 13, padding: "6px 10px", margin: 0 }} 
+                            readOnly
+  style={{
+    flex: 1,
+    fontSize: 13,
+    padding: "6px 10px",
+    margin: 0,
+    backgroundColor: "#f5f5f5",
+    cursor: "not-allowed",
+  }}
                            
                           />
 
