@@ -13,6 +13,8 @@ import {
   UpOutlined,
   SaveOutlined,
   AppstoreOutlined,
+   ArrowUpOutlined,
+  ArrowDownOutlined,
 } from "@ant-design/icons";
 import { Link, useLocation } from "react-router-dom";
 import ReactQuill from "react-quill";
@@ -598,6 +600,40 @@ export default function AboutUsAddEditData() {
     setOpenMembers((prev) => prev.map((isOpen, i) => (i === index ? !isOpen : isOpen)));
   };
 
+  const moveMemberUp = (index) => {
+  if (index === 0) return;
+
+  setTeam((prev) => {
+    const members = [...prev.members];
+    [members[index - 1], members[index]] = [members[index], members[index - 1]];
+    return { ...prev, members };
+  });
+
+  setOpenMembers((prev) => {
+    const open = [...prev];
+    [open[index - 1], open[index]] = [open[index], open[index - 1]];
+    return open;
+  });
+};
+
+const moveMemberDown = (index) => {
+  setTeam((prev) => {
+    if (index === prev.members.length - 1) return prev;
+
+    const members = [...prev.members];
+    [members[index], members[index + 1]] = [members[index + 1], members[index]];
+    return { ...prev, members };
+  });
+
+  setOpenMembers((prev) => {
+    if (index === prev.length - 1) return prev;
+
+    const open = [...prev];
+    [open[index], open[index + 1]] = [open[index + 1], open[index]];
+    return open;
+  });
+};
+
   return (
     <div className="admin-page-container">
       <div className="page-header">
@@ -1173,9 +1209,51 @@ export default function AboutUsAddEditData() {
                         {m.role?.trim() || "Click to expand and edit details"}
                       </div>
                     </div>
-                    <span style={{ color: "#475569", flexShrink: 0 }}>
+                    {/* <span style={{ color: "#475569", flexShrink: 0 }}>
                       {openMembers[i] ? <UpOutlined /> : <DownOutlined />}
-                    </span>
+                    </span> */}
+                    <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    flexShrink: 0,
+  }}
+  onClick={(e) => e.stopPropagation()}
+>
+  <button
+    type="button"
+    onClick={() => moveMemberUp(i)}
+    disabled={i === 0}
+    style={{
+      border: "none",
+      background: "transparent",
+      cursor: i === 0 ? "not-allowed" : "pointer",
+      opacity: i === 0 ? 0.4 : 1,
+    }}
+  >
+    <ArrowUpOutlined />
+  </button>
+
+  <button
+    type="button"
+    onClick={() => moveMemberDown(i)}
+    disabled={i === team.members.length - 1}
+    style={{
+      border: "none",
+      background: "transparent",
+      cursor:
+        i === team.members.length - 1 ? "not-allowed" : "pointer",
+      opacity: i === team.members.length - 1 ? 0.4 : 1,
+    }}
+  >
+    <ArrowDownOutlined />
+  </button>
+
+  <span style={{ color: "#475569" }}>
+    {openMembers[i] ? <UpOutlined /> : <DownOutlined />}
+  </span>
+</div>
                   </button>
 
                   {openMembers[i] && (
