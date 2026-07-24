@@ -1462,7 +1462,7 @@ export default function HomepageSettingsAddEdit() {
                   <CharCounter value={form.featuredMatch.title} min={F.heading.min} max={F.heading.max} />
                 </div>
               </div>
-              <div className="col-md-6 col-12 mb-3">
+              {/* <div className="col-md-6 col-12 mb-3">
                 <div className="form-group">
                   <label className="form-label">Match / Subtitle Text</label>
                   <input
@@ -1473,7 +1473,7 @@ export default function HomepageSettingsAddEdit() {
                   />
                   <CharCounter value={form.featuredMatch.subtitle} min={F.subtitle.min} max={F.subtitle.max} />
                 </div>
-              </div>
+              </div> */}
               <div className="col-md-6 col-12 mb-3">
                 <div className="form-group">
                   <label className="form-label">Link URL</label>
