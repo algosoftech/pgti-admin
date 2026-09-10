@@ -38,6 +38,7 @@ import {
   setShowRequest,
 } from "store/slices/news.slice";
 import { getNewsListingBanner } from "services/news.service";
+import { resolvePreviewMediaUrl } from "services/media.service";
 
 export default function NewsList() {
   const dispatch = useAppDispatch();
@@ -61,10 +62,9 @@ export default function NewsList() {
   const [listingBanner, setListingBanner] = useState(null);
   const [bannerPreviewOpen, setBannerPreviewOpen] = useState(false);
   const [sortState, setSortState] = useState({ sort_by: "", order: "asc" });
-  const canEdit = user?.admin_type === "Super Admin" || PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y";
-  const canStatus = user?.admin_type === "Super Admin" || PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y";
-  const canDelete = user?.admin_type === "Super Admin" || PERMISSION?.delete === "Y" || PERMISSION?.fullAccess === "Y";
-const IMAGE_BASE_URL = "https://algodev.in:3301/";
+ const canEdit = user?.admin_type === "Super Admin" || PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y";
+ const canStatus = user?.admin_type === "Super Admin" || PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y";
+ const canDelete = user?.admin_type === "Super Admin" || PERMISSION?.delete === "Y" || PERMISSION?.fullAccess === "Y";
   const [serverColumnFilters, setServerColumnFilters] = useState({
     title: "",
     location: "",
@@ -147,29 +147,26 @@ const IMAGE_BASE_URL = "https://algodev.in:3301/";
         accessorKey: "image",
         header: "Image",
         cell: ({ getValue, row }) => {
-    const image = getValue();
-// Fix: Check if it's already a full URL
-    const imgSrc = image && image.startsWith("http") 
-      ? image 
-      : `${IMAGE_BASE_URL}${image}`;
-    return image ? (
-      <img
-        src={imgSrc}
-        alt={row.original?.title}
-        style={{
-          width: 72,
-          height: 56,
-          objectFit: "cover",
-          borderRadius: 8,
-        }}
-        onError={(e) => {
-          console.log("Failed to load:", e.target.src);
-        }}
-      />
-    ) : (
-      <span className="text-muted">No image</span>
-    );
-  },
+   const image = getValue();
+   const imgSrc = resolvePreviewMediaUrl(image);
+   return image ? (
+     <img
+       src={imgSrc}
+       alt={row.original?.title}
+       style={{
+         width: 72,
+         height: 56,
+         objectFit: "cover",
+         borderRadius: 8,
+       }}
+       onError={(e) => {
+         console.log("Failed to load:", e.target.src);
+       }}
+     />
+   ) : (
+     <span className="text-muted">No image</span>
+   );
+ },
         size: 90,
         enableSorting: false,
         enableGlobalFilter: false,

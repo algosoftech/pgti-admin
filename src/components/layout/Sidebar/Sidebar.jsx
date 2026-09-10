@@ -182,15 +182,19 @@ const Sidebar = ({ children }) => {
       return;
     }
 
-    if (
-      location.pathname.startsWith("/admin/tee-time-booking") ||
-      location.pathname.startsWith("/admin/qualifier-booking") ||
-      location.pathname.startsWith("/admin/physio-booking")
-    ) {
-      setOpenPanel("booking");
-      return;
-    }
+if (location.pathname.startsWith("/admin/qschool")) {
+  setOpenPanel("qschool");
+  return;
+}
 
+if (
+  location.pathname.startsWith("/admin/tee-time-booking") ||
+  location.pathname.startsWith("/admin/qualifier-booking") ||
+  location.pathname.startsWith("/admin/physio-booking")
+) {
+  setOpenPanel("booking");
+  return;
+}
     if (location.pathname.startsWith("/admin/templates")) {
       setOpenPanel("templates");
       return;
@@ -282,6 +286,7 @@ const Sidebar = ({ children }) => {
         { check: isSuperAdmin || hasAccess("qualifier_booking_applications"), to: "/admin/qualifier-booking/applications", icon: faClock, name: "Qualifier Booking Applications" },
       ],
     },
+
     {
       title: "Physio",
       items: [
@@ -298,6 +303,22 @@ const Sidebar = ({ children }) => {
     .filter((group) => group.items.length);
 
   const bookingItems = bookingGroups.flatMap((group) => group.items);
+
+const qschoolItems = [
+  {
+    check: isSuperAdmin || hasAccess("qschool_setup"),
+    to: "/admin/qschool/setup",
+    icon: faClock,
+    name: "Q-School Page Setup",
+  },
+  {
+    check: isSuperAdmin || hasAccess("qschool_applications"),
+    to: "/admin/qschool/applications",
+    icon: faClock,
+    name: "Q-School Applications",
+  },
+].filter((item) => item.check);
+
 
   const articlePageGroups = canAccessArticlePages
     ? [
@@ -384,6 +405,14 @@ const Sidebar = ({ children }) => {
           groups: bookingGroups,
         }
       : null,
+      qschoolItems.length
+  ? {
+      key: "qschool",
+      header: "Q-School",
+      icon: faClock,
+      items: qschoolItems,
+    }
+  : null,
     articlePageItems.length
       ? {
           key: "article-pages",

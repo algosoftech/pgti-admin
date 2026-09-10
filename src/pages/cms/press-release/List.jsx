@@ -26,6 +26,7 @@ import EnhancedTable from "components/table/EnhancedTable/EnhancedTable";
 import ListSortFilter from "components/common/ListSortFilter";
 import { usePermissions } from "contexts/PermissionContext";
 import { changePressReleaseStatus, deletePressRelease, getPressReleaseListingBanner, listPressRelease } from "services/pressRelease.service";
+import { resolvePreviewMediaUrl } from "services/media.service";
 import { getTourTypeLabel } from "utils/tourType";
 import "styles/admin-pages.css";
 
@@ -66,8 +67,6 @@ export default function PressReleaseList() {
   const [listingBanner, setListingBanner] = useState(null);
   const [bannerPreviewOpen, setBannerPreviewOpen] = useState(false);
 
-  const IMAGE_BASE_URL = "https://algodev.in:3301/";
-  
   const canEdit = user?.admin_type === "Super Admin" || PERMISSION?.add_edit === "Y" || PERMISSION?.fullAccess === "Y";
   const canStatus = user?.admin_type === "Super Admin" || PERMISSION?.change_status === "Y" || PERMISSION?.fullAccess === "Y";
   const canDelete = user?.admin_type === "Super Admin" || PERMISSION?.delete === "Y" || PERMISSION?.fullAccess === "Y";
@@ -238,32 +237,29 @@ export default function PressReleaseList() {
         enableHiding: true,
       },
       {
-        accessorKey: "image",
-        header: "Image",
+       accessorKey: "image",
+       header: "Image",
        cell: ({ getValue, row }) => {
-    const image = getValue();
-// Fix: Check if it's already a full URL
-    const imgSrc = image && image.startsWith("http") 
-      ? image 
-      : `${IMAGE_BASE_URL}${image}`;
-    return image ? (
-      <img
-        src={imgSrc}
-        alt={row.original?.title}
-        style={{
-          width: 72,
-          height: 56,
-          objectFit: "cover",
-          borderRadius: 8,
-        }}
-        onError={(e) => {
-          console.log("Failed to load:", e.target.src);
-        }}
-      />
-    ) : (
-      <span className="text-muted">No image</span>
-    );
-  },
+   const image = getValue();
+   const imgSrc = resolvePreviewMediaUrl(image);
+   return image ? (
+     <img
+       src={imgSrc}
+       alt={row.original?.title}
+       style={{
+         width: 72,
+         height: 56,
+         objectFit: "cover",
+         borderRadius: 8,
+       }}
+       onError={(e) => {
+         console.log("Failed to load:", e.target.src);
+       }}
+     />
+   ) : (
+     <span className="text-muted">No image</span>
+   );
+ },
         size: 110,
         enableSorting: false,
         enableGlobalFilter: false,

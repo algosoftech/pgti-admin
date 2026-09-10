@@ -107,6 +107,8 @@ import TeeTimeWindows from "pages/tee-time-booking/Windows";
 import TeeTimeSheet from "pages/tee-time-booking/Sheet";
 import QualifierBookingSettings from "pages/qualifier-booking/Settings";
 import QualifierBookingApplications from "pages/qualifier-booking/Applications";
+import QSchoolSetup from "pages/qschool/Setup";
+import QSchoolApplications from "pages/qschool/Applications";
 import PhysioCreateSlots from "pages/physio-booking/CreateSlots";
 import PhysioViewSlots from "pages/physio-booking/ViewSlots";
 import PhysioBookings from "pages/physio-booking/Bookings";
@@ -256,6 +258,8 @@ const AppRoutes = () => (
     <Route path="/admin/tee-time-booking/sheet" element={<AdminLayout><TeeTimeSheet /></AdminLayout>} />
     <Route path="/admin/qualifier-booking/settings" element={<AdminLayout><QualifierBookingSettings /></AdminLayout>} />
     <Route path="/admin/qualifier-booking/applications" element={<AdminLayout><QualifierBookingApplications /></AdminLayout>} />
+    <Route path="/admin/qschool/setup" element={<AdminLayout><QSchoolSetup /></AdminLayout>} />
+    <Route path="/admin/qschool/applications" element={<AdminLayout><QSchoolApplications /></AdminLayout>} />
     <Route path="/admin/physio-booking/create-slots" element={<AdminLayout><PhysioCreateSlots /></AdminLayout>} />
     <Route path="/admin/physio-booking/view-slots" element={<AdminLayout><PhysioViewSlots /></AdminLayout>} />
     <Route path="/admin/physio-booking/bookings" element={<AdminLayout><PhysioBookings /></AdminLayout>} />

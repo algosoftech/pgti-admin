@@ -43,6 +43,7 @@ const buildInitialState = (state = {}) => ({
   title: state?.title || "",
   description: state?.description || "",
   image: state?.image || "",
+  thumbnail: state?.thumbnail || "",
   event_id: state?.event_id || undefined,
   season: state?.season || currentYear,
   press_release_month: state?.press_release_month || undefined,
@@ -159,6 +160,7 @@ export default function PressReleaseAddEditData() {
         title: formData.title.trim(),
         description: formData.description.trim(),
         image: formData.image,
+        thumbnail: formData.thumbnail || "",
         event_id: Number(formData.event_id),
         season: Number(formData.season),
         press_release_month: Number(formData.press_release_month),
@@ -230,7 +232,18 @@ export default function PressReleaseAddEditData() {
                       note={IMAGE_SPECS["cms/press-release"].note}
                     />
                   </div>
-
+{/* Optional Thumbnail Image */}
+<div className="col-md-6 col-12 mb-3">
+  <ImageUploadField
+    label="Thumbnail Image (Optional)"
+    value={formData.thumbnail}
+    onChange={(url) => setFormData((prev) => ({ ...prev, thumbnail: url }))}
+    folder="cms/press-release" 
+    previewH={240}
+    spec={IMAGE_SPECS["cms/press-release"]}
+  />
+  <FieldHint text="Optional thumbnail used for cards and preview thumbnails." />
+</div>
                   <div className="col-md-12 col-12 mb-3">
                     <label className="form-label required">Press Release Title</label>
                     <input

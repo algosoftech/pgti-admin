@@ -3120,3 +3120,192 @@ svg[data-icon="thumbtack"] {
   font-size: 12px;
   color: #6b7280;
 }
+
+
+
+/* =========================================
+   Q-SCHOOL SETUP
+   ========================================= */
+
+.qschool-setup-page {
+  min-height: 100vh;
+}
+
+.qschool-form {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.qschool-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.qschool-section-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.qschool-section-description {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.qschool-status-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.qschool-status-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.qschool-dynamic-card {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: none;
+}
+
+.qschool-dynamic-card:last-child {
+  margin-bottom: 0;
+}
+
+.qschool-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.qschool-card-header h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.qschool-subsection {
+  margin-top: 8px;
+  margin-bottom: 16px;
+  padding: 18px;
+  background: #f9fafb;
+  border: 1px solid #eef0f2;
+  border-radius: 8px;
+}
+
+.qschool-subsection h5 {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.qschool-empty-state {
+  padding: 30px 20px;
+  text-align: center;
+  color: #9ca3af;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.qschool-form .form-label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.qschool-form .form-input {
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.qschool-form textarea.form-input {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.qschool-form .form-input::placeholder {
+  color: #9ca3af;
+}
+
+.qschool-form .form-input:focus {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.08);
+}
+
+.qschool-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 0 30px;
+}
+
+.qschool-form-actions .action-button {
+  min-width: 180px;
+}
+
+@media (max-width: 768px) {
+  .qschool-section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .qschool-status-control {
+    justify-content: space-between;
+  }
+
+  .qschool-subsection {
+    padding: 14px;
+  }
+
+  .qschool-form-actions {
+    justify-content: stretch;
+  }
+
+  .qschool-form-actions .action-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .qschool-section-title {
+    font-size: 16px;
+  }
+
+  .qschool-card-header {
+    align-items: flex-start;
+  }
+
+  .qschool-card-header h4 {
+    font-size: 14px;
+  }
+}
+

@@ -39,19 +39,44 @@ const maybeDecrypt = async (res) => {
  *****************************************************/
 export const getRequest = async (options) => {
     try {
-        const { url } = options;
+        const {
+            url,
+            params,
+            responseType,
+        } = options;
+
         const token = getAdminStorageItem('TOKEN');
-        const headers = { Authorization: `Bearer ${token}` };
-        const response = await axios.get(url, { headers });
+
+        const headers = {
+            Authorization: `Bearer ${token}`,
+        };
+
+        const response = await axios.get(url, {
+            headers,
+            params,
+            responseType,
+        });
+
         if (response?.status !== 200) return false;
+
+        // For file downloads, return the raw Axios response.
+        if (responseType === 'blob') {
+            return response;
+        }
+
         await maybeDecrypt(response);
+
         const payload = response?.data?.response;
+
         if (!payload) return false;
+
         return payload?.result ?? payload;
+
     } catch (error) {
         if (error?.response?.status === 401) {
             redirectToAdminLogin();
         }
+
         return false;
     }
 };
