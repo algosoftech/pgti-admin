@@ -45,7 +45,6 @@ const emptyForm = {
   banner_desktop_image: "",
   banner_mobile_image: "",
   banner_title: "",
-  banner_subtitle: "",
 
   final_qualifying_school_main_venue: "",
   final_qualifying_school_detailed_venue: "",
@@ -156,9 +155,6 @@ const normalizeSetup = (raw = {}) => {
 
     banner_title:
       raw.banner_title || "",
-
-    banner_subtitle:
-      raw.banner_subtitle || "",
 
     final_qualifying_school_main_venue:
       raw.final_qualifying_school_main_venue || "",
@@ -507,9 +503,6 @@ export default function QSchoolSetup() {
         banner_title:
           form.banner_title || null,
 
-        banner_subtitle:
-          form.banner_subtitle || null,
-
         final_qualifying_school_main_venue:
           form.final_qualifying_school_main_venue ||
           null,
@@ -728,7 +721,7 @@ export default function QSchoolSetup() {
               </div>
 
               <div className="row">
-                <div className="col-12 col-md-6 mb-3">
+                <div className="col-12 mb-3">
                   <label className="form-label">
                     Banner Title
                   </label>
@@ -747,27 +740,9 @@ export default function QSchoolSetup() {
                     }
                   />
                 </div>
+              </div>
 
-                <div className="col-12 col-md-6 mb-3">
-                  <label className="form-label">
-                    Banner Subtitle
-                  </label>
-
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={
-                      form.banner_subtitle
-                    }
-                    onChange={(e) =>
-                      handleFieldChange(
-                        "banner_subtitle",
-                        e.target.value
-                      )
-                    }
-                  />
-                </div>
-
+              <div className="row">
                 <div className="col-12 col-md-6 mb-3">
                   <ImageUploadField
                     label="Desktop Banner Image"
