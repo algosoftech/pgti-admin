@@ -61,6 +61,7 @@ const emptyForm = {
   },
 
   entry_closes: {
+    day: "",
     date: "",
     time: "",
   },
@@ -77,6 +78,7 @@ const emptyForm = {
     last_date_for_entry_fees: "",
     late_entry_fees: "",
     last_date_for_late_entry_fees: "",
+    last_time_for_late_entry_fees: "",
     account_name: "",
     account_number: "",
     bank: "",
@@ -84,6 +86,9 @@ const emptyForm = {
     ifsc_code: "",
     swift_code: "",
   },
+
+  withdrawal_after_close_refund: "",
+  double_entry_fee_withdrawal_refund: "",
 
   contact_email: "",
 };
@@ -218,6 +223,12 @@ const normalizeSetup = (raw = {}) => {
       ...emptyForm.payment_details,
       ...(paymentDetails || {}),
     },
+
+    withdrawal_after_close_refund:
+      raw.withdrawal_after_close_refund ?? "",
+
+    double_entry_fee_withdrawal_refund:
+      raw.double_entry_fee_withdrawal_refund ?? "",
 
     contact_email:
       raw.contact_email || "",
@@ -559,6 +570,9 @@ export default function QSchoolSetup() {
         },
 
         entry_closes: {
+          day:
+            form.entry_closes?.day || "",
+
           date:
             form.entry_closes?.date || "",
 
@@ -606,6 +620,11 @@ export default function QSchoolSetup() {
               ?.last_date_for_late_entry_fees ||
             "",
 
+          last_time_for_late_entry_fees:
+            form.payment_details
+              ?.last_time_for_late_entry_fees ||
+            "",
+
           account_name:
             form.payment_details
               ?.account_name || "",
@@ -630,6 +649,14 @@ export default function QSchoolSetup() {
             form.payment_details
               ?.swift_code || "",
         },
+
+        withdrawal_after_close_refund:
+          form.withdrawal_after_close_refund ||
+          0,
+
+        double_entry_fee_withdrawal_refund:
+          form.double_entry_fee_withdrawal_refund ||
+          0,
 
         contact_email:
           form.contact_email || null,
@@ -1159,7 +1186,29 @@ export default function QSchoolSetup() {
               </h3>
 
               <div className="row">
-                <div className="col-md-6 mb-3">
+                <div className="col-md-4 mb-3">
+                  <label className="form-label">
+                    Day
+                  </label>
+
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. Saturday"
+                    value={
+                      form.entry_closes.day
+                    }
+                    onChange={(e) =>
+                      handleNestedChange(
+                        "entry_closes",
+                        "day",
+                        e.target.value
+                      )
+                    }
+                  />
+                </div>
+
+                <div className="col-md-4 mb-3">
                   <label className="form-label">
                     Date
                   </label>
@@ -1180,7 +1229,7 @@ export default function QSchoolSetup() {
                   />
                 </div>
 
-                <div className="col-md-6 mb-3">
+                <div className="col-md-4 mb-3">
                   <label className="form-label">
                     Time
                   </label>
@@ -1470,6 +1519,11 @@ export default function QSchoolSetup() {
                     "date",
                   ],
                   [
+                    "last_time_for_late_entry_fees",
+                    "Last Time for Late Entry Fees",
+                    "time",
+                  ],
+                  [
                     "account_name",
                     "Account Name",
                     "text",
@@ -1529,6 +1583,59 @@ export default function QSchoolSetup() {
                     </div>
                   )
                 )}
+              </div>
+            </div>
+          </div>
+
+          {/* Withdrawal & Refund */}
+          <div className="content-card mb-4">
+            <div className="content-card-body">
+              <h3 className="qschool-section-title">
+                Withdrawal & Refund
+              </h3>
+
+              <div className="row">
+                <div className="col-12 col-md-6 mb-3">
+                  <label className="form-label">
+                    Withdrawal After Close Refund
+                  </label>
+
+                  <input
+                    type="number"
+                    min="0"
+                    className="form-input"
+                    value={
+                      form.withdrawal_after_close_refund
+                    }
+                    onChange={(e) =>
+                      handleFieldChange(
+                        "withdrawal_after_close_refund",
+                        e.target.value
+                      )
+                    }
+                  />
+                </div>
+
+                <div className="col-12 col-md-6 mb-3">
+                  <label className="form-label">
+                    Double Entry Fee Withdrawal Refund
+                  </label>
+
+                  <input
+                    type="number"
+                    min="0"
+                    className="form-input"
+                    value={
+                      form.double_entry_fee_withdrawal_refund
+                    }
+                    onChange={(e) =>
+                      handleFieldChange(
+                        "double_entry_fee_withdrawal_refund",
+                        e.target.value
+                      )
+                    }
+                  />
+                </div>
               </div>
             </div>
           </div>
